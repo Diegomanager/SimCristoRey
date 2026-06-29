@@ -78,8 +78,8 @@ public class SimulacionEngine {
         publicarEstadisticas();
         ejecutarCicloPrincipal();
 
-        // ----- VACIADO MANUAL DE COLAS -----
-        vaciarColasManual();
+        // ----- ESPERAR Y VACIAR COLAS (CON FORZADO) -----
+        esperarYVaciarColas();
 
         detenerHilos();
         mostrarResultados();
@@ -243,23 +243,54 @@ public class SimulacionEngine {
         simuladorService.asignarCliente(cajas, cliente);
     }
 
-    private void vaciarColasManual() throws InterruptedException {
-        log("Vaciando colas manualmente...");
-        int totalClientesEnCola = 0;
-        for (Caja caja : cajas) {
-            totalClientesEnCola += caja.getClientesEnCola();
-        }
-        log("Clientes en cola al cierre: " + totalClientesEnCola);
+    private void esperarYVaciarColas() throws InterruptedException {
+        log("Esperando que terminen atenciones activas...");
 
-        // Procesar colas secuencialmente
+        int esperaMax = 10000;
+        int paso = 50;
+        int intentos = esperaMax / paso;
+
+        for (int i = 0; i < intentos; i++) {
+            boolean hayOcupadas = false;
+            for (Caja caja : cajas) {
+                if (caja.estaOcupada()) {
+                    hayOcupadas = true;
+                    break;
+                }
+            }
+            if (!hayOcupadas) {
+                log("Todas las atenciones activas finalizadas naturalmente.");
+                break;
+            }
+            Thread.sleep(paso);
+        }
+
+        int forzadas = 0;
+        for (Caja caja : cajas) {
+            if (caja.estaOcupada() && caja.getClienteActual() != null) {
+                log("  Forzando finalización de " + caja.getId() +
+                    " (cliente " + caja.getClienteActual().getId() + ")");
+                caja.finalizarAtencion();
+                forzadas++;
+            }
+        }
+        if (forzadas > 0) {
+            log("Atendidos forzados: " + forzadas);
+        }
+
+        log("Vaciando colas manualmente...");
+        int totalEnCola = 0;
+        for (Caja caja : cajas) {
+            totalEnCola += caja.getClientesEnCola();
+        }
+        log("Clientes en cola al cierre: " + totalEnCola);
+
         int atendidosExtra = 0;
         for (Caja caja : cajas) {
             while (caja.getClientesEnCola() > 0 && ejecutando) {
                 Cliente cliente = caja.prepararSiguienteCliente();
                 if (cliente == null) break;
-
-                // Simular atención inmediata (sin espera real)
-                cliente.setTiempoAtencionReal(1); // tiempo mínimo
+                cliente.setTiempoAtencionReal(1);
                 cliente.setTiempoSalida(reloj.getTiempoActual() + 1);
                 caja.finalizarAtencion();
                 atendidosExtra++;
@@ -268,6 +299,17 @@ public class SimulacionEngine {
         }
         if (atendidosExtra > 0) {
             log("Atendidos extra en cola: " + atendidosExtra);
+        }
+
+        int atendidosTotales = 0;
+        for (Caja caja : cajas) {
+            atendidosTotales += caja.getTotalAtendidos();
+        }
+        int perdidos = clientesGenerados - atendidosTotales - totalEnCola;
+        if (perdidos > 0) {
+            log("ADVERTENCIA: Clientes perdidos: " + perdidos);
+        } else {
+            log("Todos los clientes generados fueron contabilizados.");
         }
     }
 

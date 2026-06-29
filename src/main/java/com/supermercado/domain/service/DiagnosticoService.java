@@ -5,128 +5,206 @@ import com.supermercado.domain.model.Recomendacion;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Servicio de dominio: Diagnostico del estado de las cajas.
+ *
+ * Responsabilidad unica: analizar el estado actual de las cajas
+ * y generar diagnosticos con niveles de alerta y sugerencias.
+ *
+ * No depende de infraestructura ni de la capa de presentacion.
+ */
 public class DiagnosticoService {
-    
-    public enum NivelAlerta { 
-        NORMAL("", "Funcionando correctamente"),
+
+    // ============================================================
+    // Enumeracion de niveles de alerta
+    // ============================================================
+
+    public enum NivelAlerta {
+        NORMAL  ("", "Funcionando correctamente"),
         ATENCION("", "Monitorear"),
-        ALERTA("", "Requiere atencion"),
-        CRITICO("", "¡URGENTE!");
-        
+        ALERTA  ("", "Requiere atencion"),
+        CRITICO ("", "URGENTE!");
+
         public final String icono;
         public final String descripcion;
-        
+
         NivelAlerta(String icono, String descripcion) {
-            this.icono = icono;
+            this.icono       = icono;
             this.descripcion = descripcion;
         }
     }
-    
+
+    // ============================================================
+    // Clase Diagnostico - campos privados con getters
+    // ============================================================
+
     public static class Diagnostico {
-        public String cajaId;
-        public NivelAlerta nivel;
-        public String mensaje;
-        public String sugerencia;
-        public int colaActual;
-        public int colaMaxima;
-        public int clientesAtendidos;
-        public boolean esRapida;
-        
+
+        private final String      cajaId;
+        private final NivelAlerta nivel;
+        private final String      mensaje;
+        private final String      sugerencia;
+        private final int         colaActual;
+        private final int         colaMaxima;
+        private final int         clientesAtendidos;
+        private final boolean     esRapida;
+
+        public Diagnostico(
+                String cajaId, NivelAlerta nivel,
+                String mensaje, String sugerencia,
+                int colaActual, int colaMaxima,
+                int clientesAtendidos, boolean esRapida) {
+            this.cajaId            = cajaId;
+            this.nivel             = nivel;
+            this.mensaje           = mensaje;
+            this.sugerencia        = sugerencia;
+            this.colaActual        = colaActual;
+            this.colaMaxima        = colaMaxima;
+            this.clientesAtendidos = clientesAtendidos;
+            this.esRapida          = esRapida;
+        }
+
+        public String      getCajaId()            { return cajaId; }
+        public NivelAlerta getNivel()              { return nivel; }
+        public String      getMensaje()            { return mensaje; }
+        public String      getSugerencia()         { return sugerencia; }
+        public int         getColaActual()         { return colaActual; }
+        public int         getColaMaxima()         { return colaMaxima; }
+        public int         getClientesAtendidos()  { return clientesAtendidos; }
+        public boolean     isEsRapida()            { return esRapida; }
+
         @Override
         public String toString() {
-            return String.format("%s %s: %s (Cola: %d/%d)", 
+            return String.format("%s %s: %s (Cola: %d/%d)",
                 nivel.icono, cajaId, mensaje, colaActual, colaMaxima);
         }
     }
-    
+
+    // ============================================================
+    // Umbrales de alerta (constantes con nombre descriptivo)
+    // ============================================================
+
+    private static final int UMBRAL_CRITICO         = 40;
+    private static final int UMBRAL_ALERTA           = 25;
+    private static final int UMBRAL_SUBUTILIZACION   = 3;
+    private static final int MIN_ATENDIDOS_PARA_EVAL = 50;
+
+    // ============================================================
+    // Diagnosticar
+    // ============================================================
+
     public List<Diagnostico> diagnosticar(List<Caja> cajas) {
         List<Diagnostico> diagnosticos = new ArrayList<>();
-        
         for (Caja caja : cajas) {
-            Diagnostico d = new Diagnostico();
-            d.cajaId = caja.getId();
-            d.colaActual = caja.getClientesEnCola();
-            d.colaMaxima = caja.getColaMaxima();
-            d.clientesAtendidos = caja.getTotalAtendidos();
-            d.esRapida = caja.esRapida();
-            
-            if (d.colaActual > 40) {
-                d.nivel = NivelAlerta.CRITICO;
-                d.mensaje = "COLA EXCESIVA " + d.colaActual + " clientes esperando";
-                d.sugerencia = d.esRapida ? 
-                    "Convertir a NORMAL o abrir otra caja RAPIDA" :
-                    "Aumentar numero de cajas NORMALES o reducir tiempo de atencion";
-            } else if (d.colaActual > 25) {
-                d.nivel = NivelAlerta.ALERTA;
-                d.mensaje = "Cola alta: " + d.colaActual + " clientes";
-                d.sugerencia = "Considerar abrir otra caja o revisar tiempos";
-            } else if (d.colaActual < 3 && d.clientesAtendidos > 50) {
-                d.nivel = NivelAlerta.ATENCION;
-                d.mensaje = "Caja subutilizada: solo " + d.colaActual + " clientes en cola";
-                d.sugerencia = d.esRapida ? 
-                    "Redirigir mas clientes a esta caja RAPIDA" :
-                    "Considerar convertir a RAPIDA";
-            } else {
-                d.nivel = NivelAlerta.NORMAL;
-                d.mensaje = "Funcionando correctamente";
-                d.sugerencia = "Mantener configuracion actual";
-            }
-            
-            diagnosticos.add(d);
+            diagnosticos.add(diagnosticarCaja(caja));
         }
-        
         return diagnosticos;
     }
-    
-    public Recomendacion generarRecomendacionGeneral(List<Diagnostico> diagnosticos) {
-        long criticos = diagnosticos.stream()
-            .filter(d -> d.nivel == NivelAlerta.CRITICO).count();
-        long alertas = diagnosticos.stream()
-            .filter(d -> d.nivel == NivelAlerta.ALERTA).count();
-        long atencion = diagnosticos.stream()
-            .filter(d -> d.nivel == NivelAlerta.ATENCION).count();
-        
-        StringBuilder mensaje = new StringBuilder();
-        String prioridad = "NORMAL";
-        String configSugerida = "";
-        double mejora = 0.0;
-        
-        if (criticos > 0) {
-            prioridad = "CRITICO";
-            mensaje.append("URGENTE: " + criticos + " cajas con cola critica.\n");
-            mensaje.append("   Aumentar el numero de cajas\n");
-            mensaje.append("   Reducir tiempos de atencion\n");
-            mensaje.append("   Revisar distribucion de clientes");
-            configSugerida = "Aumentar cajas en " + criticos + " unidades";
-            mejora = 25.0;
-        } else if (alertas > 0) {
-            prioridad = "ALTO";
-            mensaje.append("ATENCION: " + alertas + " cajas con cola alta.\n");
-            mensaje.append("   Considerar abrir mas cajas en horas pico\n");
-            mensaje.append("   Optimizar tiempos de atencion");
-            configSugerida = "Ajustar tiempos o agregar cajas temporales";
-            mejora = 15.0;
-        } else if (atencion > 0) {
-            prioridad = "MEDIO";
-            mensaje.append("INFO: " + atencion + " cajas subutilizadas.\n");
-            mensaje.append("   Redistribuir clientes a estas cajas\n");
-            mensaje.append("   Considerar convertir cajas normales a rapidas");
-            configSugerida = "Redistribuir carga entre cajas";
-            mejora = 10.0;
+
+    private Diagnostico diagnosticarCaja(Caja caja) {
+        int     colaActual  = caja.getClientesEnCola();
+        int     colaMaxima  = caja.getColaMaxima();
+        int     atendidos   = caja.getTotalAtendidos();
+        boolean esRapida    = caja.esRapida();
+
+        NivelAlerta nivel;
+        String      mensaje;
+        String      sugerencia;
+
+        if (colaActual > UMBRAL_CRITICO) {
+            nivel      = NivelAlerta.CRITICO;
+            mensaje    = "COLA EXCESIVA: " + colaActual + " clientes esperando";
+            sugerencia = esRapida
+                ? "Convertir a NORMAL o abrir otra caja RAPIDA"
+                : "Aumentar numero de cajas NORMALES o reducir tiempo de atencion";
+
+        } else if (colaActual > UMBRAL_ALERTA) {
+            nivel      = NivelAlerta.ALERTA;
+            mensaje    = "Cola alta: " + colaActual + " clientes";
+            sugerencia = "Considerar abrir otra caja o revisar tiempos";
+
+        } else if (colaActual < UMBRAL_SUBUTILIZACION && atendidos > MIN_ATENDIDOS_PARA_EVAL) {
+            nivel      = NivelAlerta.ATENCION;
+            mensaje    = "Caja subutilizada: solo " + colaActual + " clientes en cola";
+            sugerencia = esRapida
+                ? "Redirigir mas clientes a esta caja RAPIDA"
+                : "Considerar convertir a RAPIDA";
+
         } else {
-            mensaje.append("CONFIGURACION OPTIMA!\n");
-            mensaje.append("   Todas las cajas funcionan correctamente\n");
-            mensaje.append("   Mantener la configuracion actual");
-            configSugerida = "Mantener configuracion actual";
-            mejora = 0.0;
+            nivel      = NivelAlerta.NORMAL;
+            mensaje    = "Funcionando correctamente";
+            sugerencia = "Mantener configuracion actual";
         }
-        
+
+        return new Diagnostico(
+            caja.getId(), nivel, mensaje, sugerencia,
+            colaActual, colaMaxima, atendidos, esRapida
+        );
+    }
+
+    // ============================================================
+    // Recomendacion general
+    // ============================================================
+
+    public Recomendacion generarRecomendacionGeneral(List<Diagnostico> diagnosticos) {
+        long criticos = contarPorNivel(diagnosticos, NivelAlerta.CRITICO);
+        long alertas  = contarPorNivel(diagnosticos, NivelAlerta.ALERTA);
+        long atencion = contarPorNivel(diagnosticos, NivelAlerta.ATENCION);
+
+        if (criticos > 0) return recomendacionCritica(criticos);
+        if (alertas  > 0) return recomendacionAlerta(alertas);
+        if (atencion > 0) return recomendacionAtencion(atencion);
+        return recomendacionNormal();
+    }
+
+    private long contarPorNivel(List<Diagnostico> diagnosticos, NivelAlerta nivel) {
+        return diagnosticos.stream()
+            .filter(d -> d.getNivel() == nivel)
+            .count();
+    }
+
+    private Recomendacion recomendacionCritica(long criticos) {
         return new Recomendacion(
-            mensaje.toString(),
-            prioridad,
-            configSugerida,
-            mejora,
-            false
+            "URGENTE: " + criticos + " cajas con cola critica.\n" +
+            "  Aumentar el numero de cajas\n" +
+            "  Reducir tiempos de atencion\n" +
+            "  Revisar distribucion de clientes",
+            "CRITICO",
+            "Aumentar cajas en " + criticos + " unidades",
+            25.0, false
+        );
+    }
+
+    private Recomendacion recomendacionAlerta(long alertas) {
+        return new Recomendacion(
+            "ATENCION: " + alertas + " cajas con cola alta.\n" +
+            "  Considerar abrir mas cajas en horas pico\n" +
+            "  Optimizar tiempos de atencion",
+            "ALTO",
+            "Ajustar tiempos o agregar cajas temporales",
+            15.0, false
+        );
+    }
+
+    private Recomendacion recomendacionAtencion(long atencion) {
+        return new Recomendacion(
+            "INFO: " + atencion + " cajas subutilizadas.\n" +
+            "  Redistribuir clientes a estas cajas\n" +
+            "  Considerar convertir cajas normales a rapidas",
+            "MEDIO",
+            "Redistribuir carga entre cajas",
+            10.0, false
+        );
+    }
+
+    private Recomendacion recomendacionNormal() {
+        return new Recomendacion(
+            "CONFIGURACION OPTIMA!\n" +
+            "  Todas las cajas funcionan correctamente\n" +
+            "  Mantener la configuracion actual",
+            "NORMAL",
+            "Mantener configuracion actual",
+            0.0, false
         );
     }
 }

@@ -32,25 +32,21 @@ public class PanelEstadisticas extends JPanel {
     }
 
     private void construir() {
-        // Seccion: Tiempo
         add(crearEncabezadoSeccion("Tiempo"));
         add(crearFila("Hora simulada:", lblHora = crearValor("08:00")));
         add(Box.createVerticalStrut(10));
 
-        // Seccion: Clientes
         add(crearEncabezadoSeccion("Clientes"));
-        add(crearFila("Atendidos:",         lblAtendidos  = crearValor("0")));
-        add(crearFila("En cola ahora:",     lblEnCola     = crearValor("0")));
-        add(crearFila("Generados:",         lblGenerados  = crearValor("0")));
+        add(crearFila("Atendidos:",     lblAtendidos = crearValor("0")));
+        add(crearFila("En cola ahora:", lblEnCola    = crearValor("0")));
+        add(crearFila("Generados:",     lblGenerados = crearValor("0")));
         add(Box.createVerticalStrut(10));
 
-        // Seccion: Ventas
         add(crearEncabezadoSeccion("Ventas"));
         add(crearFila("Articulos vendidos:", lblArticulos = crearValor("0")));
         add(crearFila("Prom. atencion:",     lblPromedio  = crearValor("0.0 min")));
         add(Box.createVerticalStrut(10));
 
-        // Seccion: Rendimiento
         add(crearEncabezadoSeccion("Rendimiento"));
         add(crearFila("Cajero estrella:", lblCajeroEstrella = crearValor("-")));
     }
@@ -61,12 +57,10 @@ public class PanelEstadisticas extends JPanel {
         p.setAlignmentX(Component.LEFT_ALIGNMENT);
         p.setMaximumSize(new Dimension(Integer.MAX_VALUE, 20));
         p.setBorder(BorderFactory.createEmptyBorder(2, 0, 4, 0));
-
         JLabel lbl = new JLabel(texto.toUpperCase());
         lbl.setFont(F_SEC);
         lbl.setForeground(C_SEC);
         p.add(lbl, BorderLayout.WEST);
-
         JSeparator sep = new JSeparator();
         sep.setForeground(new Color(210, 218, 230));
         p.add(sep, BorderLayout.CENTER);
@@ -79,11 +73,10 @@ public class PanelEstadisticas extends JPanel {
         fila.setAlignmentX(Component.LEFT_ALIGNMENT);
         fila.setMaximumSize(new Dimension(Integer.MAX_VALUE, 26));
         fila.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
-
         JLabel lbl = new JLabel(labelTxt);
         lbl.setFont(F_LABEL);
         lbl.setForeground(C_LABEL);
-        fila.add(lbl, BorderLayout.WEST);
+        fila.add(lbl,     BorderLayout.WEST);
         fila.add(valorLbl, BorderLayout.EAST);
         return fila;
     }
@@ -96,12 +89,30 @@ public class PanelEstadisticas extends JPanel {
         return lbl;
     }
 
+    /**
+     * Normaliza una cadena de hora "HH:mm" para que nunca supere 23:59.
+     * Si el servicio manda "31:57" la convierte a "07:57" (31 mod 24 = 7).
+     */
+    private String normalizarHora(String hora) {
+        if (hora == null || hora.isEmpty()) return "08:00";
+        try {
+            String[] partes = hora.split(":");
+            if (partes.length != 2) return hora;
+            int h = Integer.parseInt(partes[0]);
+            int m = Integer.parseInt(partes[1]);
+            h = h % 24;
+            return String.format("%02d:%02d", h, m);
+        } catch (NumberFormatException e) {
+            return hora;
+        }
+    }
+
     public void actualizarEstadisticasAvanzadas(
             String hora, int atendidos, int articulos, int enCola,
             int generados, double promedio, String cajeroEstrella) {
 
         SwingUtilities.invokeLater(() -> {
-            lblHora.setText(hora != null ? hora : "08:00");
+            lblHora.setText(normalizarHora(hora));
             lblAtendidos.setText(String.valueOf(atendidos));
             lblArticulos.setText(String.valueOf(articulos));
             lblEnCola.setText(String.valueOf(enCola));
@@ -114,7 +125,10 @@ public class PanelEstadisticas extends JPanel {
                 : new Color(25, 25, 25));
 
             revalidate(); repaint();
-            if (getParent() != null) { getParent().revalidate(); getParent().repaint(); }
+            if (getParent() != null) {
+                getParent().revalidate();
+                getParent().repaint();
+            }
         });
     }
 

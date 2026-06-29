@@ -3,13 +3,12 @@ package com.supermercado.domain.service;
 import com.supermercado.domain.model.Caja;
 import com.supermercado.domain.model.Cliente;
 import com.supermercado.domain.model.EstadoCaja;
-
 import java.util.List;
 
 public class SimuladorService {
-    
+
     private final RelojSimulacionService reloj;
-    
+
     public SimuladorService(RelojSimulacionService reloj) {
         this.reloj = reloj;
     }
@@ -18,23 +17,29 @@ public class SimuladorService {
         if (cliente == null) {
             throw new IllegalArgumentException("El cliente no puede ser nulo");
         }
-        
+
         Caja mejorCaja = null;
         int minCola = Integer.MAX_VALUE;
-        
+
         for (Caja caja : cajas) {
             if (caja.getEstado() == EstadoCaja.DETENIDA) continue;
-            if (!caja.esRapida() || cliente.esRapido()) {
-                int colaSize = caja.getClientesEnCola();
-                if (colaSize < minCola) {
-                    minCola = colaSize;
-                    mejorCaja = caja;
-                }
+            // Cliente rápido solo a cajas rápidas, normal a normales
+            boolean tipoCoincide = (cliente.esRapido() && caja.esRapida()) ||
+                                   (!cliente.esRapido() && !caja.esRapida());
+            if (!tipoCoincide) continue;
+            int colaSize = caja.getClientesEnCola();
+            if (colaSize < minCola) {
+                minCola = colaSize;
+                mejorCaja = caja;
             }
         }
-        
+
         if (mejorCaja != null) {
             mejorCaja.agregarCliente(cliente);
+        } else {
+            // Cliente perdido por falta de caja adecuada (se registra en log del motor)
+            System.err.println("Cliente " + cliente.getId() + " perdido: no hay caja " +
+                (cliente.esRapido() ? "rápida" : "normal") + " disponible");
         }
     }
 

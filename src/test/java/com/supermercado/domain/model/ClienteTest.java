@@ -1,72 +1,138 @@
 package com.supermercado.domain.model;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class ClienteTest {
+public class ClienteTest {
 
-    private Cliente cliente;
-
-    @BeforeEach
-    void setUp() {
-        cliente = new Cliente(1, 10);
+    @Test
+    void testCreacionClienteNormal() {
+        Cliente c = new Cliente(1, 20);
+        assertEquals("Cliente-1", c.getId());   // getId() retorna String "Cliente-N"
+        assertEquals(20, c.getCantidadArticulos());
+        assertFalse(c.esRapido());
     }
 
     @Test
-    void testConstructor_IntId() {
-        // El constructor con int convierte el id a String
-        assertNotNull(cliente.getId());
-        assertTrue(cliente.getId().equals("1") || cliente.getId().contains("1"));
-        assertEquals(10, cliente.getCantidadArticulos());
-        // 10 artículos => es rápido (menos de 10 es rápido, 10 o menos también)
-        assertTrue(cliente.esRapido());
-        assertEquals(0, cliente.getTiempoLlegada());
-        assertEquals(0, cliente.getTiempoAtencionReal());
-        assertEquals(0, cliente.getTiempoInicioAtencion());
+    void testCreacionClienteConStringId() {
+        Cliente c = new Cliente("CLI-001", 5);
+        assertEquals("CLI-001", c.getId());
+        assertEquals(5, c.getCantidadArticulos());
     }
 
     @Test
-    void testConstructor_StringId() {
-        Cliente cliente2 = new Cliente("C-100", 5);
-        assertEquals("C-100", cliente2.getId());
-        assertEquals(5, cliente2.getCantidadArticulos());
-        assertTrue(cliente2.esRapido());
+    void testClienteRapidoPorArticulos() {
+        Cliente rapido = new Cliente(1, 8);
+        assertTrue(rapido.esRapido());
     }
 
     @Test
-    void testNoRapido() {
-        Cliente clienteLento = new Cliente(2, 15);
-        assertEquals(15, clienteLento.getCantidadArticulos());
-        assertFalse(clienteLento.esRapido());
+    void testClienteExactamenteDiezArticulos() {
+        Cliente c = new Cliente(1, 10);
+        assertTrue(c.esRapido());   // <= 10 es rapido
     }
 
     @Test
-    void testTiempos() {
-        cliente.setTiempoLlegada(10);
-        cliente.setTiempoAtencionReal(5);
-        cliente.setTiempoSalida(18);
+    void testClienteNormalPorArticulos() {
+        Cliente normal = new Cliente(2, 15);
+        assertFalse(normal.esRapido());
+    }
 
-        assertEquals(10, cliente.getTiempoLlegada());
-        assertEquals(5, cliente.getTiempoAtencionReal());
-        assertEquals(18, cliente.getTiempoSalida());
+    @Test
+    void testSetTiempoLlegada() {
+        Cliente c = new Cliente(1, 5);
+        c.setTiempoLlegada(1000L);
+        assertEquals(1000L, c.getTiempoLlegada());
+    }
+
+    @Test
+    void testSetTiempoLlegadaNegativoLanzaExcepcion() {
+        Cliente c = new Cliente(1, 5);
+        assertThrows(IllegalArgumentException.class, () -> c.setTiempoLlegada(-1L));
+    }
+
+    @Test
+    void testSetTiempoAtencionReal() {
+        Cliente c = new Cliente(1, 5);
+        c.setTiempoAtencionReal(7);
+        assertEquals(7, c.getTiempoAtencionReal());
+    }
+
+    @Test
+    void testSetTiempoAtencionNegativoLanzaExcepcion() {
+        Cliente c = new Cliente(1, 5);
+        assertThrows(IllegalArgumentException.class, () -> c.setTiempoAtencionReal(-1));
+    }
+
+    @Test
+    void testSetTiempoSalida() {
+        Cliente c = new Cliente(1, 5);
+        c.setTiempoSalida(5000L);
+        assertEquals(5000L, c.getTiempoSalida());
+    }
+
+    @Test
+    void testSetTiempoSalidaNegativoLanzaExcepcion() {
+        Cliente c = new Cliente(1, 5);
+        assertThrows(IllegalArgumentException.class, () -> c.setTiempoSalida(-1L));
+    }
+
+    @Test
+    void testSetTiempoInicioAtencion() {
+        Cliente c = new Cliente(1, 5);
+        c.setTiempoInicioAtencion(2000L);
+        assertEquals(2000L, c.getTiempoInicioAtencion());
     }
 
     @Test
     void testCalcularTiempoEspera() {
-        cliente.setTiempoLlegada(5);
-        cliente.setTiempoInicioAtencion(10);
-        cliente.setTiempoSalida(15);
-
-        assertEquals(5, cliente.calcularTiempoEspera());
+        Cliente c = new Cliente(1, 5);
+        c.setTiempoLlegada(1000L);
+        c.setTiempoInicioAtencion(3000L);
+        assertEquals(2000L, c.calcularTiempoEspera());
     }
 
     @Test
-    void testToString() {
-        // El toString real devuelve: Cliente-1 [RAPIDO, 10 artículos]
-        String result = cliente.toString();
-        assertTrue(result.contains("Cliente-1"));
-        assertTrue(result.contains("10"));
-        assertTrue(result.contains("articulos") || result.contains("artículos"));
+    void testCalcularTiempoEsperaSinDatos() {
+        Cliente c = new Cliente(1, 5);
+        assertEquals(0L, c.calcularTiempoEspera());
+    }
+
+    @Test
+    void testCalcularTiempoTotal() {
+        Cliente c = new Cliente(1, 5);
+        c.setTiempoLlegada(1000L);
+        c.setTiempoSalida(6000L);
+        assertEquals(5000L, c.calcularTiempoTotal());
+    }
+
+    @Test
+    void testCalcularTiempoTotalSinDatos() {
+        Cliente c = new Cliente(1, 5);
+        assertEquals(0L, c.calcularTiempoTotal());
+    }
+
+    @Test
+    void testIdNuloLanzaExcepcion() {
+        assertThrows(IllegalArgumentException.class, () -> new Cliente(null, 5));
+    }
+
+    @Test
+    void testArticulosNegativosLanzaExcepcion() {
+        assertThrows(IllegalArgumentException.class, () -> new Cliente("X", -1));
+    }
+
+    @Test
+    void testEquality() {
+        Cliente c1 = new Cliente("CLI-1", 5);
+        Cliente c2 = new Cliente("CLI-1", 10);  // mismo id, distintos articulos
+        assertEquals(c1, c2);                    // igualdad por id
+    }
+
+    @Test
+    void testToStringContieneDatos() {
+        Cliente c = new Cliente(3, 5);
+        String str = c.toString();
+        assertTrue(str.contains("Cliente-3"));
     }
 }

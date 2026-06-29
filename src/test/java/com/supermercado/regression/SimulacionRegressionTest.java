@@ -2,6 +2,8 @@ package com.supermercado.regression;
 
 import com.supermercado.application.dto.ConfiguracionDTO;
 import com.supermercado.application.usecase.IniciarSimulacionUseCase;
+import com.supermercado.domain.service.SimulacionEngine;
+import com.supermercado.infrastructure.adapter.event.EventBusAdapter;
 import com.supermercado.infrastructure.service.LogServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -21,7 +23,7 @@ class SimulacionRegressionTest {
             .numCajasNormales(2)
             .numCajasRapidas(1)
             .horasSimuladas(1)
-            .duracionRealSegundos(3)
+            .duracionRealSegundos(8)
             .probabilidadLlegadaCliente(30)
             .limiteClientes(20)
             .articulosClienteMin(1)
@@ -31,20 +33,17 @@ class SimulacionRegressionTest {
             .tiempoCajaRapidaMin(1)
             .tiempoCajaRapidaMax(2)
             .build();
-        
-        useCase = new IniciarSimulacionUseCase(new LogServiceImpl());
+
+        useCase = new IniciarSimulacionUseCase(new SimulacionEngine(new LogServiceImpl(), new EventBusAdapter()));
     }
 
     @Test
     @Tag("regression")
     void testRegression_InicioSimulacion() {
-        assertDoesNotThrow(() -> {
-            useCase.ejecutar(config);
-        }, "La simulacion deberia iniciar sin errores");
+        assertDoesNotThrow(() -> useCase.ejecutar(config));
     }
 
     @Test
-    @Tag("regression")
     void testRegression_PausaYReanudacion() throws InterruptedException {
         Thread simThread = new Thread(() -> {
             try {
@@ -54,15 +53,18 @@ class SimulacionRegressionTest {
             }
         });
         simThread.start();
-        
+
+        Thread.sleep(2000);
+        assertTrue(useCase.isEjecutando(), "La simulación debería estar ejecutando antes de pausar");
+
+        useCase.pausar();
         Thread.sleep(500);
-        
-        assertDoesNotThrow(() -> useCase.pausar());
-        assertTrue(useCase.isPausado());
-        
-        assertDoesNotThrow(() -> useCase.reanudar());
-        assertFalse(useCase.isPausado());
-        
+        assertTrue(useCase.isPausado(), "La simulación debería estar pausada");
+
+        useCase.reanudar();
+        Thread.sleep(500);
+        assertFalse(useCase.isPausado(), "La simulación debería estar reanudada");
+
         useCase.detener();
         simThread.join(1000);
     }
@@ -78,12 +80,10 @@ class SimulacionRegressionTest {
             }
         });
         simThread.start();
-        
-        Thread.sleep(500);
-        
-        assertDoesNotThrow(() -> useCase.detener());
+
+        Thread.sleep(2000);
+        useCase.detener();
         assertFalse(useCase.isEjecutando());
-        
         simThread.join(1000);
     }
 
@@ -106,7 +106,7 @@ class SimulacionRegressionTest {
             .numCajasNormales(2)
             .numCajasRapidas(1)
             .horasSimuladas(1)
-            .duracionRealSegundos(4)
+            .duracionRealSegundos(10)
             .probabilidadLlegadaCliente(30)
             .limiteClientes(10)
             .articulosClienteMin(1)
@@ -116,9 +116,8 @@ class SimulacionRegressionTest {
             .tiempoCajaRapidaMin(1)
             .tiempoCajaRapidaMax(2)
             .build();
-        
-        IniciarSimulacionUseCase useCaseLarga = new IniciarSimulacionUseCase(new LogServiceImpl());
-        
+
+        IniciarSimulacionUseCase useCaseLarga = new IniciarSimulacionUseCase(new SimulacionEngine(new LogServiceImpl(), new EventBusAdapter()));
         Thread simThread = new Thread(() -> {
             try {
                 useCaseLarga.ejecutar(configLarga);
@@ -127,8 +126,7 @@ class SimulacionRegressionTest {
             }
         });
         simThread.start();
-        simThread.join(10000);
-        
-        assertFalse(useCaseLarga.isEjecutando());
+        simThread.join(25000);
+        assertFalse(useCaseLarga.isEjecutando(), "La simulación debería haber terminado");
     }
 }

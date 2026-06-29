@@ -1,0 +1,8 @@
+target/
+*.class
+.vscode/
+*.bak
+*.backup
+*.bak2
+*.log
+simulacion_log.txt

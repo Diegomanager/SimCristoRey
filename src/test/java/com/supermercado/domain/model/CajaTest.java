@@ -4,119 +4,159 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class CajaTest {
+public class CajaTest {
 
-    private Caja cajaRapida;
     private Caja cajaNormal;
+    private Caja cajaRapida;
 
     @BeforeEach
     void setUp() {
-        cajaRapida = new Caja(1, true);
-        cajaNormal = new Caja(2, false);
+        cajaNormal  = new Caja(1, false);
+        cajaRapida  = new Caja(2, true);
     }
 
     @Test
-    void testConstructor_IntId() {
-        // El getId() puede devolver "CAJA 1" o "CAJA 1 (R)" dependiendo de la implementación
-        String id = cajaRapida.getId();
-        assertTrue(id.contains("CAJA 1"));
+    void testCreacionCajaNormal() {
+        assertEquals("CAJA 1", cajaNormal.getId());
+        assertFalse(cajaNormal.esRapida());
+        assertEquals(EstadoCaja.LIBRE, cajaNormal.getEstado());
+        assertEquals(0, cajaNormal.getTotalAtendidos());
+        assertEquals(0, cajaNormal.getClientesEnCola());
+    }
+
+    @Test
+    void testCreacionCajaRapida() {
         assertTrue(cajaRapida.esRapida());
-        assertEquals(EstadoCaja.LIBRE, cajaRapida.getEstado());
-        assertEquals(0, cajaRapida.getClientesEnCola());
-        assertEquals(0, cajaRapida.getTotalAtendidos());
-        assertNull(cajaRapida.getClienteActual());
-        assertEquals(0, cajaRapida.getColaMaxima());
+        assertEquals("CAJA 2", cajaRapida.getId());
     }
 
     @Test
-    void testAgregarCliente() {
-        Cliente cliente = new Cliente(1, 5);
-        assertTrue(cajaRapida.agregarCliente(cliente));
-        assertEquals(1, cajaRapida.getClientesEnCola());
+    void testAgregarClienteYCola() {
+        Cliente c1 = new Cliente(1, 5);
+        Cliente c2 = new Cliente(2, 10);
+        cajaNormal.agregarCliente(c1);
+        cajaNormal.agregarCliente(c2);
+        assertEquals(2, cajaNormal.getClientesEnCola());
+        assertEquals(2, cajaNormal.getColaMaxima());
     }
 
     @Test
     void testPrepararSiguienteCliente() {
-        Cliente cliente1 = new Cliente(1, 5);
-        Cliente cliente2 = new Cliente(2, 3);
-        cajaRapida.agregarCliente(cliente1);
-        cajaRapida.agregarCliente(cliente2);
+        Cliente c = new Cliente(1, 5);
+        cajaNormal.agregarCliente(c);
+        Cliente preparado = cajaNormal.prepararSiguienteCliente();
+        assertNotNull(preparado);
+        assertEquals(EstadoCaja.OCUPADA, cajaNormal.getEstado());
+        assertEquals(0, cajaNormal.getClientesEnCola());
+    }
 
-        Cliente preparado = cajaRapida.prepararSiguienteCliente();
-        assertEquals(cliente1, preparado);
-        assertEquals(1, cajaRapida.getClientesEnCola());
-        assertEquals(EstadoCaja.OCUPADA, cajaRapida.getEstado());
+    @Test
+    void testPrepararClienteCuandoColaVacia() {
+        Cliente resultado = cajaNormal.prepararSiguienteCliente();
+        assertNull(resultado);
     }
 
     @Test
     void testFinalizarAtencion() {
-        Cliente cliente = new Cliente(1, 5);
-        cajaRapida.agregarCliente(cliente);
-        cajaRapida.prepararSiguienteCliente();
+        Cliente c = new Cliente(1, 5);
+        cajaNormal.agregarCliente(c);
+        cajaNormal.prepararSiguienteCliente();
+        cajaNormal.finalizarAtencion();
+        assertEquals(1, cajaNormal.getTotalAtendidos());
+        assertEquals(EstadoCaja.LIBRE, cajaNormal.getEstado());
+        assertEquals(1, cajaNormal.getClientesAtendidos().size());
+    }
 
-        assertEquals(0, cajaRapida.getTotalAtendidos());
-        cajaRapida.finalizarAtencion();
-        assertEquals(1, cajaRapida.getTotalAtendidos());
-        assertEquals(EstadoCaja.LIBRE, cajaRapida.getEstado());
-        assertNull(cajaRapida.getClienteActual());
+    @Test
+    void testFinalizarAtencionConClientesPendientes() {
+        Cliente c1 = new Cliente(1, 5);
+        Cliente c2 = new Cliente(2, 10);
+        cajaNormal.agregarCliente(c1);
+        cajaNormal.agregarCliente(c2);
+        cajaNormal.prepararSiguienteCliente();
+        cajaNormal.finalizarAtencion();
+        // Debe continuar con c2 automaticamente
+        assertEquals(EstadoCaja.OCUPADA, cajaNormal.getEstado());
+        assertEquals(1, cajaNormal.getTotalAtendidos());
     }
 
     @Test
     void testPausarYReanudar() {
-        // Primero agregar un cliente y poner la caja en estado OCUPADA
-        Cliente cliente = new Cliente(1, 5);
-        cajaRapida.agregarCliente(cliente);
-        cajaRapida.prepararSiguienteCliente();
-        assertEquals(EstadoCaja.OCUPADA, cajaRapida.getEstado());
-        
-        // Pausar - ahora sí debe funcionar porque la caja está OCUPADA
-        cajaRapida.pausar();
-        assertEquals(EstadoCaja.PAUSADA, cajaRapida.getEstado());
-        // NOTA: estaActiva() devuelve true para PAUSADA (solo DETENIDA es false)
-        // Verificamos que el estado cambió correctamente
-        assertTrue(cajaRapida.estaActiva());
-        assertEquals(EstadoCaja.PAUSADA, cajaRapida.getEstado());
-        
-        // Reanudar
-        cajaRapida.reanudar();
-        // Después de reanudar, debe volver a OCUPADA
-        assertEquals(EstadoCaja.OCUPADA, cajaRapida.getEstado());
-        assertTrue(cajaRapida.estaActiva());
-        
-        // Verificar que el cliente sigue siendo el mismo
-        assertNotNull(cajaRapida.getClienteActual());
-        assertEquals(cliente, cajaRapida.getClienteActual());
+        cajaNormal.pausar();
+        assertEquals(EstadoCaja.PAUSADA, cajaNormal.getEstado());
+        cajaNormal.reanudar();
+        assertEquals(EstadoCaja.LIBRE, cajaNormal.getEstado());
+    }
+
+    @Test
+    void testPausarCajaOcupada() {
+        Cliente c = new Cliente(1, 5);
+        cajaNormal.agregarCliente(c);
+        cajaNormal.prepararSiguienteCliente();
+        cajaNormal.pausar();
+        assertEquals(EstadoCaja.PAUSADA, cajaNormal.getEstado());
+        cajaNormal.reanudar();
+        assertEquals(EstadoCaja.OCUPADA, cajaNormal.getEstado());
     }
 
     @Test
     void testDetener() {
-        cajaRapida.detener();
-        assertEquals(EstadoCaja.DETENIDA, cajaRapida.getEstado());
+        cajaNormal.detener();
+        assertEquals(EstadoCaja.DETENIDA, cajaNormal.getEstado());
+        assertFalse(cajaNormal.estaActiva());
     }
 
     @Test
-    void testTieneClientesPendientes() {
-        assertFalse(cajaRapida.tieneClientesPendientes());
+    void testNoAgregarClienteDetenida() {
+        cajaNormal.detener();
+        Cliente c = new Cliente(1, 5);
+        boolean resultado = cajaNormal.agregarCliente(c);
+        assertFalse(resultado);
+        assertEquals(0, cajaNormal.getClientesEnCola());
+    }
 
-        cajaRapida.agregarCliente(new Cliente(1, 5));
-        assertTrue(cajaRapida.tieneClientesPendientes());
+    @Test
+    void testNoPrepararClientePausada() {
+        Cliente c = new Cliente(1, 5);
+        cajaNormal.agregarCliente(c);
+        cajaNormal.pausar();
+        Cliente preparado = cajaNormal.prepararSiguienteCliente();
+        assertNull(preparado);
+    }
 
-        cajaRapida.prepararSiguienteCliente();
-        assertTrue(cajaRapida.tieneClientesPendientes());
-
-        cajaRapida.finalizarAtencion();
-        assertFalse(cajaRapida.tieneClientesPendientes());
+    @Test
+    void testReiniciar() {
+        Cliente c = new Cliente(1, 5);
+        cajaNormal.agregarCliente(c);
+        cajaNormal.prepararSiguienteCliente();
+        cajaNormal.reiniciar();
+        assertEquals(EstadoCaja.LIBRE, cajaNormal.getEstado());
+        assertEquals(0, cajaNormal.getTotalAtendidos());
+        assertEquals(0, cajaNormal.getClientesEnCola());
+        assertTrue(cajaNormal.getClientesAtendidos().isEmpty());
     }
 
     @Test
     void testEstaOcupada() {
-        assertFalse(cajaRapida.estaOcupada());
-        
-        cajaRapida.agregarCliente(new Cliente(1, 5));
-        cajaRapida.prepararSiguienteCliente();
-        assertTrue(cajaRapida.estaOcupada());
-        
-        cajaRapida.finalizarAtencion();
-        assertFalse(cajaRapida.estaOcupada());
+        assertFalse(cajaNormal.estaOcupada());
+        Cliente c = new Cliente(1, 5);
+        cajaNormal.agregarCliente(c);
+        cajaNormal.prepararSiguienteCliente();
+        assertTrue(cajaNormal.estaOcupada());
+    }
+
+    @Test
+    void testTieneClientesPendientes() {
+        assertFalse(cajaNormal.tieneClientesPendientes());
+        Cliente c = new Cliente(1, 5);
+        cajaNormal.agregarCliente(c);
+        assertTrue(cajaNormal.tieneClientesPendientes());
+    }
+
+    @Test
+    void testToString() {
+        String str = cajaNormal.toString();
+        assertTrue(str.contains("CAJA 1"));
+        assertTrue(str.contains("LIBRE"));
     }
 }

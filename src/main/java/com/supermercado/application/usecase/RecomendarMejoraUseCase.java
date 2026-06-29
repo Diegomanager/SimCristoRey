@@ -19,42 +19,45 @@ public class RecomendarMejoraUseCase {
     }
     
     public RecomendacionDTO ejecutar(List<Caja> cajas, Configuracion configuracion) {
-        // Primero diagnosticar
+        // 1. Diagnosticar
         List<DiagnosticoService.Diagnostico> diagnosticos = 
             diagnosticoService.diagnosticar(cajas);
         
-        // Generar recomendación general
+        // 2. Generar recomendación general
         Recomendacion recomendacionGeneral = 
             diagnosticoService.generarRecomendacionGeneral(diagnosticos);
         
-        // Si hay problemas críticos, optimizar
+        // 3. Contar críticos
         long criticos = diagnosticos.stream()
-            .filter(d -> d.nivel == DiagnosticoService.NivelAlerta.CRITICO).count();
+            .filter(d -> d.getNivel() == DiagnosticoService.NivelAlerta.CRITICO)
+            .count();
         
+        // 4. Si hay críticos, optimizar
         if (criticos > 0) {
-            // Obtener mejor configuración
             List<OptimizadorService.ResultadoOptimizacion> resultados = 
                 optimizadorService.optimizar(configuracion, 10, 5);
             
             if (!resultados.isEmpty()) {
                 OptimizadorService.ResultadoOptimizacion mejor = resultados.get(0);
+                
                 String mensaje = recomendacionGeneral.getMensaje() + "\n\n" +
                     "CONFIGURACION RECOMENDADA:\n" +
-                    "  Normales: " + mejor.numCajasNormales + "\n" +
-                    "  Rapidas: " + mejor.numCajasRapidas + "\n" +
-                    "  Mejora estimada: " + String.format("%.1f", mejor.mejoraPorcentaje) + "%";
+                    "  Normales: " + mejor.getNumCajasNormales() + "\n" +
+                    "  Rapidas: " + mejor.getNumCajasRapidas() + "\n" +
+                    "  Mejora estimada: " + String.format("%.1f", mejor.getMejoraPorcentaje()) + "%";
                 
                 return new RecomendacionDTO(
                     mensaje,
                     "CRITICO",
-                    mejor.numCajasNormales + " normales + " + 
-                    mejor.numCajasRapidas + " rapidas",
-                    mejor.mejoraPorcentaje,
+                    mejor.getNumCajasNormales() + " normales + " + 
+                    mejor.getNumCajasRapidas() + " rapidas",
+                    mejor.getMejoraPorcentaje(),
                     false
                 );
             }
         }
         
+        // 5. Sin críticos, devolver la recomendación general
         return new RecomendacionDTO(
             recomendacionGeneral.getMensaje(),
             recomendacionGeneral.getPrioridad(),

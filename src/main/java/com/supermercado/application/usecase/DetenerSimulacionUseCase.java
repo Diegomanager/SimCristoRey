@@ -1,9 +1,16 @@
 package com.supermercado.application.usecase;
 
+import com.supermercado.domain.service.SimulacionEngine;
+
 public class DetenerSimulacionUseCase {
-    
+
+    private final SimulacionEngine engine;
+
+    public DetenerSimulacionUseCase(SimulacionEngine engine) {
+        this.engine = engine;
+    }
+
     public void ejecutar() {
-        // La l?gica de detenci?n se maneja en IniciarSimulacionUseCase.detener()
-        // Este caso de uso act?a como fachada para mantener la separaci?n de responsabilidades
+        engine.detener();
     }
 }

@@ -20,22 +20,22 @@ public class DiagnosticarConfiguracionUseCase {
         
         List<DiagnosticoDTO.DiagnosticoItem> items = diagnosticos.stream()
             .map(d -> new DiagnosticoDTO.DiagnosticoItem(
-                d.cajaId,
-                d.nivel.name(),
-                d.nivel.icono,
-                d.mensaje,
-                d.sugerencia,
-                d.colaActual,
-                d.colaMaxima
+                d.getCajaId(),
+                d.getNivel().name(),
+                d.getNivel().icono,
+                d.getMensaje(),
+                d.getSugerencia(),
+                d.getColaActual(),
+                d.getColaMaxima()
             ))
             .collect(Collectors.toList());
         
         long criticos = diagnosticos.stream()
-            .filter(d -> d.nivel == DiagnosticoService.NivelAlerta.CRITICO).count();
+            .filter(d -> d.getNivel() == DiagnosticoService.NivelAlerta.CRITICO).count();
         long alertas = diagnosticos.stream()
-            .filter(d -> d.nivel == DiagnosticoService.NivelAlerta.ALERTA).count();
+            .filter(d -> d.getNivel() == DiagnosticoService.NivelAlerta.ALERTA).count();
         long atencion = diagnosticos.stream()
-            .filter(d -> d.nivel == DiagnosticoService.NivelAlerta.ATENCION).count();
+            .filter(d -> d.getNivel() == DiagnosticoService.NivelAlerta.ATENCION).count();
         
         String resumen = generarResumen(criticos, alertas, atencion);
         

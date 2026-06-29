@@ -1,51 +1,63 @@
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\domain\model\EstadoCaja.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\ObtenerColaMaximaUseCase.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\domain\service\TeoriaColasService.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\DiagnosticarConfiguracionUseCase.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\TeoriaColasUseCase.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\ExportarReporteUseCase.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\domain\model\Caja.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\CalcularTiempoEsperaUseCase.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\presentation\view\PanelTeoriaColas.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\infrastructure\service\ReporteExcelImpl.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\port\ILogService.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\presentation\view\DialogoConfiguracion.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\OptimizarCajasUseCase.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\presentation\view\PanelEstadisticas.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\ReanudarSimulacionUseCase.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\domain\service\EstadisticasService.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\presentation\view\SimuladorFrame.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\AsignarClienteUseCase.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\ObtenerEstadisticasUseCase.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\presentation\view\PanelRecomendaciones.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\dto\RecomendacionDTO.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\ConfigurarSimulacionUseCase.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\dto\EstadisticasDTO.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\domain\model\Configuracion.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\Main.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\ReiniciarSimulacionUseCase.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\dto\OptimizacionDTO.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\SimulacionConEscalaUseCase.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\PausarSimulacionUseCase.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\infrastructure\config\AppConfig.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\DetenerSimulacionUseCase.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\infrastructure\service\LogServiceImpl.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\domain\service\SimuladorService.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\presentation\view\Theme.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\domain\model\Cliente.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\presentation\controller\SimulacionController.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\IniciarSimulacionUseCase.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\dto\DiagnosticoDTO.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\infrastructure\repository\ConfiguracionRepositorioImpl.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\presentation\view\PanelDiagnostico.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\port\IReporteExportador.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\port\IConfiguracionRepositorio.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\domain\service\RelojSimulacionService.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\dto\ConfiguracionDTO.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\domain\service\DiagnosticoService.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\presentation\view\PanelCajas.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\domain\service\OptimizadorService.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\RecomendarMejoraUseCase.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\GenerarClienteUseCase.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\CompararConfiguracionesUseCase.java
-C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\domain\model\Recomendacion.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\usecase\ObtenerColaMaximaUseCase.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\dto\ConfiguracionDTO.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\infrastructure\adapter\ui\SwingEventAdapter.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\infrastructure\service\ReporteTextoImpl.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\domain\service\EstadisticasService.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\domain\event\SimulacionFinalizadaEvent.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\usecase\TeoriaColasUseCase.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\port\IReporteExportador.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\domain\event\SimulacionPausadaEvent.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\domain\service\DiagnosticoService.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\domain\model\EstadoCaja.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\presentation\view\DialogoConfiguracion.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\domain\model\Caja.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\infrastructure\config\AppConfig.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\domain\model\Recomendacion.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\presentation\view\PanelDiagnostico.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\dto\DiagnosticoDTO.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\domain\event\CajaActualizadaEvent.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\domain\service\SimulacionEngine.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\presentation\view\PanelEstadisticas.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\domain\event\ClienteGeneradoEvent.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\domain\event\SimulacionIniciadaEvent.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\domain\model\Cliente.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\domain\service\OptimizadorService.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\domain\model\Configuracion.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\usecase\DiagnosticarConfiguracionUseCase.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\domain\event\EstadisticasActualizadasEvent.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\usecase\RecomendarMejoraUseCase.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\infrastructure\service\LogServiceImpl.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\usecase\AsignarClienteUseCase.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\infrastructure\repository\ConfiguracionRepositorioImpl.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\usecase\DetenerSimulacionUseCase.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\domain\event\SimulacionDetenidaEvent.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\domain\service\SimuladorService.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\presentation\view\PanelCajas.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\port\IConfiguracionRepositorio.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\usecase\CompararConfiguracionesUseCase.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\domain\event\SimulacionReanudadaEvent.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\usecase\ConfigurarSimulacionUseCase.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\domain\service\RelojSimulacionService.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\usecase\OptimizarCajasUseCase.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\usecase\ReanudarSimulacionUseCase.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\presentation\view\Theme.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\usecase\ObtenerEstadisticasUseCase.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\domain\service\TeoriaColasService.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\presentation\view\PanelTeoriaColas.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\usecase\CalcularTiempoEsperaUseCase.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\usecase\ReiniciarSimulacionUseCase.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\usecase\PausarSimulacionUseCase.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\usecase\SimulacionConEscalaUseCase.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\dto\RecomendacionDTO.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\infrastructure\adapter\event\EventBusAdapter.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\presentation\view\SimuladorFrame.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\port\IEventPublisher.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\dto\EstadisticasDTO.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\presentation\controller\SimulacionController.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\usecase\GenerarClienteUseCase.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\presentation\view\PanelRecomendaciones.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\dto\OptimizacionDTO.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\usecase\ExportarReporteUseCase.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\port\ILogService.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\application\usecase\IniciarSimulacionUseCase.java
+C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad2 Botones\src\main\java\com\supermercado\Main.java

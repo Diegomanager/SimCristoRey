@@ -4,8 +4,6 @@ import com.supermercado.application.dto.ConfiguracionDTO;
 import com.supermercado.application.dto.EstadisticasDTO;
 import com.supermercado.application.port.IConfiguracionRepositorio;
 import com.supermercado.application.port.ILogService;
-import com.supermercado.infrastructure.config.AppConfig;
-import com.supermercado.infrastructure.repository.ConfiguracionRepositorioImpl;
 import com.supermercado.presentation.controller.SimulacionController;
 
 import javax.swing.*;
@@ -18,10 +16,10 @@ public class SimuladorFrame extends JFrame {
 
     private static final long serialVersionUID = 1L;
 
-    private SimulacionController controller;
-    private ConfiguracionDTO configuracion;
     private final ILogService logService;
     private final IConfiguracionRepositorio configRepo;
+    private SimulacionController controller;
+    private ConfiguracionDTO configuracion;
 
     private JButton btnIniciar;
     private JButton btnDetener;
@@ -32,23 +30,24 @@ public class SimuladorFrame extends JFrame {
     private PanelEstadisticas panelStats;
     private JButton btnConfigurar;
 
-    public SimuladorFrame() {
-        this.logService = AppConfig.getInstance().getLogService();
-        this.configRepo = new ConfiguracionRepositorioImpl(logService);
+    public SimuladorFrame(ILogService logService, IConfiguracionRepositorio configRepo) {
+        this.logService = logService;
+        this.configRepo = configRepo;
         this.configuracion = configRepo.cargar();
+
         setTitle("Simulador de Supermercado - Gestion de Calidad");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        // Pantalla completa al iniciar
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setMinimumSize(new Dimension(900, 600));
-
         setLayout(new BorderLayout(8, 8));
         getContentPane().setBackground(Theme.BACKGROUND);
+
         inicializarComponentes();
     }
 
-    public void setController(SimulacionController controller) { this.controller = controller; }
+    public void setController(SimulacionController controller) {
+        this.controller = controller;
+    }
 
     public void setConfiguracion(ConfiguracionDTO configuracion) {
         this.configuracion = configuracion;
@@ -173,10 +172,12 @@ public class SimuladorFrame extends JFrame {
                 controller.iniciarSimulacion(configuracion);
             }
         });
+
         btnPausar.addActionListener(e -> {
             if (controller != null && controller.isSimulacionActiva())
                 controller.pausarSimulacion();
         });
+
         btnDetener.addActionListener(e -> {
             if (controller != null) {
                 controller.detenerSimulacion();
@@ -185,6 +186,7 @@ public class SimuladorFrame extends JFrame {
                 cambiarEstadoPausa(false);
             }
         });
+
         btnReiniciar.addActionListener(e -> {
             if (controller != null) {
                 controller.detenerSimulacion();
@@ -193,6 +195,7 @@ public class SimuladorFrame extends JFrame {
                 logService.info("Sistema reiniciado");
             }
         });
+
         btnConfigurar.addActionListener(e -> {
             DialogoConfiguracion dialogo = new DialogoConfiguracion(SimuladorFrame.this, this.configuracion);
             dialogo.setVisible(true);
@@ -267,12 +270,20 @@ public class SimuladorFrame extends JFrame {
     }
 
     public void limpiarLog() { areaLog.setText(""); }
-    public void habilitarBotonIniciar(boolean h) { btnIniciar.setEnabled(h); }
 
-    public void habilitarBotonDetener(boolean h) {
-        btnDetener.setEnabled(h);
-        if (h) { btnPausar.setEnabled(true); btnPausar.setText("Pausar"); cambiarEstadoPausa(false); }
-        else   { btnPausar.setEnabled(false); }
+    public void habilitarBotonIniciar(boolean habilitado) {
+        btnIniciar.setEnabled(habilitado);
+    }
+
+    public void habilitarBotonDetener(boolean habilitado) {
+        btnDetener.setEnabled(habilitado);
+        if (habilitado) {
+            btnPausar.setEnabled(true);
+            btnPausar.setText("Pausar");
+            cambiarEstadoPausa(false);
+        } else {
+            btnPausar.setEnabled(false);
+        }
     }
 
     public void cambiarEstadoPausa(boolean pausado) {
@@ -296,12 +307,15 @@ public class SimuladorFrame extends JFrame {
                     estadisticas.getTiempoPromedioAtencion(),
                     estadisticas.getCajeroEstrella()
                 );
-                revalidate(); repaint();
+                revalidate();
+                repaint();
             });
         }
     }
 
-    public void actualizarEstadisticas(EstadisticasDTO e) { actualizarEstadisticasDirecto(e); }
+    public void actualizarEstadisticas(EstadisticasDTO estadisticas) {
+        actualizarEstadisticasDirecto(estadisticas);
+    }
 
     public void agregarLog(String mensaje) {
         SwingUtilities.invokeLater(() -> {
@@ -314,13 +328,16 @@ public class SimuladorFrame extends JFrame {
     public void mostrarMensaje(String msg) {
         JOptionPane.showMessageDialog(this, msg, "Informacion", JOptionPane.INFORMATION_MESSAGE);
     }
+
     public void mostrarError(String titulo, String msg) {
         JOptionPane.showMessageDialog(this, msg, titulo, JOptionPane.ERROR_MESSAGE);
     }
-    public void actualizarCaja(int n, String estado, int cola, String info) {
-        panelCajas.actualizarCaja(n, estado, cola, info);
+
+    public void actualizarCaja(int numCaja, String estado, int cola, String info) {
+        panelCajas.actualizarCaja(numCaja, estado, cola, info);
     }
-    public void actualizarCajaConTipo(int n, String estado, int cola, String info, String tipo) {
-        panelCajas.actualizarCaja(n, estado, cola, info, tipo);
+
+    public void actualizarCajaConTipo(int numCaja, String estado, int cola, String info, String tipo) {
+        panelCajas.actualizarCaja(numCaja, estado, cola, info, tipo);
     }
 }

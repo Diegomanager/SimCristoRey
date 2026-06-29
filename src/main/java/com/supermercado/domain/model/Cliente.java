@@ -5,16 +5,17 @@ import java.util.Objects;
 /**
  * Entidad de dominio: Cliente.
  * Representa a un cliente que llega al supermercado.
- * 
+ *
  * Reglas de negocio:
- * - Un cliente es "rápido" si tiene 10 o menos artículos.
+ * - Un cliente es "rápido" si tiene 10 o menos artículos (valor por defecto).
+ * - El límite puede ser sobrescrito externamente mediante setRapido().
  * - El tiempo de atención es asignado externamente.
  */
 public class Cliente {
-    
+
     private final String id;
     private final int cantidadArticulos;
-    private final boolean esRapido;
+    private boolean rapido;  // mutable para permitir límite configurable
     private long tiempoLlegada;
     private long tiempoInicioAtencion;
     private long tiempoSalida;
@@ -23,7 +24,7 @@ public class Cliente {
     // ============================================================
     // Constructores
     // ============================================================
-    
+
     public Cliente(String id, int cantidadArticulos) {
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("El ID del cliente no puede estar vacío");
@@ -33,7 +34,7 @@ public class Cliente {
         }
         this.id = id;
         this.cantidadArticulos = cantidadArticulos;
-        this.esRapido = cantidadArticulos <= 10;
+        this.rapido = cantidadArticulos <= 10;  // valor por defecto
         this.tiempoLlegada = 0;
         this.tiempoInicioAtencion = 0;
         this.tiempoSalida = 0;
@@ -45,22 +46,26 @@ public class Cliente {
     }
 
     // ============================================================
-    // Getters (inmutables)
+    // Getters (inmutables excepto rapido que puede cambiar)
     // ============================================================
-    
+
     public String getId() { return id; }
     public int getCantidadArticulos() { return cantidadArticulos; }
-    public boolean esRapido() { return esRapido; }
-    
+    public boolean esRapido() { return rapido; }
+
     public long getTiempoLlegada() { return tiempoLlegada; }
     public long getTiempoInicioAtencion() { return tiempoInicioAtencion; }
     public long getTiempoSalida() { return tiempoSalida; }
     public int getTiempoAtencionReal() { return tiempoAtencionReal; }
 
     // ============================================================
-    // Setters (solo para tiempos, permiten modificar el estado)
+    // Setters (incluyendo setRapido para permitir configuración externa)
     // ============================================================
-    
+
+    public void setRapido(boolean rapido) {
+        this.rapido = rapido;
+    }
+
     public void setTiempoLlegada(long tiempoLlegada) {
         if (tiempoLlegada < 0) {
             throw new IllegalArgumentException("El tiempo de llegada no puede ser negativo");
@@ -92,9 +97,10 @@ public class Cliente {
     // ============================================================
     // Métodos de negocio
     // ============================================================
-    
+
     /**
      * Calcula el tiempo de espera del cliente en minutos simulados.
+     * El tiempo de espera es desde que llega hasta que empieza a ser atendido.
      */
     public long calcularTiempoEspera() {
         if (tiempoLlegada == 0 || tiempoInicioAtencion == 0) {
@@ -102,7 +108,7 @@ public class Cliente {
         }
         return tiempoInicioAtencion - tiempoLlegada;
     }
-    
+
     /**
      * Calcula el tiempo total en el sistema (espera + atención).
      */
@@ -116,11 +122,11 @@ public class Cliente {
     // ============================================================
     // Object overrides
     // ============================================================
-    
+
     @Override
     public String toString() {
-        return String.format("%s [%s, %d artículos]", 
-            id, esRapido ? "RÁPIDO" : "NORMAL", cantidadArticulos);
+        return String.format("%s [%s, %d artículos]",
+            id, rapido ? "RÁPIDO" : "NORMAL", cantidadArticulos);
     }
 
     @Override

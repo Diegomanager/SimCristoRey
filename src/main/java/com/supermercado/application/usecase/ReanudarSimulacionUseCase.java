@@ -1,9 +1,16 @@
 package com.supermercado.application.usecase;
 
+import com.supermercado.domain.service.SimulacionEngine;
+
 public class ReanudarSimulacionUseCase {
-    
+
+    private final SimulacionEngine engine;
+
+    public ReanudarSimulacionUseCase(SimulacionEngine engine) {
+        this.engine = engine;
+    }
+
     public void ejecutar() {
-        // La l?gica de reanudaci?n se maneja en IniciarSimulacionUseCase.reanudar()
-        // Este caso de uso act?a como fachada para mantener la separaci?n de responsabilidades
+        engine.reanudar();
     }
 }

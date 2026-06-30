@@ -1,0 +1,4428 @@
+﻿# REPORTE COMPLETO DEL PROYECTO
+# Generado: 06/19/2026 11:17:14
+# ==========================================
+
+## ESTRUCTURA DE DIRECTORIOS
+Listado de rutas de carpetas para el volumen OS El n·mero de serie del volumen es 00000097 12B7:4DC5 C:. |   codigo_completo.txt |   config.properties |   EJECUTAR.bat |   Jenkinsfile |   pom.xml |    +---.github |   \---modernize |       \---java-upgrade |           |   .gitignore |           |    |           \---hooks |               \---scripts |                       recordToolUse.ps1 |                       recordToolUse.sh |                        +---backups |   +---20260616_223309 |   |       EstadisticasDTO.java.bak |   |       SimuladorFrame.java.bak |   |        |   \---20260616_223413 |           EstadisticasDTO.java.bak |           IniciarSimulacionUseCase.java.bak |           SimuladorFrame.java.bak |            +---lib |       logback-classic-1.4.14.jar |       logback-core-1.4.14.jar |       slf4j-api-2.0.9.jar |        +---src |   +---main |   |   +---java |   |   |   \---com |   |   |       \---supermercado |   |   |           |   Main.java |   |   |           |    |   |   |           +---application |   |   |           |   +---dto |   |   |           |   |       ConfiguracionDTO.java |   |   |           |   |       DiagnosticoDTO.java |   |   |           |   |       EstadisticasDTO.java |   |   |           |   |       OptimizacionDTO.java |   |   |           |   |       RecomendacionDTO.java |   |   |           |   |        |   |   |           |   +---port |   |   |           |   |       IConfiguracionRepositorio.java |   |   |           |   |       ILogService.java |   |   |           |   |       IReporteExportador.java |   |   |           |   |        |   |   |           |   \---usecase |   |   |           |           AsignarClienteUseCase.java |   |   |           |           CalcularTiempoEsperaUseCase.java |   |   |           |           CompararConfiguracionesUseCase.java |   |   |           |           ConfigurarSimulacionUseCase.java |   |   |           |           DetenerSimulacionUseCase.java |   |   |           |           DiagnosticarConfiguracionUseCase.java |   |   |           |           ExportarReporteUseCase.java |   |   |           |           GenerarClienteUseCase.java |   |   |           |           IniciarSimulacionUseCase.java |   |   |           |           IniciarSimulacionUseCase.java.manual.bak |   |   |           |           ObtenerColaMaximaUseCase.java |   |   |           |           ObtenerEstadisticasUseCase.java |   |   |           |           OptimizarCajasUseCase.java |   |   |           |           PausarSimulacionUseCase.java |   |   |           |           ReanudarSimulacionUseCase.java |   |   |           |           RecomendarMejoraUseCase.java |   |   |           |           ReiniciarSimulacionUseCase.java |   |   |           |           SimulacionConEscalaUseCase.java |   |   |           |           TeoriaColasUseCase.java |   |   |           |            |   |   |           +---domain |   |   |           |   +---exception |   |   |           |   +---model |   |   |           |   |       Caja.java |   |   |           |   |       Cliente.java |   |   |           |   |       Configuracion.java |   |   |           |   |       EstadoCaja.java |   |   |           |   |       Recomendacion.java |   |   |           |   |        |   |   |           |   \---service |   |   |           |           DiagnosticoService.java |   |   |           |           EstadisticasService.java |   |   |           |           OptimizadorService.java |   |   |           |           RelojSimulacionService.java |   |   |           |           SimuladorService.java |   |   |           |           TeoriaColasService.java |   |   |           |            |   |   |           +---infrastructure |   |   |           |   +---config |   |   |           |   |       AppConfig.java |   |   |           |   |        |   |   |           |   +---repository |   |   |           |   |       ConfiguracionRepositorioImpl.java |   |   |           |   |       ConfiguracionRepositorioImpl.java.bak |   |   |           |   |        |   |   |           |   \---service |   |   |           |           LogServiceImpl.java |   |   |           |           ReporteExcelImpl.java |   |   |           |            |   |   |           \---presentation |   |   |               +---controller |   |   |               |       SimulacionController.java |   |   |               |        |   |   |               +---listener |   |   |               \---view |   |   |                       DialogoConfiguracion.java |   |   |                       DialogoConfiguracion.java.bak |   |   |                       PanelCajas.java |   |   |                       PanelCajas.java.bak |   |   |                       PanelDiagnostico.java |   |   |                       PanelEstadisticas.java |   |   |                       PanelRecomendaciones.java |   |   |                       PanelTeoriaColas.java |   |   |                       SimuladorFrame.java |   |   |                       SimuladorFrame.java.bak |   |   |                       Theme.java |   |   |                        |   |   \---resources |   \---test |       \---java |           \---com |               \---supermercado |                   +---application |                   |   \---usecase |                   |           DiagnosticarConfiguracionUseCaseTest.java |                   |            |                   +---domain |                   |   +---model |                   |   |       CajaTest.java |                   |   |       ClienteTest.java |                   |   |       EstadoCajaTest.java |                   |   |        |                   |   \---service |                   |           DiagnosticoServiceTest.java |                   |           EstadisticasServiceTest.java |                   |           OptimizadorServiceTest.java |                   |           RelojSimulacionServiceTest.java |                   |           SimuladorServiceTest.java |                   |           TeoriaColasServiceTest.java |                   |            |                   +---presentation |                   |   \---controller |                   \---regression |                           SimulacionRegressionTest.java |                            \---target     +---classes     |   \---com     |       \---supermercado     |           |   Main.class     |           |        |           +---application     |           |   +---dto     |           |   |       ConfiguracionDTO$Builder.class     |           |   |       ConfiguracionDTO.class     |           |   |       DiagnosticoDTO$DiagnosticoItem.class     |           |   |       DiagnosticoDTO.class     |           |   |       EstadisticasDTO$Builder.class     |           |   |       EstadisticasDTO.class     |           |   |       OptimizacionDTO$ResultadoOptimizacion.class     |           |   |       OptimizacionDTO.class     |           |   |       RecomendacionDTO.class     |           |   |            |           |   +---port     |           |   |       IConfiguracionRepositorio.class     |           |   |       ILogService.class     |           |   |       IReporteExportador.class     |           |   |            |           |   \---usecase     |           |           AsignarClienteUseCase.class     |           |           CalcularTiempoEsperaUseCase.class     |           |           CompararConfiguracionesUseCase.class     |           |           ConfigurarSimulacionUseCase.class     |           |           DetenerSimulacionUseCase.class     |           |           DiagnosticarConfiguracionUseCase.class     |           |           ExportarReporteUseCase.class     |           |           GenerarClienteUseCase.class     |           |           IniciarSimulacionUseCase.class     |           |           ObtenerColaMaximaUseCase.class     |           |           ObtenerEstadisticasUseCase.class     |           |           OptimizarCajasUseCase.class     |           |           PausarSimulacionUseCase.class     |           |           ReanudarSimulacionUseCase.class     |           |           RecomendarMejoraUseCase.class     |           |           ReiniciarSimulacionUseCase.class     |           |           SimulacionConEscalaUseCase.class     |           |           TeoriaColasUseCase.class     |           |                |           +---domain     |           |   +---model     |           |   |       Caja.class     |           |   |       Cliente.class     |           |   |       Configuracion$Builder.class     |           |   |       Configuracion.class     |           |   |       EstadoCaja.class     |           |   |       Recomendacion.class     |           |   |            |           |   \---service     |           |           DiagnosticoService$Diagnostico.class     |           |           DiagnosticoService$NivelAlerta.class     |           |           DiagnosticoService.class     |           |           EstadisticasService.class     |           |           OptimizadorService$ResultadoOptimizacion.class     |           |           OptimizadorService.class     |           |           RelojSimulacionService.class     |           |           SimuladorService.class     |           |           TeoriaColasService$MetricasColas.class     |           |           TeoriaColasService.class     |           |                |           +---infrastructure     |           |   +---config     |           |   |       AppConfig.class     |           |   |            |           |   +---repository     |           |   |       ConfiguracionRepositorioImpl.class     |           |   |            |           |   \---service     |           |           LogServiceImpl.class     |           |           ReporteExcelImpl.class     |           |                |           \---presentation     |               +---controller     |               |       SimulacionController.class     |               |            |               \---view     |                       DialogoConfiguracion$1.class     |                       DialogoConfiguracion.class     |                       PanelCajas.class     |                       PanelDiagnostico$1.class     |                       PanelDiagnostico$2.class     |                       PanelDiagnostico.class     |                       PanelEstadisticas.class     |                       PanelRecomendaciones.class     |                       PanelTeoriaColas.class     |                       SimuladorFrame$1.class     |                       SimuladorFrame.class     |                       Theme.class     |                            +---generated-sources     |   \---annotations     \---maven-status         \---maven-compiler-plugin             \---compile                 \---default-compile                         createdFiles.lst                         inputFiles.lst                         
+
+## ARCHIVOS DE CÓDIGO FUENTE
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\Main.java ===
+package com.supermercado;
+
+import com.supermercado.application.dto.ConfiguracionDTO;
+import com.supermercado.application.port.IConfiguracionRepositorio;
+import com.supermercado.infrastructure.config.AppConfig;
+import com.supermercado.presentation.controller.SimulacionController;
+import com.supermercado.presentation.view.SimuladorFrame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+
+public class Main {
+
+    private static final Logger log = LoggerFactory.getLogger(Main.class);
+
+    public static void main(String[] args) {
+        log.info("=== INICIANDO SIMULADOR DE SUPERMERCADO ===");
+
+        try {
+            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+        } catch (Exception e) {
+            log.warn("No se pudo establecer LookAndFeel", e);
+        }
+
+        SwingUtilities.invokeLater(() -> {
+            try {
+                IConfiguracionRepositorio configRepo = AppConfig.getInstance().getConfiguracionRepositorio();
+                ConfiguracionDTO config = configRepo.cargar();
+
+                SimuladorFrame frame = new SimuladorFrame();
+                SimulacionController controller = new SimulacionController(frame);
+                frame.setController(controller);
+                frame.setConfiguracion(config);
+                frame.setVisible(true);
+
+                log.info("GUI iniciada correctamente");
+            } catch (Exception e) {
+                log.error("Error al iniciar la GUI", e);
+                JOptionPane.showMessageDialog(null,
+                    "Error al iniciar la aplicacion: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+    }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\dto\ConfiguracionDTO.java ===
+package com.supermercado.application.dto;
+
+public class ConfiguracionDTO {
+    
+    private final int horasSimuladas;
+    private final int duracionRealSegundos;
+    private final int numCajasNormales;
+    private final int numCajasRapidas;
+    private final int limiteClienteRapido;
+    private final int probabilidadLlegadaCliente;
+    private final int limiteClientes;
+    private final int tiempoCajaNormalMin;
+    private final int tiempoCajaNormalMax;
+    private final int tiempoCajaRapidaMin;
+    private final int tiempoCajaRapidaMax;
+    private final int articulosClienteMin;
+    private final int articulosClienteMax;
+    private final boolean mostrarDetalleClientes;
+    private final boolean mostrarEstadisticasAvanzadas;
+
+    private ConfiguracionDTO(Builder builder) {
+        this.horasSimuladas = builder.horasSimuladas;
+        this.duracionRealSegundos = builder.duracionRealSegundos;
+        this.numCajasNormales = builder.numCajasNormales;
+        this.numCajasRapidas = builder.numCajasRapidas;
+        this.limiteClienteRapido = builder.limiteClienteRapido;
+        this.probabilidadLlegadaCliente = builder.probabilidadLlegadaCliente;
+        this.limiteClientes = builder.limiteClientes;
+        this.tiempoCajaNormalMin = builder.tiempoCajaNormalMin;
+        this.tiempoCajaNormalMax = builder.tiempoCajaNormalMax;
+        this.tiempoCajaRapidaMin = builder.tiempoCajaRapidaMin;
+        this.tiempoCajaRapidaMax = builder.tiempoCajaRapidaMax;
+        this.articulosClienteMin = builder.articulosClienteMin;
+        this.articulosClienteMax = builder.articulosClienteMax;
+        this.mostrarDetalleClientes = builder.mostrarDetalleClientes;
+        this.mostrarEstadisticasAvanzadas = builder.mostrarEstadisticasAvanzadas;
+    }
+
+    public int getHorasSimuladas() { return horasSimuladas; }
+    public int getDuracionRealSegundos() { return duracionRealSegundos; }
+    public int getNumCajasNormales() { return numCajasNormales; }
+    public int getNumCajasRapidas() { return numCajasRapidas; }
+    public int getLimiteClienteRapido() { return limiteClienteRapido; }
+    public int getProbabilidadLlegadaCliente() { return probabilidadLlegadaCliente; }
+    public int getLimiteClientes() { return limiteClientes; }
+    public int getTiempoCajaNormalMin() { return tiempoCajaNormalMin; }
+    public int getTiempoCajaNormalMax() { return tiempoCajaNormalMax; }
+    public int getTiempoCajaRapidaMin() { return tiempoCajaRapidaMin; }
+    public int getTiempoCajaRapidaMax() { return tiempoCajaRapidaMax; }
+    public int getArticulosClienteMin() { return articulosClienteMin; }
+    public int getArticulosClienteMax() { return articulosClienteMax; }
+    public boolean isMostrarDetalleClientes() { return mostrarDetalleClientes; }
+    public boolean isMostrarEstadisticasAvanzadas() { return mostrarEstadisticasAvanzadas; }
+
+    public static class Builder {
+        private int horasSimuladas = 12;
+        private int duracionRealSegundos = 20;
+        private int numCajasNormales = 2;
+        private int numCajasRapidas = 1;
+        private int limiteClienteRapido = 10;
+        private int probabilidadLlegadaCliente = 40;
+        private int limiteClientes = 0;
+        private int tiempoCajaNormalMin = 4;
+        private int tiempoCajaNormalMax = 8;
+        private int tiempoCajaRapidaMin = 2;
+        private int tiempoCajaRapidaMax = 5;
+        private int articulosClienteMin = 1;
+        private int articulosClienteMax = 30;
+        private boolean mostrarDetalleClientes = true;
+        private boolean mostrarEstadisticasAvanzadas = true;
+
+        public Builder horasSimuladas(int horas) { this.horasSimuladas = horas; return this; }
+        public Builder duracionRealSegundos(int segundos) { this.duracionRealSegundos = segundos; return this; }
+        public Builder numCajasNormales(int cajas) { this.numCajasNormales = cajas; return this; }
+        public Builder numCajasRapidas(int cajas) { this.numCajasRapidas = cajas; return this; }
+        public Builder limiteClienteRapido(int limite) { this.limiteClienteRapido = limite; return this; }
+        public Builder probabilidadLlegadaCliente(int prob) { this.probabilidadLlegadaCliente = prob; return this; }
+        public Builder limiteClientes(int limite) { this.limiteClientes = limite; return this; }
+        public Builder tiempoCajaNormalMin(int min) { this.tiempoCajaNormalMin = min; return this; }
+        public Builder tiempoCajaNormalMax(int max) { this.tiempoCajaNormalMax = max; return this; }
+        public Builder tiempoCajaRapidaMin(int min) { this.tiempoCajaRapidaMin = min; return this; }
+        public Builder tiempoCajaRapidaMax(int max) { this.tiempoCajaRapidaMax = max; return this; }
+        public Builder articulosClienteMin(int min) { this.articulosClienteMin = min; return this; }
+        public Builder articulosClienteMax(int max) { this.articulosClienteMax = max; return this; }
+        public Builder mostrarDetalleClientes(boolean mostrar) { this.mostrarDetalleClientes = mostrar; return this; }
+        public Builder mostrarEstadisticasAvanzadas(boolean mostrar) { this.mostrarEstadisticasAvanzadas = mostrar; return this; }
+
+        public ConfiguracionDTO build() {
+            return new ConfiguracionDTO(this);
+        }
+    }
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\dto\DiagnosticoDTO.java ===
+package com.supermercado.application.dto;
+
+import java.util.List;
+
+public class DiagnosticoDTO {
+    private final List<DiagnosticoItem> items;
+    private final long criticos;
+    private final long alertas;
+    private final long atencion;
+    private final String resumenEjecutivo;
+    
+    public DiagnosticoDTO(List<DiagnosticoItem> items, long criticos, 
+                          long alertas, long atencion) {
+        this(items, criticos, alertas, atencion, null);
+    }
+    
+    public DiagnosticoDTO(List<DiagnosticoItem> items, long criticos, 
+                          long alertas, long atencion, String resumenEjecutivo) {
+        this.items = items;
+        this.criticos = criticos;
+        this.alertas = alertas;
+        this.atencion = atencion;
+        this.resumenEjecutivo = resumenEjecutivo;
+    }
+    
+    public static class DiagnosticoItem {
+        private final String cajaId;
+        private final String nivel;
+        private final String icono;
+        private final String mensaje;
+        private final String sugerencia;
+        private final int colaActual;
+        private final int colaMaxima;
+        
+        public DiagnosticoItem(String cajaId, String nivel, String icono,
+                               String mensaje, String sugerencia,
+                               int colaActual, int colaMaxima) {
+            this.cajaId = cajaId;
+            this.nivel = nivel;
+            this.icono = icono;
+            this.mensaje = mensaje;
+            this.sugerencia = sugerencia;
+            this.colaActual = colaActual;
+            this.colaMaxima = colaMaxima;
+        }
+        
+        public String getCajaId() { return cajaId; }
+        public String getNivel() { return nivel; }
+        public String getIcono() { return icono; }
+        public String getMensaje() { return mensaje; }
+        public String getSugerencia() { return sugerencia; }
+        public int getColaActual() { return colaActual; }
+        public int getColaMaxima() { return colaMaxima; }
+    }
+    
+    public List<DiagnosticoItem> getItems() { return items; }
+    public long getCriticos() { return criticos; }
+    public long getAlertas() { return alertas; }
+    public long getAtencion() { return atencion; }
+    public String getResumenEjecutivo() { return resumenEjecutivo; }
+    
+    public boolean tieneProblemas() {
+        return criticos > 0 || alertas > 0;
+    }
+    
+    public String getEstadoGeneral() {
+        if (criticos > 0) return "CRITICO";
+        if (alertas > 0) return "ALERTA";
+        if (atencion > 0) return "ATENCION";
+        return "NORMAL";
+    }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\dto\EstadisticasDTO.java ===
+package com.supermercado.application.dto;
+
+public class EstadisticasDTO {
+
+    private final int totalClientesAtendidos;
+    private final int totalArticulosVendidos;
+    private final int totalMinutosAtencion;
+    private final int clientesEnCola;
+    private final String cajeroEstrella;
+    private final double tiempoPromedioAtencion;
+    private final double articulosPromedio;
+    private final int clientesGenerados;
+    private final String horaSimulada;
+
+    public EstadisticasDTO() {
+        this(0, 0, 0, 0, "-", 0.0, 0.0, 0, "08:00");
+    }
+
+    private EstadisticasDTO(int totalClientesAtendidos, int totalArticulosVendidos,
+                           int totalMinutosAtencion, int clientesEnCola,
+                           String cajeroEstrella, double tiempoPromedioAtencion,
+                           double articulosPromedio, int clientesGenerados,
+                           String horaSimulada) {
+        this.totalClientesAtendidos = totalClientesAtendidos;
+        this.totalArticulosVendidos = totalArticulosVendidos;
+        this.totalMinutosAtencion = totalMinutosAtencion;
+        this.clientesEnCola = clientesEnCola;
+        this.cajeroEstrella = cajeroEstrella != null ? cajeroEstrella : "-";
+        this.tiempoPromedioAtencion = tiempoPromedioAtencion;
+        this.articulosPromedio = articulosPromedio;
+        this.clientesGenerados = clientesGenerados;
+        this.horaSimulada = horaSimulada != null ? horaSimulada : "08:00";
+    }
+
+    public int getTotalClientesAtendidos() { return totalClientesAtendidos; }
+    public int getTotalArticulosVendidos() { return totalArticulosVendidos; }
+    public int getTotalMinutosAtencion() { return totalMinutosAtencion; }
+    public int getClientesEnCola() { return clientesEnCola; }
+    public String getCajeroEstrella() { return cajeroEstrella; }
+    public double getTiempoPromedioAtencion() { return tiempoPromedioAtencion; }
+    public double getArticulosPromedio() { return articulosPromedio; }
+    public int getClientesGenerados() { return clientesGenerados; }
+    public String getHoraSimulada() { return horaSimulada; }
+
+    public static class Builder {
+        private int totalClientesAtendidos;
+        private int totalArticulosVendidos;
+        private int totalMinutosAtencion;
+        private int clientesEnCola;
+        private String cajeroEstrella;
+        private double tiempoPromedioAtencion;
+        private double articulosPromedio;
+        private int clientesGenerados;
+        private String horaSimulada;
+
+        public Builder totalClientesAtendidos(int value) { this.totalClientesAtendidos = value; return this; }
+        public Builder totalArticulosVendidos(int value) { this.totalArticulosVendidos = value; return this; }
+        public Builder totalMinutosAtencion(int value) { this.totalMinutosAtencion = value; return this; }
+        public Builder clientesEnCola(int value) { this.clientesEnCola = value; return this; }
+        public Builder cajeroEstrella(String value) { this.cajeroEstrella = value; return this; }
+        public Builder tiempoPromedioAtencion(double value) { this.tiempoPromedioAtencion = value; return this; }
+        public Builder articulosPromedio(double value) { this.articulosPromedio = value; return this; }
+        public Builder clientesGenerados(int value) { this.clientesGenerados = value; return this; }
+        public Builder horaSimulada(String value) { this.horaSimulada = value; return this; }
+
+        public EstadisticasDTO build() {
+            return new EstadisticasDTO(totalClientesAtendidos, totalArticulosVendidos,
+                                      totalMinutosAtencion, clientesEnCola,
+                                      cajeroEstrella, tiempoPromedioAtencion,
+                                      articulosPromedio, clientesGenerados,
+                                      horaSimulada);
+        }
+    }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\dto\OptimizacionDTO.java ===
+package com.supermercado.application.dto;
+
+import java.util.List;
+
+public class OptimizacionDTO {
+    private final List<ResultadoOptimizacion> resultados;
+    private final String mejorConfiguracion;
+    private final double mejoraPorcentaje;
+    private final String recomendacion;
+    
+    public OptimizacionDTO(List<ResultadoOptimizacion> resultados, 
+                           String mejorConfiguracion, 
+                           double mejoraPorcentaje,
+                           String recomendacion) {
+        this.resultados = resultados;
+        this.mejorConfiguracion = mejorConfiguracion;
+        this.mejoraPorcentaje = mejoraPorcentaje;
+        this.recomendacion = recomendacion;
+    }
+    
+    public static class ResultadoOptimizacion {
+        private final int normales;
+        private final int rapidas;
+        private final int totalCajas;
+        private final int clientesAtendidos;
+        private final int colaMaxima;
+        private final double tiempoPromedio;
+        private final double factorUtilizacion;
+        private final double mejora;
+        private final String estado;
+        
+        public ResultadoOptimizacion(int normales, int rapidas, int totalCajas,
+                                     int clientesAtendidos, int colaMaxima,
+                                     double tiempoPromedio, double factorUtilizacion,
+                                     double mejora, String estado) {
+            this.normales = normales;
+            this.rapidas = rapidas;
+            this.totalCajas = totalCajas;
+            this.clientesAtendidos = clientesAtendidos;
+            this.colaMaxima = colaMaxima;
+            this.tiempoPromedio = tiempoPromedio;
+            this.factorUtilizacion = factorUtilizacion;
+            this.mejora = mejora;
+            this.estado = estado;
+        }
+        
+        public int getNormales() { return normales; }
+        public int getRapidas() { return rapidas; }
+        public int getTotalCajas() { return totalCajas; }
+        public int getClientesAtendidos() { return clientesAtendidos; }
+        public int getColaMaxima() { return colaMaxima; }
+        public double getTiempoPromedio() { return tiempoPromedio; }
+        public double getFactorUtilizacion() { return factorUtilizacion; }
+        public double getMejora() { return mejora; }
+        public String getEstado() { return estado; }
+    }
+    
+    public List<ResultadoOptimizacion> getResultados() { return resultados; }
+    public String getMejorConfiguracion() { return mejorConfiguracion; }
+    public double getMejoraPorcentaje() { return mejoraPorcentaje; }
+    public String getRecomendacion() { return recomendacion; }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\dto\RecomendacionDTO.java ===
+package com.supermercado.application.dto;
+
+public class RecomendacionDTO {
+    private final String mensaje;
+    private final String prioridad;
+    private final String configuracionSugerida;
+    private final double mejoraEstimada;
+    private final boolean aceptada;
+    
+    public RecomendacionDTO(String mensaje, String prioridad, 
+                            String configuracionSugerida, 
+                            double mejoraEstimada, 
+                            boolean aceptada) {
+        this.mensaje = mensaje;
+        this.prioridad = prioridad;
+        this.configuracionSugerida = configuracionSugerida;
+        this.mejoraEstimada = mejoraEstimada;
+        this.aceptada = aceptada;
+    }
+    
+    public String getMensaje() { return mensaje; }
+    public String getPrioridad() { return prioridad; }
+    public String getConfiguracionSugerida() { return configuracionSugerida; }
+    public double getMejoraEstimada() { return mejoraEstimada; }
+    public boolean isAceptada() { return aceptada; }
+    
+    public RecomendacionDTO conAceptada(boolean aceptada) {
+        return new RecomendacionDTO(mensaje, prioridad, 
+            configuracionSugerida, mejoraEstimada, aceptada);
+    }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\port\IConfiguracionRepositorio.java ===
+package com.supermercado.application.port;
+
+import com.supermercado.application.dto.ConfiguracionDTO;
+
+public interface IConfiguracionRepositorio {
+    ConfiguracionDTO cargar();
+    void guardar(ConfiguracionDTO configuracion);
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\port\ILogService.java ===
+package com.supermercado.application.port;
+
+public interface ILogService {
+    void info(String mensaje);
+    void debug(String mensaje);
+    void warn(String mensaje);
+    void error(String mensaje);
+    void error(String mensaje, Throwable throwable);
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\port\IReporteExportador.java ===
+package com.supermercado.application.port;
+
+import com.supermercado.application.dto.EstadisticasDTO;
+
+public interface IReporteExportador {
+    void exportar(EstadisticasDTO estadisticas, String rutaArchivo);
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\AsignarClienteUseCase.java ===
+package com.supermercado.application.usecase;
+
+import com.supermercado.domain.model.Caja;
+import com.supermercado.domain.model.Cliente;
+import com.supermercado.domain.service.SimuladorService;
+import com.supermercado.domain.service.RelojSimulacionService;
+
+import java.util.List;
+
+public class AsignarClienteUseCase {
+    
+    private final SimuladorService simuladorService;
+    
+    public AsignarClienteUseCase() {
+        this.simuladorService = new SimuladorService(new RelojSimulacionService());
+    }
+    
+    public void ejecutar(List<Caja> cajas, Cliente cliente) {
+        if (cajas == null || cajas.isEmpty()) {
+            throw new IllegalArgumentException("La lista de cajas no puede estar vac?a");
+        }
+        if (cliente == null) {
+            throw new IllegalArgumentException("El cliente no puede ser nulo");
+        }
+        simuladorService.asignarCliente(cajas, cliente);
+    }
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\CalcularTiempoEsperaUseCase.java ===
+package com.supermercado.application.usecase;
+
+import com.supermercado.domain.model.Cliente;
+
+public class CalcularTiempoEsperaUseCase {
+    
+    public long ejecutar(Cliente cliente) {
+        if (cliente == null) {
+            throw new IllegalArgumentException("El cliente no puede ser nulo");
+        }
+        return cliente.calcularTiempoEspera();
+    }
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\CompararConfiguracionesUseCase.java ===
+package com.supermercado.application.usecase;
+
+import com.supermercado.domain.model.Configuracion;
+import com.supermercado.domain.service.OptimizadorService;
+import com.supermercado.application.dto.OptimizacionDTO;
+import java.util.List;
+
+public class CompararConfiguracionesUseCase {
+    
+    private final OptimizadorService optimizadorService;
+    
+    public CompararConfiguracionesUseCase() {
+        this.optimizadorService = new OptimizadorService();
+    }
+    
+    public String ejecutar(Configuracion configActual, 
+                           Configuracion configPropuesta) {
+        
+        StringBuilder comparacion = new StringBuilder();
+        comparacion.append("=== COMPARACION DE CONFIGURACIONES ===\n\n");
+        
+        comparacion.append("CONFIGURACION ACTUAL:\n");
+        comparacion.append("  Normales: ").append(configActual.getNumCajasNormales()).append("\n");
+        comparacion.append("  Rapidas: ").append(configActual.getNumCajasRapidas()).append("\n");
+        comparacion.append("  Total: ").append(configActual.getNumCajasNormales() + configActual.getNumCajasRapidas()).append("\n\n");
+        
+        comparacion.append("CONFIGURACION PROPUESTA:\n");
+        comparacion.append("  Normales: ").append(configPropuesta.getNumCajasNormales()).append("\n");
+        comparacion.append("  Rapidas: ").append(configPropuesta.getNumCajasRapidas()).append("\n");
+        comparacion.append("  Total: ").append(configPropuesta.getNumCajasNormales() + configPropuesta.getNumCajasRapidas()).append("\n\n");
+        
+        int diffNormales = configPropuesta.getNumCajasNormales() - configActual.getNumCajasNormales();
+        int diffRapidas = configPropuesta.getNumCajasRapidas() - configActual.getNumCajasRapidas();
+        int diffTotal = diffNormales + diffRapidas;
+        
+        comparacion.append("DIFERENCIAS:\n");
+        comparacion.append("  Normales: ").append(diffNormales > 0 ? "+" : "").append(diffNormales).append("\n");
+        comparacion.append("  Rapidas: ").append(diffRapidas > 0 ? "+" : "").append(diffRapidas).append("\n");
+        comparacion.append("  Total: ").append(diffTotal > 0 ? "+" : "").append(diffTotal).append("\n\n");
+        
+        if (diffTotal > 0) {
+            comparacion.append("RECOMENDACION: Aumentar el numero de cajas\n");
+        } else if (diffTotal < 0) {
+            comparacion.append("RECOMENDACION: Reducir el numero de cajas\n");
+        } else {
+            comparacion.append("RECOMENDACION: Mantener el mismo numero de cajas\n");
+            comparacion.append("  Considerar redistribuir entre normales y rapidas\n");
+        }
+        
+        return comparacion.toString();
+    }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\ConfigurarSimulacionUseCase.java ===
+package com.supermercado.application.usecase;
+
+import com.supermercado.application.dto.ConfiguracionDTO;
+import com.supermercado.application.port.IConfiguracionRepositorio;
+import com.supermercado.application.port.ILogService;
+
+public class ConfigurarSimulacionUseCase {
+    
+    private final ILogService logService;
+    private final IConfiguracionRepositorio repositorio;
+    
+    public ConfigurarSimulacionUseCase(ILogService logService, IConfiguracionRepositorio repositorio) {
+        this.logService = logService;
+        this.repositorio = repositorio;
+    }
+    
+    public void ejecutar(ConfiguracionDTO config) {
+        if (config == null) {
+            throw new IllegalArgumentException("La configuraci?n no puede ser nula");
+        }
+        
+        validarConfiguracion(config);
+        repositorio.guardar(config);
+        logService.info("Configuraci?n guardada exitosamente");
+    }
+    
+    private void validarConfiguracion(ConfiguracionDTO config) {
+        if (config.getNumCajasNormales() < 1) {
+            throw new IllegalArgumentException("Debe haber al menos 1 caja normal");
+        }
+        if (config.getTiempoCajaNormalMin() > config.getTiempoCajaNormalMax()) {
+            throw new IllegalArgumentException("El tiempo m?nimo no puede ser mayor al m?ximo");
+        }
+        if (config.getTiempoCajaRapidaMin() > config.getTiempoCajaRapidaMax()) {
+            throw new IllegalArgumentException("El tiempo m?nimo r?pido no puede ser mayor al m?ximo r?pido");
+        }
+        if (config.getArticulosClienteMin() > config.getArticulosClienteMax()) {
+            throw new IllegalArgumentException("El m?nimo de art?culos no puede ser mayor al m?ximo");
+        }
+        logService.debug("Configuraci?n validada correctamente");
+    }
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\DetenerSimulacionUseCase.java ===
+package com.supermercado.application.usecase;
+
+public class DetenerSimulacionUseCase {
+    
+    public void ejecutar() {
+        // La l?gica de detenci?n se maneja en IniciarSimulacionUseCase.detener()
+        // Este caso de uso act?a como fachada para mantener la separaci?n de responsabilidades
+    }
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\DiagnosticarConfiguracionUseCase.java ===
+package com.supermercado.application.usecase;
+
+import com.supermercado.domain.model.Caja;
+import com.supermercado.domain.service.DiagnosticoService;
+import com.supermercado.application.dto.DiagnosticoDTO;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class DiagnosticarConfiguracionUseCase {
+    
+    private final DiagnosticoService diagnosticoService;
+    
+    public DiagnosticarConfiguracionUseCase() {
+        this.diagnosticoService = new DiagnosticoService();
+    }
+    
+    public DiagnosticoDTO ejecutar(List<Caja> cajas) {
+        List<DiagnosticoService.Diagnostico> diagnosticos = 
+            diagnosticoService.diagnosticar(cajas);
+        
+        List<DiagnosticoDTO.DiagnosticoItem> items = diagnosticos.stream()
+            .map(d -> new DiagnosticoDTO.DiagnosticoItem(
+                d.cajaId,
+                d.nivel.name(),
+                d.nivel.icono,
+                d.mensaje,
+                d.sugerencia,
+                d.colaActual,
+                d.colaMaxima
+            ))
+            .collect(Collectors.toList());
+        
+        long criticos = diagnosticos.stream()
+            .filter(d -> d.nivel == DiagnosticoService.NivelAlerta.CRITICO).count();
+        long alertas = diagnosticos.stream()
+            .filter(d -> d.nivel == DiagnosticoService.NivelAlerta.ALERTA).count();
+        long atencion = diagnosticos.stream()
+            .filter(d -> d.nivel == DiagnosticoService.NivelAlerta.ATENCION).count();
+        
+        String resumen = generarResumen(criticos, alertas, atencion);
+        
+        return new DiagnosticoDTO(items, criticos, alertas, atencion, resumen);
+    }
+    
+    private String generarResumen(long criticos, long alertas, long atencion) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("RESUMEN DEL DIAGNOSTICO:\n");
+        sb.append("  Criticos: ").append(criticos).append("\n");
+        sb.append("  Alertas: ").append(alertas).append("\n");
+        sb.append("  Atencion: ").append(atencion).append("\n");
+        
+        if (criticos > 0) {
+            sb.append("  ESTADO: CRITICO - Se requieren cambios urgentes");
+        } else if (alertas > 0) {
+            sb.append("  ESTADO: ALERTA - Se recomienda optimizacion");
+        } else if (atencion > 0) {
+            sb.append("  ESTADO: ATENCION - Monitorear el sistema");
+        } else {
+            sb.append("  ESTADO: NORMAL - Sistema funcionando correctamente");
+        }
+        
+        return sb.toString();
+    }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\ExportarReporteUseCase.java ===
+package com.supermercado.application.usecase;
+
+import com.supermercado.application.dto.EstadisticasDTO;
+import com.supermercado.application.port.IReporteExportador;
+import com.supermercado.application.port.ILogService;
+
+public class ExportarReporteUseCase {
+    
+    private final ILogService logService;
+    private final IReporteExportador exportador;
+    
+    public ExportarReporteUseCase(ILogService logService, IReporteExportador exportador) {
+        this.logService = logService;
+        this.exportador = exportador;
+    }
+    
+    public void ejecutar(EstadisticasDTO estadisticas, String rutaArchivo) {
+        if (estadisticas == null) {
+            throw new IllegalArgumentException("Las estad?sticas no pueden ser nulas");
+        }
+        if (rutaArchivo == null || rutaArchivo.isBlank()) {
+            throw new IllegalArgumentException("La ruta del archivo no puede estar vac?a");
+        }
+        
+        exportador.exportar(estadisticas, rutaArchivo);
+        logService.info("Reporte exportado correctamente");
+    }
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\GenerarClienteUseCase.java ===
+package com.supermercado.application.usecase;
+
+import com.supermercado.domain.model.Cliente;
+
+import java.util.Random;
+
+public class GenerarClienteUseCase {
+    
+    private static int contador = 0;
+    private final Random random;
+    
+    public GenerarClienteUseCase() {
+        this.random = new Random();
+    }
+    
+    public Cliente ejecutar(int minArticulos, int maxArticulos) {
+        if (minArticulos < 0 || maxArticulos < minArticulos) {
+            throw new IllegalArgumentException("Rango de art?culos inv?lido");
+        }
+        int articulos = minArticulos + random.nextInt(maxArticulos - minArticulos + 1);
+        return new Cliente(++contador, articulos);
+    }
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\IniciarSimulacionUseCase.java ===
+package com.supermercado.application.usecase;
+
+import com.supermercado.application.dto.ConfiguracionDTO;
+import com.supermercado.application.dto.EstadisticasDTO;
+import com.supermercado.application.port.ILogService;
+import com.supermercado.domain.model.Caja;
+import com.supermercado.domain.model.Cliente;
+import com.supermercado.domain.service.EstadisticasService;
+import com.supermercado.domain.service.RelojSimulacionService;
+import com.supermercado.domain.service.SimuladorService;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.function.Consumer;
+
+public class IniciarSimulacionUseCase {
+
+    private static final int HORA_APERTURA = 8;
+    private final ILogService logService;
+    private final RelojSimulacionService reloj;
+    private final SimuladorService simuladorService;
+    private final EstadisticasService estadisticasService;
+
+    private ConfiguracionDTO config;
+    private List<Caja> cajas;
+    private List<Thread> hilosCajas;
+    private Random random;
+    private volatile boolean ejecutando;
+    private boolean pausado;
+    private int clientesGenerados;
+    private long tiempoInicio;
+    private long msPerMinutoSimulado;
+    private int minSimulados;
+    private int totalClientesAtendidos = 0;
+    private long minutosSimuladosTranscurridos = 0;
+
+    private Consumer<EstadisticasDTO> onEstadisticasUpdate;
+    private Consumer<String[]> onCajaUpdate;
+    private Consumer<String> onLogUpdate;
+    private Consumer<EstadisticasDTO> onEstadisticasDirect;  // Para inyección directa
+
+    public IniciarSimulacionUseCase(ILogService logService) {
+        this.logService = logService;
+        this.reloj = new RelojSimulacionService();
+        this.simuladorService = new SimuladorService(reloj);
+        this.estadisticasService = new EstadisticasService();
+        this.cajas = new ArrayList<>();
+        this.hilosCajas = new ArrayList<>();
+        this.random = new Random();
+        this.ejecutando = false;
+        this.pausado = false;
+        this.clientesGenerados = 0;
+    }
+
+    public void setOnEstadisticasUpdate(Consumer<EstadisticasDTO> callback) {
+        this.onEstadisticasUpdate = callback;
+    }
+
+    public void setOnCajaUpdate(Consumer<String[]> callback) {
+        this.onCajaUpdate = callback;
+    }
+
+    public void setOnEstadisticasDirect(Consumer<EstadisticasDTO> callback) {
+        this.onEstadisticasDirect = callback;
+    }
+
+    public void setOnLogUpdate(Consumer<String> callback) {
+        this.onLogUpdate = callback;
+    }
+
+    private String calcularHoraSimulada(int minutos) {
+        int totalMinutos = config.getHorasSimuladas() * 60;
+        if (minutos > totalMinutos) {
+            minutos = totalMinutos;
+        }
+        if (minutos < 0) {
+            minutos = 0;
+        }
+        int hora = HORA_APERTURA + (minutos / 60);
+        int minuto = minutos % 60;
+        int horaFinal = HORA_APERTURA + config.getHorasSimuladas();
+        if (hora >= horaFinal) {
+            return String.format("%02d:%02d", horaFinal, 0);
+        }
+        return String.format("%02d:%02d", hora, minuto);
+    }
+
+    private boolean estaCerrado() {
+        int totalMinutos = config.getHorasSimuladas() * 60;
+        return minutosSimuladosTranscurridos >= totalMinutos;
+    }
+
+    private int getClientesEnCola() {
+        int total = 0;
+        for (Caja caja : cajas) {
+            total += caja.getClientesEnCola();
+        }
+        return total;
+    }
+
+    private void log(String mensaje) {
+        if (onLogUpdate != null) {
+            onLogUpdate.accept(mensaje);
+        }
+        logService.info(mensaje);
+    }
+
+    private void actualizarUI() {
+        if (onEstadisticasUpdate != null) {
+            EstadisticasDTO stats = estadisticasService.calcularEstadisticas(cajas);
+            
+            // Calcular la hora correcta usando los minutos transcurridos
+            String horaSimulada = calcularHoraSimulada((int) minutosSimuladosTranscurridos);
+            
+            EstadisticasDTO statsCompleto = new EstadisticasDTO.Builder()
+                .totalClientesAtendidos(stats.getTotalClientesAtendidos())
+                .totalArticulosVendidos(stats.getTotalArticulosVendidos())
+                .totalMinutosAtencion(stats.getTotalMinutosAtencion())
+                .clientesEnCola(stats.getClientesEnCola())
+                .cajeroEstrella(stats.getCajeroEstrella())
+                .tiempoPromedioAtencion(stats.getTiempoPromedioAtencion())
+                .articulosPromedio(stats.getArticulosPromedio())
+                .clientesGenerados(clientesGenerados)
+                .horaSimulada(horaSimulada)
+                .build();
+            
+            System.out.println("USE CASE - Hora enviada: " + horaSimulada);
+            System.out.println("USE CASE - onEstadisticasUpdate es " + (onEstadisticasUpdate != null ? "NO NULL" : "NULL"));
+                        // FORZAR ACTUALIZACIÃ“N DIRECTA
+            if (onEstadisticasUpdate != null) {
+                onEstadisticasUpdate.accept(statsCompleto);
+                System.out.println("USE CASE - onEstadisticasUpdate ACCEPT llamado");
+            } else {
+                System.err.println("USE CASE - onEstadisticasUpdate es NULL!");
+            }
+        }
+
+        if (onCajaUpdate != null) {
+            for (Caja caja : cajas) {
+                String id = caja.getId();
+                String numStr = id.replaceAll("\\D+", "");
+                if (numStr.isEmpty()) continue;
+                int num = Integer.parseInt(numStr);
+                String estado = caja.estaOcupada() ? "ATENDIENDO" : "LIBRE";
+                if (caja.getEstado().toString().equals("PAUSADA")) {
+                    estado = "PAUSADA";
+                }
+                String clienteInfo = caja.getClienteActual() != null ?
+                    caja.getClienteActual().getId() : "";
+                String tipo = caja.esRapida() ? "R" : "N";
+                onCajaUpdate.accept(new String[]{String.valueOf(num), estado,
+                    String.valueOf(caja.getClientesEnCola()), clienteInfo, tipo});
+            }
+        }
+    }
+
+    private void generarCliente() {
+        int min = config.getArticulosClienteMin();
+        int max = config.getArticulosClienteMax();
+        int articulos = min + random.nextInt(max - min + 1);
+        Cliente cliente = new Cliente(++clientesGenerados, articulos);
+        cliente.setTiempoLlegada(reloj.getTiempoActual());
+        String horaActual = calcularHoraSimulada((int) minutosSimuladosTranscurridos);
+        log("[" + horaActual + "] Cliente-" + cliente.getId() + " generado | Articulos: " + articulos);
+        simuladorService.asignarCliente(cajas, cliente);
+    }
+
+    private void ejecutarCaja(Caja caja) {
+        while (caja.estaActiva()) {
+            try {
+                while (pausado && ejecutando) {
+                    Thread.sleep(50);
+                }
+                Cliente cliente = caja.prepararSiguienteCliente();
+                if (cliente == null) {
+                    Thread.sleep(msPerMinutoSimulado / 2);
+                    continue;
+                }
+                int tMin, tMax;
+                if (caja.esRapida()) {
+                    tMin = config.getTiempoCajaRapidaMin();
+                    tMax = config.getTiempoCajaRapidaMax();
+                } else {
+                    tMin = config.getTiempoCajaNormalMin();
+                    tMax = config.getTiempoCajaNormalMax();
+                }
+                int tiempoAtencionMinutos = tMin + random.nextInt(Math.max(1, tMax - tMin + 1));
+                cliente.setTiempoAtencionReal(tiempoAtencionMinutos);
+                String horaActual = calcularHoraSimulada((int) minutosSimuladosTranscurridos);
+                log("[" + horaActual + "] Atendiendo: " + cliente.getId() + " en " + caja.getId() +
+                    " (" + tiempoAtencionMinutos + " min)");
+                long sleepMs = Math.max(50, tiempoAtencionMinutos * msPerMinutoSimulado);
+                Thread.sleep(sleepMs);
+                cliente.setTiempoSalida(reloj.getTiempoActual());
+                caja.finalizarAtencion();
+                totalClientesAtendidos++;
+                log("Finalizada atencion de " + cliente.getId() + " en " + caja.getId());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+    }
+
+    private void mostrarResultados() {
+        log("\n============ ESTADISTICAS FINALES ============");
+        for (Caja caja : cajas) {
+            log(String.format("  %s: %d clientes | Cola maxima: %d | %s",
+                    caja.getId(), caja.getTotalAtendidos(), caja.getColaMaxima(),
+                    caja.esRapida() ? "RAPIDA" : "NORMAL"));
+        }
+        EstadisticasDTO estadisticas = estadisticasService.calcularEstadisticas(cajas);
+        log("----------------------------------------------");
+        log("  Total clientes atendidos: " + estadisticas.getTotalClientesAtendidos());
+        log("  Total articulos vendidos: " + estadisticas.getTotalArticulosVendidos());
+        log("  Total minutos de atencion: " + estadisticas.getTotalMinutosAtencion());
+        log("  Clientes generados: " + clientesGenerados);
+        log(String.format("  Prom. articulos/cliente: %.2f", estadisticas.getArticulosPromedio()));
+        log(String.format("  Prom. minutos/cliente: %.2f", estadisticas.getTiempoPromedioAtencion()));
+        log("  Cajero Estrella: " + estadisticas.getCajeroEstrella());
+        log("==============================================\n");
+    }
+
+    public void ejecutar(ConfiguracionDTO config) throws InterruptedException {
+        if (ejecutando) throw new IllegalStateException("La simulacion ya esta en ejecucion");
+        this.config = config;
+        this.ejecutando = true;
+        this.pausado = false;
+        this.clientesGenerados = 0;
+        this.totalClientesAtendidos = 0;
+        this.minutosSimuladosTranscurridos = 0;
+        this.cajas.clear();
+        this.hilosCajas.clear();
+
+        log("=== INICIANDO SIMULACION ===");
+        log("Horario: 08:00 - " + (HORA_APERTURA + config.getHorasSimuladas()) + ":00 (" + config.getHorasSimuladas() + " horas)");
+        log("Duracion real: " + config.getDuracionRealSegundos() + "s | Tiempo simulado: " + config.getHorasSimuladas() + "h");
+        log("Cajas Normales: " + config.getNumCajasNormales() + " | Cajas Rapidas: " + config.getNumCajasRapidas());
+
+        int numRapidas = config.getNumCajasRapidas();
+        int numNormales = config.getNumCajasNormales();
+        for (int i = 1; i <= numRapidas; i++) cajas.add(new Caja(i, true));
+        for (int i = 1; i <= numNormales; i++) cajas.add(new Caja(numRapidas + i, false));
+        log("Total cajas creadas: " + cajas.size());
+
+        for (Caja caja : cajas) {
+            Thread hilo = new Thread(() -> ejecutarCaja(caja));
+            hilo.start();
+            hilosCajas.add(hilo);
+        }
+
+        minSimulados = config.getHorasSimuladas() * 60;
+        int duracionRealMs = config.getDuracionRealSegundos() * 1000;
+        msPerMinutoSimulado = Math.max(1, duracionRealMs / minSimulados);
+        long tickMs = Math.max(10, msPerMinutoSimulado / 2);
+        log("Escala: 1 minuto simulado = " + msPerMinutoSimulado + "ms reales");
+
+        reloj.iniciar();
+        tiempoInicio = System.currentTimeMillis();
+        int limiteClientes = config.getLimiteClientes();
+        long duracionMs = config.getDuracionRealSegundos() * 1000L;
+        long tiempoTranscurrido = 0;
+        int ticks = 0;
+
+        while (ejecutando && tiempoTranscurrido < duracionMs) {
+            while (pausado && ejecutando) {
+                Thread.sleep(50);
+                tiempoTranscurrido = System.currentTimeMillis() - tiempoInicio;
+            }
+            tiempoTranscurrido = System.currentTimeMillis() - tiempoInicio;
+            ticks++;
+            minutosSimuladosTranscurridos = (tiempoTranscurrido * minSimulados) / duracionMs;
+            reloj.setTiempoSimulado(minutosSimuladosTranscurridos);
+
+            if (estaCerrado()) {
+                log("CIERRE DEL SUPERMERCADO (" + (HORA_APERTURA + config.getHorasSimuladas()) + ":00)");
+                break;
+            }
+
+            if (limiteClientes > 0 && clientesGenerados >= limiteClientes) {
+                log("Limite de " + limiteClientes + " clientes alcanzado.");
+                break;
+            }
+
+            if (random.nextInt(100) < config.getProbabilidadLlegadaCliente()) {
+                generarCliente();
+            }
+
+            if (ticks % 3 == 0) actualizarUI();
+            Thread.sleep(tickMs);
+        }
+
+        log("Esperando que terminen las atenciones...");
+        boolean hayPendientes;
+        int intentos = 0;
+        do {
+            hayPendientes = false;
+            for (Caja caja : cajas) {
+                if (caja.tieneClientesPendientes() || caja.estaOcupada()) {
+                    hayPendientes = true;
+                    break;
+                }
+            }
+            if (hayPendientes) {
+                Thread.sleep(msPerMinutoSimulado / 2);
+                intentos++;
+                if (intentos > 200) break;
+            }
+        } while (hayPendientes && ejecutando);
+
+        for (Caja caja : cajas) caja.detener();
+        reloj.detener();
+        ejecutando = false;
+        log("=== SIMULACION COMPLETADA ===");
+        mostrarResultados();
+    }
+
+    public void detener() {
+        ejecutando = false;
+        pausado = false;
+        for (Caja caja : cajas) caja.detener();
+        log("Simulacion detenida");
+    }
+
+    public void pausar() {
+        if (ejecutando && !pausado) {
+            pausado = true;
+            reloj.pausar();
+            for (Caja caja : cajas) {
+                caja.pausar();
+            }
+            log("Simulacion pausada");
+            actualizarUI();
+        }
+    }
+
+    public void reanudar() {
+        if (ejecutando && pausado) {
+            pausado = false;
+            reloj.reanudar();
+            for (Caja caja : cajas) {
+                caja.reanudar();
+            }
+            log("Simulacion reanudada");
+            actualizarUI();
+        }
+    }
+
+    public EstadisticasDTO obtenerEstadisticas() {
+        return estadisticasService.calcularEstadisticas(cajas);
+    }
+
+    public boolean isEjecutando() { return ejecutando; }
+    public boolean isPausado() { return pausado; }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\ObtenerColaMaximaUseCase.java ===
+package com.supermercado.application.usecase;
+
+import com.supermercado.domain.model.Caja;
+
+import java.util.List;
+
+public class ObtenerColaMaximaUseCase {
+    
+    public int ejecutar(List<Caja> cajas) {
+        if (cajas == null || cajas.isEmpty()) {
+            return 0;
+        }
+        int max = 0;
+        for (Caja caja : cajas) {
+            int cola = caja.getColaMaxima();
+            if (cola > max) {
+                max = cola;
+            }
+        }
+        return max;
+    }
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\ObtenerEstadisticasUseCase.java ===
+package com.supermercado.application.usecase;
+
+import com.supermercado.application.dto.EstadisticasDTO;
+import com.supermercado.domain.model.Caja;
+import com.supermercado.domain.service.EstadisticasService;
+
+import java.util.List;
+
+public class ObtenerEstadisticasUseCase {
+    
+    private final EstadisticasService estadisticasService;
+    
+    public ObtenerEstadisticasUseCase() {
+        this.estadisticasService = new EstadisticasService();
+    }
+    
+    public EstadisticasDTO ejecutar(List<Caja> cajas) {
+        if (cajas == null || cajas.isEmpty()) {
+            return new EstadisticasDTO();
+        }
+        return estadisticasService.calcularEstadisticas(cajas);
+    }
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\OptimizarCajasUseCase.java ===
+package com.supermercado.application.usecase;
+
+import com.supermercado.domain.model.Configuracion;
+import com.supermercado.domain.service.OptimizadorService;
+import com.supermercado.application.dto.OptimizacionDTO;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class OptimizarCajasUseCase {
+    
+    private final OptimizadorService optimizadorService;
+    
+    public OptimizarCajasUseCase() {
+        this.optimizadorService = new OptimizadorService();
+    }
+    
+    public OptimizacionDTO ejecutar(Configuracion configuracionBase, 
+                                    int maxNormales, 
+                                    int maxRapidas) {
+        List<OptimizadorService.ResultadoOptimizacion> resultados = 
+            optimizadorService.optimizar(configuracionBase, maxNormales, maxRapidas);
+        
+        List<OptimizacionDTO.ResultadoOptimizacion> items = resultados.stream()
+            .map(r -> new OptimizacionDTO.ResultadoOptimizacion(
+                r.numCajasNormales,
+                r.numCajasRapidas,
+                r.totalCajas,
+                r.clientesAtendidos,
+                r.colaMaxima,
+                r.tiempoPromedio,
+                r.factorUtilizacion,
+                r.mejoraPorcentaje,
+                r.recomendacion
+            ))
+            .collect(Collectors.toList());
+        
+        String mejorConfig = "";
+        double mejora = 0.0;
+        String recomendacion = "";
+        
+        if (!resultados.isEmpty()) {
+            OptimizadorService.ResultadoOptimizacion mejor = resultados.get(0);
+            mejorConfig = mejor.numCajasNormales + " normales + " + 
+                         mejor.numCajasRapidas + " rapidas";
+            mejora = mejor.mejoraPorcentaje;
+            recomendacion = mejor.recomendacion;
+        }
+        
+        return new OptimizacionDTO(items, mejorConfig, mejora, recomendacion);
+    }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\PausarSimulacionUseCase.java ===
+package com.supermercado.application.usecase;
+
+public class PausarSimulacionUseCase {
+    
+    public void ejecutar() {
+        // La l?gica de pausa se maneja en IniciarSimulacionUseCase.pausar()
+        // Este caso de uso act?a como fachada para mantener la separaci?n de responsabilidades
+    }
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\ReanudarSimulacionUseCase.java ===
+package com.supermercado.application.usecase;
+
+public class ReanudarSimulacionUseCase {
+    
+    public void ejecutar() {
+        // La l?gica de reanudaci?n se maneja en IniciarSimulacionUseCase.reanudar()
+        // Este caso de uso act?a como fachada para mantener la separaci?n de responsabilidades
+    }
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\RecomendarMejoraUseCase.java ===
+package com.supermercado.application.usecase;
+
+import com.supermercado.domain.model.Caja;
+import com.supermercado.domain.model.Configuracion;
+import com.supermercado.domain.model.Recomendacion;
+import com.supermercado.domain.service.DiagnosticoService;
+import com.supermercado.domain.service.OptimizadorService;
+import com.supermercado.application.dto.RecomendacionDTO;
+import java.util.List;
+
+public class RecomendarMejoraUseCase {
+    
+    private final DiagnosticoService diagnosticoService;
+    private final OptimizadorService optimizadorService;
+    
+    public RecomendarMejoraUseCase() {
+        this.diagnosticoService = new DiagnosticoService();
+        this.optimizadorService = new OptimizadorService();
+    }
+    
+    public RecomendacionDTO ejecutar(List<Caja> cajas, Configuracion configuracion) {
+        // Primero diagnosticar
+        List<DiagnosticoService.Diagnostico> diagnosticos = 
+            diagnosticoService.diagnosticar(cajas);
+        
+        // Generar recomendación general
+        Recomendacion recomendacionGeneral = 
+            diagnosticoService.generarRecomendacionGeneral(diagnosticos);
+        
+        // Si hay problemas críticos, optimizar
+        long criticos = diagnosticos.stream()
+            .filter(d -> d.nivel == DiagnosticoService.NivelAlerta.CRITICO).count();
+        
+        if (criticos > 0) {
+            // Obtener mejor configuración
+            List<OptimizadorService.ResultadoOptimizacion> resultados = 
+                optimizadorService.optimizar(configuracion, 10, 5);
+            
+            if (!resultados.isEmpty()) {
+                OptimizadorService.ResultadoOptimizacion mejor = resultados.get(0);
+                String mensaje = recomendacionGeneral.getMensaje() + "\n\n" +
+                    "CONFIGURACION RECOMENDADA:\n" +
+                    "  Normales: " + mejor.numCajasNormales + "\n" +
+                    "  Rapidas: " + mejor.numCajasRapidas + "\n" +
+                    "  Mejora estimada: " + String.format("%.1f", mejor.mejoraPorcentaje) + "%";
+                
+                return new RecomendacionDTO(
+                    mensaje,
+                    "CRITICO",
+                    mejor.numCajasNormales + " normales + " + 
+                    mejor.numCajasRapidas + " rapidas",
+                    mejor.mejoraPorcentaje,
+                    false
+                );
+            }
+        }
+        
+        return new RecomendacionDTO(
+            recomendacionGeneral.getMensaje(),
+            recomendacionGeneral.getPrioridad(),
+            recomendacionGeneral.getConfiguracionSugerida(),
+            recomendacionGeneral.getMejoraEstimada(),
+            false
+        );
+    }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\ReiniciarSimulacionUseCase.java ===
+package com.supermercado.application.usecase;
+
+import com.supermercado.domain.model.Caja;
+
+public class ReiniciarSimulacionUseCase {
+    
+    public void ejecutar(Caja caja) {
+        if (caja != null) {
+            caja.reiniciar();
+        }
+    }
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\SimulacionConEscalaUseCase.java ===
+package com.supermercado.application.usecase;
+
+import com.supermercado.application.dto.ConfiguracionDTO;
+import com.supermercado.application.dto.EstadisticasDTO;
+import com.supermercado.application.port.ILogService;
+import com.supermercado.domain.model.Caja;
+import com.supermercado.domain.model.Cliente;
+import com.supermercado.domain.model.EstadoCaja;
+import com.supermercado.domain.service.EstadisticasService;
+import com.supermercado.domain.service.SimuladorService;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.function.Consumer;
+
+/**
+ * UseCase que ejecuta la simulaci?n con escala de tiempo.
+ * Mantiene la l?gica original de SimulacionThread pero con mejoras de logging y UI.
+ */
+public class SimulacionConEscalaUseCase {
+    
+    private final ILogService logService;
+    private final SimuladorService simuladorService;
+    private final EstadisticasService estadisticasService;
+    
+    private ConfiguracionDTO config;
+    private List<Caja> cajas;
+    private List<Thread> hilosCajas;
+    private Random random;
+    
+    private volatile boolean ejecutando;
+    private boolean pausado;
+    private int clientesGenerados;
+    private long tiempoInicio;
+    private long msPerMinutoSimulado;
+    private int minSimulados;
+    private long duracionRealMs;
+    private long tickMs;
+    private int tickActual = 0;
+    
+    private Consumer<EstadisticasDTO> onEstadisticasUpdate;
+    private Consumer<String[]> onCajaUpdate;
+    private Consumer<String> onLogUpdate;
+
+    public SimulacionConEscalaUseCase(ILogService logService) {
+        this.logService = logService;
+        this.simuladorService = new SimuladorService(null);
+        this.estadisticasService = new EstadisticasService();
+        this.cajas = new ArrayList<>();
+        this.hilosCajas = new ArrayList<>();
+        this.random = new Random();
+        this.ejecutando = false;
+        this.pausado = false;
+        this.clientesGenerados = 0;
+    }
+    
+    public void setOnEstadisticasUpdate(Consumer<EstadisticasDTO> callback) {
+        this.onEstadisticasUpdate = callback;
+    }
+    
+    public void setOnCajaUpdate(Consumer<String[]> callback) {
+        this.onCajaUpdate = callback;
+    }
+    
+    public void setOnLogUpdate(Consumer<String> callback) {
+        this.onLogUpdate = callback;
+    }
+
+    public void ejecutar(ConfiguracionDTO config) throws InterruptedException {
+        if (ejecutando) {
+            throw new IllegalStateException("La simulacion ya esta en ejecucion");
+        }
+        
+        this.config = config;
+        this.ejecutando = true;
+        this.pausado = false;
+        this.clientesGenerados = 0;
+        this.tickActual = 0;
+        this.cajas.clear();
+        this.hilosCajas.clear();
+        
+        log("=== INICIANDO SIMULACION ===");
+        log("Duracion real: " + config.getDuracionRealSegundos() + "s  |  Tiempo simulado: " + config.getHorasSimuladas() + "h");
+        log("Cajas Normales: " + config.getNumCajasNormales() + "  |  Cajas Rapidas: " + config.getNumCajasRapidas());
+        
+        // ============================================================
+        // C?LCULO DE ESCALA DE TIEMPO (manteniendo la l?gica original)
+        // ============================================================
+        this.duracionRealMs = config.getDuracionRealSegundos() * 1000L;
+        this.minSimulados = config.getHorasSimuladas() * 60;
+        this.msPerMinutoSimulado = Math.max(1, duracionRealMs / minSimulados);
+        this.tickMs = msPerMinutoSimulado;
+        
+        log("Escala: 1 minuto simulado = " + msPerMinutoSimulado + "ms reales");
+        
+        // ============================================================
+        // CREAR CAJAS
+        // ============================================================
+        int numRapidas = config.getNumCajasRapidas();
+        int numNormales = config.getNumCajasNormales();
+        for (int i = 1; i <= numRapidas; i++) {
+            cajas.add(new Caja(i, true));
+        }
+        for (int i = 1; i <= numNormales; i++) {
+            cajas.add(new Caja(numRapidas + i, false));
+        }
+        
+        log("Total cajas creadas: " + cajas.size() + " (" + numRapidas + " rapidas, " + numNormales + " normales)");
+        
+        // ============================================================
+        // INICIAR HILOS DE CAJAS
+        // ============================================================
+        for (Caja caja : cajas) {
+            Thread hilo = new Thread(() -> ejecutarCaja(caja));
+            hilo.start();
+            hilosCajas.add(hilo);
+        }
+        
+        // ============================================================
+        // BUCLE PRINCIPAL (1 iteraci?n = 1 tick = 1 minuto simulado)
+        // ============================================================
+        tiempoInicio = System.currentTimeMillis();
+        int limiteClientes = config.getLimiteClientes();
+        
+        while (ejecutando) {
+            long transcurrido = System.currentTimeMillis() - tiempoInicio;
+            if (transcurrido >= duracionRealMs) {
+                log("Tiempo de simulacion completado.");
+                break;
+            }
+            
+            // Pausa
+            while (pausado && ejecutando) {
+                Thread.sleep(50);
+                transcurrido = System.currentTimeMillis() - tiempoInicio;
+            }
+            
+            // L?mite de clientes
+            if (limiteClientes > 0 && clientesGenerados >= limiteClientes) {
+                log("Limite de " + limiteClientes + " clientes alcanzado.");
+                break;
+            }
+            
+            // Generar cliente seg?n probabilidad
+            if (random.nextInt(100) < config.getProbabilidadLlegadaCliente()) {
+                generarCliente();
+            }
+            
+            // Actualizar UI
+            tickActual++;
+            actualizarUI();
+            
+            // Esperar hasta el pr?ximo tick
+            Thread.sleep(tickMs);
+        }
+        
+        // ============================================================
+        // ESPERAR QUE TERMINEN LAS ATENCIONES
+        // ============================================================
+        log("Esperando que terminen las atenciones...");
+        boolean todasLibres = false;
+        int esperas = 0;
+        while (!todasLibres && ejecutando) {
+            todasLibres = true;
+            for (Caja c : cajas) {
+                if (c.getClienteActual() != null || c.getClientesEnCola() > 0) {
+                    todasLibres = false;
+                    break;
+                }
+            }
+            if (!todasLibres) {
+                Thread.sleep(tickMs);
+                esperas++;
+                if (esperas % 10 == 0) {
+                    log("Esperando finalizacion... (" + esperas + ")");
+                }
+            }
+        }
+        
+        // ============================================================
+        // FINALIZAR
+        // ============================================================
+        for (Caja caja : cajas) {
+            caja.detener();
+        }
+        ejecutando = false;
+        
+        log("=== SIMULACION COMPLETADA ===");
+        mostrarResultados();
+    }
+    
+    private void log(String mensaje) {
+        if (onLogUpdate != null) {
+            onLogUpdate.accept(mensaje);
+        }
+        logService.info(mensaje);
+    }
+    
+    private void generarCliente() {
+        int min = config.getArticulosClienteMin();
+        int max = config.getArticulosClienteMax();
+        int articulos = min + random.nextInt(max - min + 1);
+        
+        Cliente cliente = new Cliente(++clientesGenerados, articulos);
+        cliente.setTiempoLlegada(tickActual); // tick actual como tiempo simulado
+        
+        // Asignar a caja con menos cola
+        Caja mejorCaja = null;
+        int minCola = Integer.MAX_VALUE;
+        for (Caja caja : cajas) {
+            if (caja.getEstado() == EstadoCaja.DETENIDA) continue;
+            if (!caja.esRapida() || cliente.esRapido()) {
+                int colaSize = caja.getClientesEnCola();
+                if (colaSize < minCola) {
+                    minCola = colaSize;
+                    mejorCaja = caja;
+                }
+            }
+        }
+        if (mejorCaja != null) {
+            mejorCaja.agregarCliente(cliente);
+        }
+    }
+    
+    private void ejecutarCaja(Caja caja) {
+        while (caja.estaActiva()) {
+            try {
+                while (pausado && ejecutando) {
+                    Thread.sleep(50);
+                }
+                
+                Cliente cliente = caja.prepararSiguienteCliente();
+                if (cliente == null) {
+                    Thread.sleep(tickMs / 2);
+                    continue;
+                }
+                
+                // Calcular tiempo de atenci?n
+                int tMin, tMax;
+                if (caja.esRapida()) {
+                    tMin = config.getTiempoCajaRapidaMin();
+                    tMax = config.getTiempoCajaRapidaMax();
+                } else {
+                    tMin = config.getTiempoCajaNormalMin();
+                    tMax = config.getTiempoCajaNormalMax();
+                }
+                int tiempoAtencionMinutos = tMin + random.nextInt(Math.max(1, tMax - tMin + 1));
+                cliente.setTiempoAtencionReal(tiempoAtencionMinutos);
+                cliente.setTiempoSalida(tickActual + tiempoAtencionMinutos);
+                
+                // Dormir seg?n escala
+                long sleepMs = Math.max(50, tiempoAtencionMinutos * msPerMinutoSimulado);
+                Thread.sleep(sleepMs);
+                
+                caja.finalizarAtencion();
+                
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+    }
+    
+    private void actualizarUI() {
+        // Estad?sticas
+        if (onEstadisticasUpdate != null) {
+            EstadisticasDTO stats = estadisticasService.calcularEstadisticas(cajas);
+            onEstadisticasUpdate.accept(stats);
+        }
+        
+        // Cajas
+        if (onCajaUpdate != null) {
+            for (Caja caja : cajas) {
+                String id = caja.getId();
+                String numStr = id.replaceAll("\\D+", "");
+                if (numStr.isEmpty()) continue;
+                int num = Integer.parseInt(numStr);
+                String estado = caja.estaOcupada() ? "ATENDIENDO" : "LIBRE";
+                if (caja.getEstado().toString().equals("PAUSADA")) {
+                    estado = "PAUSADA";
+                }
+                String clienteInfo = caja.getClienteActual() != null ? 
+                    caja.getClienteActual().getId() : "";
+                String tipo = caja.esRapida() ? "R" : "N";
+                onCajaUpdate.accept(new String[]{String.valueOf(num), estado, 
+                    String.valueOf(caja.getClientesEnCola()), clienteInfo, tipo});
+            }
+        }
+    }
+    
+    private void mostrarResultados() {
+        log("\n============ ESTADISTICAS FINALES ============");
+        
+        for (Caja caja : cajas) {
+            log(String.format("  %s: %d clientes | Cola maxima: %d | %s", 
+                    caja.getId(), caja.getTotalAtendidos(), caja.getColaMaxima(),
+                    caja.esRapida() ? "RAPIDA" : "NORMAL"));
+        }
+        
+        EstadisticasDTO stats = estadisticasService.calcularEstadisticas(cajas);
+        log("----------------------------------------------");
+        log("  Total clientes atendidos: " + stats.getTotalClientesAtendidos());
+        log("  Total articulos vendidos: " + stats.getTotalArticulosVendidos());
+        log("  Total minutos de atencion: " + stats.getTotalMinutosAtencion());
+        log("  Clientes generados: " + clientesGenerados);
+        log(String.format("  Prom. articulos/cliente: %.2f", stats.getArticulosPromedio()));
+        log(String.format("  Prom. minutos/cliente: %.2f", stats.getTiempoPromedioAtencion()));
+        log("  Cajero Estrella: " + stats.getCajeroEstrella());
+        log("==============================================\n");
+    }
+    
+    public void detener() {
+        ejecutando = false;
+        pausado = false;
+        for (Caja caja : cajas) {
+            caja.detener();
+        }
+        log("Simulacion detenida");
+    }
+    
+    public void pausar() {
+        if (ejecutando && !pausado) {
+            pausado = true;
+            for (Caja caja : cajas) {
+                caja.pausar();
+            }
+            log("Simulacion pausada");
+        }
+    }
+    
+    public void reanudar() {
+        if (ejecutando && pausado) {
+            pausado = false;
+            for (Caja caja : cajas) {
+                caja.reanudar();
+            }
+            log("Simulacion reanudada");
+        }
+    }
+    
+    public boolean isEjecutando() { return ejecutando; }
+    public boolean isPausado() { return pausado; }
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\application\usecase\TeoriaColasUseCase.java ===
+package com.supermercado.application.usecase;
+
+import com.supermercado.domain.model.Configuracion;
+import com.supermercado.domain.model.Recomendacion;
+import com.supermercado.domain.service.TeoriaColasService;
+
+public class TeoriaColasUseCase {
+    
+    private final TeoriaColasService teoriaColasService;
+    
+    public TeoriaColasUseCase() {
+        this.teoriaColasService = new TeoriaColasService();
+    }
+    
+    public String ejecutar(Configuracion configuracion) {
+        double lambda = configuracion.getClientesPorHora();
+        double mu = 60.0 / configuracion.getTiempoAtencionPromedio();
+        int c = configuracion.getNumCajasNormales() + configuracion.getNumCajasRapidas();
+        
+        TeoriaColasService.MetricasColas metricas = 
+            teoriaColasService.calcularMetricas(lambda, mu, c);
+        
+        return metricas.toString();
+    }
+    
+    public Recomendacion obtenerRecomendacion(Configuracion configuracion) {
+        double lambda = configuracion.getClientesPorHora();
+        double mu = 60.0 / configuracion.getTiempoAtencionPromedio();
+        int c = configuracion.getNumCajasNormales() + configuracion.getNumCajasRapidas();
+        
+        TeoriaColasService.MetricasColas metricas = 
+            teoriaColasService.calcularMetricas(lambda, mu, c);
+        
+        return teoriaColasService.generarRecomendacionTeoriaColas(metricas);
+    }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\domain\model\Caja.java ===
+package com.supermercado.domain.model;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class Caja {
+    private final String id;
+    private final boolean esRapida;
+    private EstadoCaja estado;
+    private Cliente clienteActual;
+    private List<Cliente> colaClientes;
+    private AtomicInteger totalAtendidos;
+    private int colaMaxima;
+    private long tiempoOcupado;
+    private List<Cliente> clientesAtendidosHistorial;
+    private EstadoCaja estadoAnterior;
+
+    public Caja(String id, boolean esRapida) {
+        this.id = id;
+        this.esRapida = esRapida;
+        this.estado = EstadoCaja.LIBRE;
+        this.clienteActual = null;
+        this.colaClientes = new ArrayList<>();
+        this.totalAtendidos = new AtomicInteger(0);
+        this.colaMaxima = 0;
+        this.tiempoOcupado = 0;
+        this.clientesAtendidosHistorial = new ArrayList<>();
+        this.estadoAnterior = null;
+    }
+
+    public Caja(int id, boolean esRapida) {
+        this("CAJA " + id, esRapida);
+    }
+
+    public String getId() { return id; }
+    public boolean esRapida() { return esRapida; }
+    public EstadoCaja getEstado() { return estado; }
+    public Cliente getClienteActual() { return clienteActual; }
+    public int getClientesEnCola() { return colaClientes.size(); }
+    public int getTotalAtendidos() { return totalAtendidos.get(); }
+    public int getColaMaxima() { return colaMaxima; }
+    public long getTiempoOcupado() { return tiempoOcupado; }
+    public List<Cliente> getClientesAtendidos() { return List.copyOf(clientesAtendidosHistorial); }
+
+    public boolean agregarCliente(Cliente cliente) {
+        if (estado == EstadoCaja.DETENIDA) {
+            return false;
+        }
+        colaClientes.add(cliente);
+        if (colaClientes.size() > colaMaxima) {
+            colaMaxima = colaClientes.size();
+        }
+        return true;
+    }
+
+    public Cliente prepararSiguienteCliente() {
+        if (estado == EstadoCaja.DETENIDA || estado == EstadoCaja.PAUSADA) {
+            return null;
+        }
+        if (colaClientes.isEmpty()) {
+            return null;
+        }
+        clienteActual = colaClientes.remove(0);
+        estado = EstadoCaja.OCUPADA;
+        return clienteActual;
+    }
+
+    public void finalizarAtencion() {
+        if (clienteActual != null) {
+            totalAtendidos.incrementAndGet();
+            clientesAtendidosHistorial.add(clienteActual);
+            clienteActual = null;
+            estado = colaClientes.isEmpty() ? EstadoCaja.LIBRE : EstadoCaja.OCUPADA;
+            if (!colaClientes.isEmpty()) {
+                clienteActual = colaClientes.remove(0);
+                estado = EstadoCaja.OCUPADA;
+            }
+        }
+    }
+
+    public void pausar() {
+        if (estado != EstadoCaja.DETENIDA && estado != EstadoCaja.PAUSADA) {
+            estadoAnterior = estado;
+            estado = EstadoCaja.PAUSADA;
+        }
+    }
+
+    public void reanudar() {
+        if (estado == EstadoCaja.PAUSADA) {
+            if (estadoAnterior != null) {
+                estado = estadoAnterior;
+                estadoAnterior = null;
+            } else if (clienteActual != null) {
+                estado = EstadoCaja.OCUPADA;
+            } else {
+                estado = EstadoCaja.LIBRE;
+            }
+        }
+    }
+
+    public void detener() {
+        estado = EstadoCaja.DETENIDA;
+    }
+
+    public void reiniciar() {
+        estado = EstadoCaja.LIBRE;
+        clienteActual = null;
+        colaClientes.clear();
+        totalAtendidos.set(0);
+        colaMaxima = 0;
+        tiempoOcupado = 0;
+        clientesAtendidosHistorial.clear();
+        estadoAnterior = null;
+    }
+
+    public boolean estaActiva() {
+        return estado != EstadoCaja.DETENIDA;
+    }
+
+    public boolean estaOcupada() {
+        return estado == EstadoCaja.OCUPADA;
+    }
+
+    public boolean tieneClientesPendientes() {
+        return clienteActual != null || !colaClientes.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s [%s, %d en cola, %d atendidos]", id, estado, getClientesEnCola(), getTotalAtendidos());
+    }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\domain\model\Cliente.java ===
+package com.supermercado.domain.model;
+
+import java.util.Objects;
+
+/**
+ * Entidad de dominio: Cliente.
+ * Representa a un cliente que llega al supermercado.
+ * 
+ * Reglas de negocio:
+ * - Un cliente es "rápido" si tiene 10 o menos artículos.
+ * - El tiempo de atención es asignado externamente.
+ */
+public class Cliente {
+    
+    private final String id;
+    private final int cantidadArticulos;
+    private final boolean esRapido;
+    private long tiempoLlegada;
+    private long tiempoInicioAtencion;
+    private long tiempoSalida;
+    private int tiempoAtencionReal;
+
+    // ============================================================
+    // Constructores
+    // ============================================================
+    
+    public Cliente(String id, int cantidadArticulos) {
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("El ID del cliente no puede estar vacío");
+        }
+        if (cantidadArticulos < 0) {
+            throw new IllegalArgumentException("La cantidad de artículos no puede ser negativa");
+        }
+        this.id = id;
+        this.cantidadArticulos = cantidadArticulos;
+        this.esRapido = cantidadArticulos <= 10;
+        this.tiempoLlegada = 0;
+        this.tiempoInicioAtencion = 0;
+        this.tiempoSalida = 0;
+        this.tiempoAtencionReal = 0;
+    }
+
+    public Cliente(int id, int cantidadArticulos) {
+        this("Cliente-" + id, cantidadArticulos);
+    }
+
+    // ============================================================
+    // Getters (inmutables)
+    // ============================================================
+    
+    public String getId() { return id; }
+    public int getCantidadArticulos() { return cantidadArticulos; }
+    public boolean esRapido() { return esRapido; }
+    
+    public long getTiempoLlegada() { return tiempoLlegada; }
+    public long getTiempoInicioAtencion() { return tiempoInicioAtencion; }
+    public long getTiempoSalida() { return tiempoSalida; }
+    public int getTiempoAtencionReal() { return tiempoAtencionReal; }
+
+    // ============================================================
+    // Setters (solo para tiempos, permiten modificar el estado)
+    // ============================================================
+    
+    public void setTiempoLlegada(long tiempoLlegada) {
+        if (tiempoLlegada < 0) {
+            throw new IllegalArgumentException("El tiempo de llegada no puede ser negativo");
+        }
+        this.tiempoLlegada = tiempoLlegada;
+    }
+
+    public void setTiempoInicioAtencion(long tiempoInicioAtencion) {
+        if (tiempoInicioAtencion < 0) {
+            throw new IllegalArgumentException("El tiempo de inicio de atención no puede ser negativo");
+        }
+        this.tiempoInicioAtencion = tiempoInicioAtencion;
+    }
+
+    public void setTiempoSalida(long tiempoSalida) {
+        if (tiempoSalida < 0) {
+            throw new IllegalArgumentException("El tiempo de salida no puede ser negativo");
+        }
+        this.tiempoSalida = tiempoSalida;
+    }
+
+    public void setTiempoAtencionReal(int tiempoAtencionReal) {
+        if (tiempoAtencionReal < 0) {
+            throw new IllegalArgumentException("El tiempo de atención real no puede ser negativo");
+        }
+        this.tiempoAtencionReal = tiempoAtencionReal;
+    }
+
+    // ============================================================
+    // Métodos de negocio
+    // ============================================================
+    
+    /**
+     * Calcula el tiempo de espera del cliente en minutos simulados.
+     */
+    public long calcularTiempoEspera() {
+        if (tiempoLlegada == 0 || tiempoInicioAtencion == 0) {
+            return 0;
+        }
+        return tiempoInicioAtencion - tiempoLlegada;
+    }
+    
+    /**
+     * Calcula el tiempo total en el sistema (espera + atención).
+     */
+    public long calcularTiempoTotal() {
+        if (tiempoLlegada == 0 || tiempoSalida == 0) {
+            return 0;
+        }
+        return tiempoSalida - tiempoLlegada;
+    }
+
+    // ============================================================
+    // Object overrides
+    // ============================================================
+    
+    @Override
+    public String toString() {
+        return String.format("%s [%s, %d artículos]", 
+            id, esRapido ? "RÁPIDO" : "NORMAL", cantidadArticulos);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Cliente cliente = (Cliente) obj;
+        return Objects.equals(id, cliente.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\domain\model\Configuracion.java ===
+package com.supermercado.domain.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Configuracion {
+    private final int numCajasNormales;
+    private final int numCajasRapidas;
+    private final int horasSimuladas;
+    private final int duracionRealSegundos;
+    private final int probabilidadLlegadaCliente;
+    private final int limiteClientes;
+    private final int articulosClienteMin;
+    private final int articulosClienteMax;
+    private final int tiempoCajaNormalMin;
+    private final int tiempoCajaNormalMax;
+    private final int tiempoCajaRapidaMin;
+    private final int tiempoCajaRapidaMax;
+    private final List<Caja> cajas;
+
+    private Configuracion(Builder builder) {
+        this.numCajasNormales = builder.numCajasNormales;
+        this.numCajasRapidas = builder.numCajasRapidas;
+        this.horasSimuladas = builder.horasSimuladas;
+        this.duracionRealSegundos = builder.duracionRealSegundos;
+        this.probabilidadLlegadaCliente = builder.probabilidadLlegadaCliente;
+        this.limiteClientes = builder.limiteClientes;
+        this.articulosClienteMin = builder.articulosClienteMin;
+        this.articulosClienteMax = builder.articulosClienteMax;
+        this.tiempoCajaNormalMin = builder.tiempoCajaNormalMin;
+        this.tiempoCajaNormalMax = builder.tiempoCajaNormalMax;
+        this.tiempoCajaRapidaMin = builder.tiempoCajaRapidaMin;
+        this.tiempoCajaRapidaMax = builder.tiempoCajaRapidaMax;
+        this.cajas = new ArrayList<>();
+    }
+
+    public static class Builder {
+        private int numCajasNormales = 6;
+        private int numCajasRapidas = 2;
+        private int horasSimuladas = 10;
+        private int duracionRealSegundos = 30;
+        private int probabilidadLlegadaCliente = 50;
+        private int limiteClientes = 0;
+        private int articulosClienteMin = 1;
+        private int articulosClienteMax = 20;
+        private int tiempoCajaNormalMin = 2;
+        private int tiempoCajaNormalMax = 8;
+        private int tiempoCajaRapidaMin = 1;
+        private int tiempoCajaRapidaMax = 5;
+
+        public Builder numCajasNormales(int value) { this.numCajasNormales = value; return this; }
+        public Builder numCajasRapidas(int value) { this.numCajasRapidas = value; return this; }
+        public Builder horasSimuladas(int value) { this.horasSimuladas = value; return this; }
+        public Builder duracionRealSegundos(int value) { this.duracionRealSegundos = value; return this; }
+        public Builder probabilidadLlegadaCliente(int value) { this.probabilidadLlegadaCliente = value; return this; }
+        public Builder limiteClientes(int value) { this.limiteClientes = value; return this; }
+        public Builder articulosClienteMin(int value) { this.articulosClienteMin = value; return this; }
+        public Builder articulosClienteMax(int value) { this.articulosClienteMax = value; return this; }
+        public Builder tiempoCajaNormalMin(int value) { this.tiempoCajaNormalMin = value; return this; }
+        public Builder tiempoCajaNormalMax(int value) { this.tiempoCajaNormalMax = value; return this; }
+        public Builder tiempoCajaRapidaMin(int value) { this.tiempoCajaRapidaMin = value; return this; }
+        public Builder tiempoCajaRapidaMax(int value) { this.tiempoCajaRapidaMax = value; return this; }
+
+        public Configuracion build() {
+            return new Configuracion(this);
+        }
+    }
+
+    public int getNumCajasNormales() { return numCajasNormales; }
+    public int getNumCajasRapidas() { return numCajasRapidas; }
+    public int getHorasSimuladas() { return horasSimuladas; }
+    public int getDuracionRealSegundos() { return duracionRealSegundos; }
+    public int getProbabilidadLlegadaCliente() { return probabilidadLlegadaCliente; }
+    public int getLimiteClientes() { return limiteClientes; }
+    public int getArticulosClienteMin() { return articulosClienteMin; }
+    public int getArticulosClienteMax() { return articulosClienteMax; }
+    public int getTiempoCajaNormalMin() { return tiempoCajaNormalMin; }
+    public int getTiempoCajaNormalMax() { return tiempoCajaNormalMax; }
+    public int getTiempoCajaRapidaMin() { return tiempoCajaRapidaMin; }
+    public int getTiempoCajaRapidaMax() { return tiempoCajaRapidaMax; }
+    public List<Caja> getCajas() { return cajas; }
+    
+    public double getClientesPorHora() {
+        return 60.0 * 60 / (getTiempoCajaNormalMin() + getTiempoCajaRapidaMin());
+    }
+    
+    public double getTiempoAtencionPromedio() {
+        return (getTiempoCajaNormalMin() + getTiempoCajaNormalMax() + 
+                getTiempoCajaRapidaMin() + getTiempoCajaRapidaMax()) / 4.0;
+    }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\domain\model\EstadoCaja.java ===
+package com.supermercado.domain.model;
+
+public enum EstadoCaja {
+    LIBRE,
+    OCUPADA,
+    PAUSADA,
+    DETENIDA
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\domain\model\Recomendacion.java ===
+package com.supermercado.domain.model;
+
+public class Recomendacion {
+    private final String mensaje;
+    private final String prioridad;
+    private final String configuracionSugerida;
+    private final double mejoraEstimada;
+    private final boolean aceptada;
+
+    public Recomendacion(String mensaje, String prioridad) {
+        this(mensaje, prioridad, null, 0.0, false);
+    }
+
+    public Recomendacion(String mensaje, String prioridad,
+                         String configuracionSugerida,
+                         double mejoraEstimada,
+                         boolean aceptada) {
+        this.mensaje = mensaje;
+        this.prioridad = prioridad;
+        this.configuracionSugerida = configuracionSugerida;
+        this.mejoraEstimada = mejoraEstimada;
+        this.aceptada = aceptada;
+    }
+
+    public String getMensaje() { return mensaje; }
+    public String getPrioridad() { return prioridad; }
+    public String getConfiguracionSugerida() { return configuracionSugerida; }
+    public double getMejoraEstimada() { return mejoraEstimada; }
+    public boolean isAceptada() { return aceptada; }
+
+    public Recomendacion conAceptada(boolean aceptada) {
+        return new Recomendacion(mensaje, prioridad,
+            configuracionSugerida, mejoraEstimada, aceptada);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[%s] %s", prioridad, mensaje);
+    }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\domain\service\DiagnosticoService.java ===
+package com.supermercado.domain.service;
+
+import com.supermercado.domain.model.Caja;
+import com.supermercado.domain.model.Recomendacion;
+import java.util.ArrayList;
+import java.util.List;
+
+public class DiagnosticoService {
+    
+    public enum NivelAlerta { 
+        NORMAL("", "Funcionando correctamente"),
+        ATENCION("", "Monitorear"),
+        ALERTA("", "Requiere atencion"),
+        CRITICO("", "¡URGENTE!");
+        
+        public final String icono;
+        public final String descripcion;
+        
+        NivelAlerta(String icono, String descripcion) {
+            this.icono = icono;
+            this.descripcion = descripcion;
+        }
+    }
+    
+    public static class Diagnostico {
+        public String cajaId;
+        public NivelAlerta nivel;
+        public String mensaje;
+        public String sugerencia;
+        public int colaActual;
+        public int colaMaxima;
+        public int clientesAtendidos;
+        public boolean esRapida;
+        
+        @Override
+        public String toString() {
+            return String.format("%s %s: %s (Cola: %d/%d)", 
+                nivel.icono, cajaId, mensaje, colaActual, colaMaxima);
+        }
+    }
+    
+    public List<Diagnostico> diagnosticar(List<Caja> cajas) {
+        List<Diagnostico> diagnosticos = new ArrayList<>();
+        
+        for (Caja caja : cajas) {
+            Diagnostico d = new Diagnostico();
+            d.cajaId = caja.getId();
+            d.colaActual = caja.getClientesEnCola();
+            d.colaMaxima = caja.getColaMaxima();
+            d.clientesAtendidos = caja.getTotalAtendidos();
+            d.esRapida = caja.esRapida();
+            
+            if (d.colaActual > 40) {
+                d.nivel = NivelAlerta.CRITICO;
+                d.mensaje = "COLA EXCESIVA " + d.colaActual + " clientes esperando";
+                d.sugerencia = d.esRapida ? 
+                    "Convertir a NORMAL o abrir otra caja RAPIDA" :
+                    "Aumentar numero de cajas NORMALES o reducir tiempo de atencion";
+            } else if (d.colaActual > 25) {
+                d.nivel = NivelAlerta.ALERTA;
+                d.mensaje = "Cola alta: " + d.colaActual + " clientes";
+                d.sugerencia = "Considerar abrir otra caja o revisar tiempos";
+            } else if (d.colaActual < 3 && d.clientesAtendidos > 50) {
+                d.nivel = NivelAlerta.ATENCION;
+                d.mensaje = "Caja subutilizada: solo " + d.colaActual + " clientes en cola";
+                d.sugerencia = d.esRapida ? 
+                    "Redirigir mas clientes a esta caja RAPIDA" :
+                    "Considerar convertir a RAPIDA";
+            } else {
+                d.nivel = NivelAlerta.NORMAL;
+                d.mensaje = "Funcionando correctamente";
+                d.sugerencia = "Mantener configuracion actual";
+            }
+            
+            diagnosticos.add(d);
+        }
+        
+        return diagnosticos;
+    }
+    
+    public Recomendacion generarRecomendacionGeneral(List<Diagnostico> diagnosticos) {
+        long criticos = diagnosticos.stream()
+            .filter(d -> d.nivel == NivelAlerta.CRITICO).count();
+        long alertas = diagnosticos.stream()
+            .filter(d -> d.nivel == NivelAlerta.ALERTA).count();
+        long atencion = diagnosticos.stream()
+            .filter(d -> d.nivel == NivelAlerta.ATENCION).count();
+        
+        StringBuilder mensaje = new StringBuilder();
+        String prioridad = "NORMAL";
+        String configSugerida = "";
+        double mejora = 0.0;
+        
+        if (criticos > 0) {
+            prioridad = "CRITICO";
+            mensaje.append("URGENTE: " + criticos + " cajas con cola critica.\n");
+            mensaje.append("   Aumentar el numero de cajas\n");
+            mensaje.append("   Reducir tiempos de atencion\n");
+            mensaje.append("   Revisar distribucion de clientes");
+            configSugerida = "Aumentar cajas en " + criticos + " unidades";
+            mejora = 25.0;
+        } else if (alertas > 0) {
+            prioridad = "ALTO";
+            mensaje.append("ATENCION: " + alertas + " cajas con cola alta.\n");
+            mensaje.append("   Considerar abrir mas cajas en horas pico\n");
+            mensaje.append("   Optimizar tiempos de atencion");
+            configSugerida = "Ajustar tiempos o agregar cajas temporales";
+            mejora = 15.0;
+        } else if (atencion > 0) {
+            prioridad = "MEDIO";
+            mensaje.append("INFO: " + atencion + " cajas subutilizadas.\n");
+            mensaje.append("   Redistribuir clientes a estas cajas\n");
+            mensaje.append("   Considerar convertir cajas normales a rapidas");
+            configSugerida = "Redistribuir carga entre cajas";
+            mejora = 10.0;
+        } else {
+            mensaje.append("CONFIGURACION OPTIMA!\n");
+            mensaje.append("   Todas las cajas funcionan correctamente\n");
+            mensaje.append("   Mantener la configuracion actual");
+            configSugerida = "Mantener configuracion actual";
+            mejora = 0.0;
+        }
+        
+        return new Recomendacion(
+            mensaje.toString(),
+            prioridad,
+            configSugerida,
+            mejora,
+            false
+        );
+    }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\domain\service\EstadisticasService.java ===
+package com.supermercado.domain.service;
+
+import com.supermercado.domain.model.Caja;
+import com.supermercado.domain.model.Cliente;
+import com.supermercado.application.dto.EstadisticasDTO;
+
+import java.util.List;
+
+public class EstadisticasService {
+    
+    public EstadisticasDTO calcularEstadisticas(List<Caja> cajas) {
+        if (cajas == null || cajas.isEmpty()) {
+            return new EstadisticasDTO();
+        }
+        
+        int totalAtendidos = 0;
+        int totalArticulos = 0;
+        int totalMinutosAtencion = 0;
+        int totalEnCola = 0;
+        String cajeroEstrella = "-";
+        int maxAtendidos = 0;
+        double tiempoPromedioAtencion = 0.0;
+        double articulosPromedio = 0.0;
+
+        for (Caja caja : cajas) {
+            int atendidos = caja.getTotalAtendidos();
+            totalAtendidos += atendidos;
+            totalEnCola += caja.getClientesEnCola();
+            
+            for (Cliente cliente : caja.getClientesAtendidos()) {
+                totalArticulos += cliente.getCantidadArticulos();
+                totalMinutosAtencion += cliente.getTiempoAtencionReal();
+            }
+            
+            if (atendidos > maxAtendidos) {
+                maxAtendidos = atendidos;
+                cajeroEstrella = caja.getId();
+            }
+        }
+        
+        if (totalAtendidos > 0) {
+            tiempoPromedioAtencion = (double) totalMinutosAtencion / totalAtendidos;
+            articulosPromedio = (double) totalArticulos / totalAtendidos;
+        }
+
+        return new EstadisticasDTO.Builder()
+                .totalClientesAtendidos(totalAtendidos)
+                .totalArticulosVendidos(totalArticulos)
+                .totalMinutosAtencion(totalMinutosAtencion)
+                .clientesEnCola(totalEnCola)
+                .cajeroEstrella(cajeroEstrella)
+                .tiempoPromedioAtencion(tiempoPromedioAtencion)
+                .articulosPromedio(articulosPromedio)
+                .build();
+    }
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\domain\service\OptimizadorService.java ===
+package com.supermercado.domain.service;
+
+import com.supermercado.domain.model.Caja;
+import com.supermercado.domain.model.Configuracion;
+import com.supermercado.domain.model.Recomendacion;
+import java.util.*;
+
+public class OptimizadorService {
+    
+    public static class ResultadoOptimizacion {
+        public int numCajasNormales;
+        public int numCajasRapidas;
+        public int clientesAtendidos;
+        public int colaMaxima;
+        public double tiempoPromedio;
+        public double mejoraPorcentaje;
+        public String recomendacion;
+        public double factorUtilizacion;
+        public int totalCajas;
+    }
+    
+    public List<ResultadoOptimizacion> optimizar(
+            Configuracion configuracionBase,
+            int maxNormales,
+            int maxRapidas) {
+        
+        List<ResultadoOptimizacion> resultados = new ArrayList<>();
+        
+        for (int normales = 4; normales <= maxNormales; normales++) {
+            for (int rapidas = 1; rapidas <= maxRapidas; rapidas++) {
+                if (normales + rapidas > 12) continue;
+                
+                ResultadoOptimizacion resultado = new ResultadoOptimizacion();
+                resultado.numCajasNormales = normales;
+                resultado.numCajasRapidas = rapidas;
+                resultado.totalCajas = normales + rapidas;
+                
+                double lambda = 60.0;
+                double mu = 60.0 / 5.0;
+                double capacidad = (normales * mu) + (rapidas * mu * 1.5);
+                resultado.factorUtilizacion = lambda / capacidad;
+                
+                resultado.clientesAtendidos = (int)(lambda * 10 * 
+                    Math.min(1, 1 / resultado.factorUtilizacion));
+                
+                resultado.colaMaxima = (int)(resultado.factorUtilizacion * 60);
+                if (resultado.colaMaxima < 5) resultado.colaMaxima = 5;
+                
+                resultado.tiempoPromedio = 5.0 / Math.min(1, 1 / resultado.factorUtilizacion);
+                
+                if (resultado.factorUtilizacion > 0.9) {
+                    resultado.recomendacion = " Sobrecargado - Considere aumentar cajas";
+                } else if (resultado.factorUtilizacion < 0.5) {
+                    resultado.recomendacion = "ℹ Subutilizado - Considere reducir cajas";
+                } else {
+                    resultado.recomendacion = " Balanceado - Configuracion optima";
+                }
+                
+                resultados.add(resultado);
+            }
+        }
+        
+        resultados.sort((a, b) -> b.clientesAtendidos - a.clientesAtendidos);
+        
+        if (!resultados.isEmpty()) {
+            int maxClientes = resultados.get(0).clientesAtendidos;
+            for (ResultadoOptimizacion r : resultados) {
+                r.mejoraPorcentaje = ((double)(r.clientesAtendidos - maxClientes) / 
+                    maxClientes) * 100;
+            }
+        }
+        
+        return resultados;
+    }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\domain\service\RelojSimulacionService.java ===
+package com.supermercado.domain.service;
+
+public class RelojSimulacionService {
+    
+    private long tiempoInicio;
+    private long tiempoPausado;
+    private boolean corriendo;
+    private boolean pausado;
+    private long tiempoAcumulado;
+    private long tiempoSimuladoAcumulado; // minutos simulados
+
+    public RelojSimulacionService() {
+        this.tiempoInicio = 0;
+        this.tiempoPausado = 0;
+        this.corriendo = false;
+        this.pausado = false;
+        this.tiempoAcumulado = 0;
+        this.tiempoSimuladoAcumulado = 0;
+    }
+
+    public void iniciar() {
+        this.tiempoInicio = System.currentTimeMillis();
+        this.corriendo = true;
+        this.pausado = false;
+        this.tiempoAcumulado = 0;
+        this.tiempoSimuladoAcumulado = 0;
+    }
+
+    public void detener() {
+        this.corriendo = false;
+        this.pausado = false;
+    }
+
+    public void pausar() {
+        if (corriendo && !pausado) {
+            this.pausado = true;
+            this.tiempoPausado = System.currentTimeMillis();
+        }
+    }
+
+    public void reanudar() {
+        if (corriendo && pausado) {
+            long ahora = System.currentTimeMillis();
+            tiempoAcumulado += (ahora - tiempoPausado);
+            this.pausado = false;
+            this.tiempoPausado = 0;
+        }
+    }
+
+    public void reiniciar() {
+        this.tiempoInicio = 0;
+        this.tiempoPausado = 0;
+        this.corriendo = false;
+        this.pausado = false;
+        this.tiempoAcumulado = 0;
+        this.tiempoSimuladoAcumulado = 0;
+    }
+
+    public long getTiempoActual() {
+        if (!corriendo) return 0;
+        if (pausado) {
+            return tiempoAcumulado;
+        }
+        return tiempoAcumulado + (System.currentTimeMillis() - tiempoInicio);
+    }
+
+    /**
+     * Actualiza el tiempo simulado en minutos
+     */
+    public void setTiempoSimulado(long minutosSimulados) {
+        this.tiempoSimuladoAcumulado = minutosSimulados;
+    }
+    
+    public long getTiempoSimulado() {
+        return tiempoSimuladoAcumulado;
+    }
+
+    public boolean estaCorriendo() { return corriendo; }
+    public boolean estaPausado() { return pausado; }
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\domain\service\SimuladorService.java ===
+package com.supermercado.domain.service;
+
+import com.supermercado.domain.model.Caja;
+import com.supermercado.domain.model.Cliente;
+import com.supermercado.domain.model.EstadoCaja;
+
+import java.util.List;
+
+public class SimuladorService {
+    
+    private final RelojSimulacionService reloj;
+    
+    public SimuladorService(RelojSimulacionService reloj) {
+        this.reloj = reloj;
+    }
+
+    public void asignarCliente(List<Caja> cajas, Cliente cliente) {
+        if (cliente == null) {
+            throw new IllegalArgumentException("El cliente no puede ser nulo");
+        }
+        
+        Caja mejorCaja = null;
+        int minCola = Integer.MAX_VALUE;
+        
+        for (Caja caja : cajas) {
+            if (caja.getEstado() == EstadoCaja.DETENIDA) continue;
+            if (!caja.esRapida() || cliente.esRapido()) {
+                int colaSize = caja.getClientesEnCola();
+                if (colaSize < minCola) {
+                    minCola = colaSize;
+                    mejorCaja = caja;
+                }
+            }
+        }
+        
+        if (mejorCaja != null) {
+            mejorCaja.agregarCliente(cliente);
+        }
+    }
+
+    public int getTotalClientesEnCola(List<Caja> cajas) {
+        int total = 0;
+        for (Caja caja : cajas) {
+            total += caja.getClientesEnCola();
+        }
+        return total;
+    }
+
+    public int getTotalClientesAtendidos(List<Caja> cajas) {
+        int total = 0;
+        for (Caja caja : cajas) {
+            total += caja.getTotalAtendidos();
+        }
+        return total;
+    }
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\domain\service\TeoriaColasService.java ===
+package com.supermercado.domain.service;
+
+import com.supermercado.domain.model.Recomendacion;
+
+public class TeoriaColasService {
+    
+    public static class MetricasColas {
+        public double lambda;
+        public double mu;
+        public int c;
+        public double rho;
+        public double L;
+        public double Lq;
+        public double W;
+        public double Wq;
+        public double p0;
+        
+        @Override
+        public String toString() {
+            String estado = rho >= 1 ? "SATURADO" : "ESTABLE";
+            return String.format(
+                "METRICAS DE TEORIA DE COLAS (M/M/%d):\n" +
+                "  lambda (llegada): %.2f clientes/hora\n" +
+                "  mu (servicio): %.2f clientes/hora\n" +
+                "  rho (utilizacion): %.2f%% (%s)\n" +
+                "  L (en sistema): %.2f clientes\n" +
+                "  Lq (en cola): %.2f clientes\n" +
+                "  W (en sistema): %.2f min\n" +
+                "  Wq (en cola): %.2f min\n" +
+                "  P0 (sistema vacio): %.2f%%",
+                c, lambda, mu, rho * 100, estado,
+                L, Lq, W * 60, Wq * 60, p0 * 100
+            );
+        }
+    }
+    
+    public MetricasColas calcularMetricas(double lambda, double mu, int c) {
+        MetricasColas metrics = new MetricasColas();
+        metrics.lambda = lambda;
+        metrics.mu = mu;
+        metrics.c = c;
+        metrics.rho = lambda / (c * mu);
+        
+        if (metrics.rho >= 1) {
+            metrics.L = Double.POSITIVE_INFINITY;
+            metrics.Lq = Double.POSITIVE_INFINITY;
+            metrics.W = Double.POSITIVE_INFINITY;
+            metrics.Wq = Double.POSITIVE_INFINITY;
+            metrics.p0 = 0;
+            return metrics;
+        }
+        
+        double sum = 0;
+        for (int i = 0; i < c; i++) {
+            sum += Math.pow(lambda/mu, i) / factorial(i);
+        }
+        sum += Math.pow(lambda/mu, c) / (factorial(c) * (1 - metrics.rho));
+        metrics.p0 = 1 / sum;
+        
+        metrics.Lq = (metrics.p0 * Math.pow(lambda/mu, c) * metrics.rho) /
+                    (factorial(c) * Math.pow(1 - metrics.rho, 2));
+        metrics.L = metrics.Lq + metrics.rho;
+        metrics.Wq = metrics.Lq / lambda;
+        metrics.W = metrics.Wq + (1 / mu);
+        
+        return metrics;
+    }
+    
+    private long factorial(int n) {
+        long result = 1;
+        for (int i = 2; i <= n; i++) {
+            result *= i;
+        }
+        return result;
+    }
+    
+    public Recomendacion generarRecomendacionTeoriaColas(MetricasColas metrics) {
+        String mensaje;
+        String prioridad;
+        String configSugerida;
+        double mejora = 0;
+        
+        if (metrics.rho >= 1) {
+            prioridad = "CRITICO";
+            mensaje = String.format(
+                "EL SISTEMA ESTA SATURADO!\n" +
+                "  Factor de utilizacion: %.1f%% (DEBE ser < 100%%)\n" +
+                "  Se necesitan mas cajas urgentemente\n" +
+                "  Recomendacion: Aumentar a %d cajas totales",
+                metrics.rho * 100,
+                (int)(Math.ceil(metrics.lambda / metrics.mu) + 1)
+            );
+            configSugerida = "Aumentar cajas a " + 
+                (int)(Math.ceil(metrics.lambda / metrics.mu) + 1);
+            mejora = 30;
+        } else if (metrics.rho > 0.8) {
+            prioridad = "ALTO";
+            mensaje = String.format(
+                "SISTEMA CERCA DE SATURACION!\n" +
+                "  Factor de utilizacion: %.1f%%\n" +
+                "  Cola promedio: %.1f clientes\n" +
+                "  Tiempo espera: %.1f min\n" +
+                "  Recomendacion: Considerar aumentar cajas",
+                metrics.rho * 100,
+                metrics.Lq,
+                metrics.Wq * 60
+            );
+            configSugerida = "Considerar agregar 1 caja";
+            mejora = 15;
+        } else if (metrics.rho < 0.5) {
+            prioridad = "MEDIO";
+            mensaje = String.format(
+                "SISTEMA SUBUTILIZADO\n" +
+                "  Factor de utilizacion: %.1f%%\n" +
+                "  Cola promedio: %.1f clientes\n" +
+                "  Tiempo espera: %.1f min\n" +
+                "  Recomendacion: Reducir cajas para optimizar costos",
+                metrics.rho * 100,
+                metrics.Lq,
+                metrics.Wq * 60
+            );
+            configSugerida = "Reducir cajas en 1 unidad";
+            mejora = 5;
+        } else {
+            prioridad = "NORMAL";
+            mensaje = String.format(
+                "SISTEMA OPTIMO!\n" +
+                "  Factor de utilizacion: %.1f%% (rango ideal)\n" +
+                "  Cola promedio: %.1f clientes\n" +
+                "  Tiempo espera: %.1f min\n" +
+                "  Mantener configuracion actual",
+                metrics.rho * 100,
+                metrics.Lq,
+                metrics.Wq * 60
+            );
+            configSugerida = "Mantener configuracion actual";
+            mejora = 0;
+        }
+        
+        return new Recomendacion(mensaje, prioridad, configSugerida, mejora, false);
+    }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\infrastructure\config\AppConfig.java ===
+package com.supermercado.infrastructure.config;
+
+import com.supermercado.application.port.IConfiguracionRepositorio;
+import com.supermercado.application.port.ILogService;
+import com.supermercado.application.port.IReporteExportador;
+import com.supermercado.application.usecase.IniciarSimulacionUseCase;
+import com.supermercado.infrastructure.service.LogServiceImpl;
+import com.supermercado.infrastructure.repository.ConfiguracionRepositorioImpl;
+import com.supermercado.infrastructure.service.ReporteExcelImpl;
+
+public class AppConfig {
+    
+    private static AppConfig instance;
+    
+    private final ILogService logService;
+    private final IConfiguracionRepositorio configuracionRepositorio;
+    private final IReporteExportador reporteExportador;
+    private final IniciarSimulacionUseCase iniciarSimulacionUseCase;
+    
+    private AppConfig() {
+        this.logService = new LogServiceImpl();
+        this.configuracionRepositorio = new ConfiguracionRepositorioImpl(logService);
+        this.reporteExportador = new ReporteExcelImpl(logService);
+        this.iniciarSimulacionUseCase = new IniciarSimulacionUseCase(logService);
+    }
+    
+    public static AppConfig getInstance() {
+        if (instance == null) {
+            instance = new AppConfig();
+        }
+        return instance;
+    }
+    
+    public ILogService getLogService() { return logService; }
+    public IConfiguracionRepositorio getConfiguracionRepositorio() { return configuracionRepositorio; }
+    public IReporteExportador getReporteExportador() { return reporteExportador; }
+    public IniciarSimulacionUseCase getIniciarSimulacionUseCase() { return iniciarSimulacionUseCase; }
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\infrastructure\repository\ConfiguracionRepositorioImpl.java ===
+package com.supermercado.infrastructure.repository;
+
+import com.supermercado.application.dto.ConfiguracionDTO;
+import com.supermercado.application.port.IConfiguracionRepositorio;
+import com.supermercado.application.port.ILogService;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
+
+public class ConfiguracionRepositorioImpl implements IConfiguracionRepositorio {
+
+    private static final String ARCHIVO_CONFIG = System.getProperty("user.dir") + File.separator + "config.properties";
+    private final ILogService logService;
+
+    public ConfiguracionRepositorioImpl(ILogService logService) {
+        this.logService = logService;
+        System.out.println("?? Archivo de configuraci?n: " + ARCHIVO_CONFIG);
+    }
+
+    @Override
+    public ConfiguracionDTO cargar() {
+        Properties props = new Properties();
+        ConfiguracionDTO.Builder builder = new ConfiguracionDTO.Builder();
+
+        try (FileInputStream fis = new FileInputStream(ARCHIVO_CONFIG)) {
+            props.load(fis);
+
+            builder.horasSimuladas(getInt(props, "tiempo.simulado.horas", 12));
+            builder.duracionRealSegundos(getInt(props, "duracion.real.segundos", 20));
+            builder.numCajasNormales(getInt(props, "num.cajas.normales", 2));
+            builder.numCajasRapidas(getInt(props, "num.cajas.rapidas", 1));
+            builder.limiteClienteRapido(getInt(props, "limite.cliente.rapido", 10));
+            builder.probabilidadLlegadaCliente(getInt(props, "probabilidad.llegada.cliente", 40));
+            builder.limiteClientes(getInt(props, "limite.clientes", 0));
+            builder.tiempoCajaNormalMin(getInt(props, "tiempo.caja.normal.min", 4));
+            builder.tiempoCajaNormalMax(getInt(props, "tiempo.caja.normal.max", 8));
+            builder.tiempoCajaRapidaMin(getInt(props, "tiempo.caja.rapida.min", 2));
+            builder.tiempoCajaRapidaMax(getInt(props, "tiempo.caja.rapida.max", 5));
+            builder.articulosClienteMin(getInt(props, "articulos.cliente.min", 1));
+            builder.articulosClienteMax(getInt(props, "articulos.cliente.max", 30));
+            builder.mostrarDetalleClientes(getBoolean(props, "mostrar.detalle.clientes", true));
+            builder.mostrarEstadisticasAvanzadas(getBoolean(props, "mostrar.estadisticas.avanzadas", true));
+
+            logService.info("Configuraci?n cargada desde " + ARCHIVO_CONFIG);
+
+        } catch (IOException e) {
+            logService.warn("No se encontr? " + ARCHIVO_CONFIG + ", usando valores por defecto");
+        }
+
+        return builder.build();
+    }
+
+    @Override
+    public void guardar(ConfiguracionDTO config) {
+        Properties props = new Properties();
+
+        props.setProperty("tiempo.simulado.horas", String.valueOf(config.getHorasSimuladas()));
+        props.setProperty("duracion.real.segundos", String.valueOf(config.getDuracionRealSegundos()));
+        props.setProperty("num.cajas.normales", String.valueOf(config.getNumCajasNormales()));
+        props.setProperty("num.cajas.rapidas", String.valueOf(config.getNumCajasRapidas()));
+        props.setProperty("limite.cliente.rapido", String.valueOf(config.getLimiteClienteRapido()));
+        props.setProperty("probabilidad.llegada.cliente", String.valueOf(config.getProbabilidadLlegadaCliente()));
+        props.setProperty("limite.clientes", String.valueOf(config.getLimiteClientes()));
+        props.setProperty("tiempo.caja.normal.min", String.valueOf(config.getTiempoCajaNormalMin()));
+        props.setProperty("tiempo.caja.normal.max", String.valueOf(config.getTiempoCajaNormalMax()));
+        props.setProperty("tiempo.caja.rapida.min", String.valueOf(config.getTiempoCajaRapidaMin()));
+        props.setProperty("tiempo.caja.rapida.max", String.valueOf(config.getTiempoCajaRapidaMax()));
+        props.setProperty("articulos.cliente.min", String.valueOf(config.getArticulosClienteMin()));
+        props.setProperty("articulos.cliente.max", String.valueOf(config.getArticulosClienteMax()));
+        props.setProperty("mostrar.detalle.clientes", String.valueOf(config.isMostrarDetalleClientes()));
+        props.setProperty("mostrar.estadisticas.avanzadas", String.valueOf(config.isMostrarEstadisticasAvanzadas()));
+
+        File file = new File(ARCHIVO_CONFIG);
+        try {
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                props.store(fos, "Configuraci?n del Simulador de Supermercado");
+                logService.info("Configuraci?n guardada en " + file.getAbsolutePath());
+            }
+        } catch (IOException e) {
+            logService.error("Error al guardar configuraci?n", e);
+        }
+    }
+
+    private int getInt(Properties props, String key, int defaultValue) {
+        String value = props.getProperty(key);
+        if (value != null) {
+            try {
+                return Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                return defaultValue;
+            }
+        }
+        return defaultValue;
+    }
+
+    private boolean getBoolean(Properties props, String key, boolean defaultValue) {
+        String value = props.getProperty(key);
+        if (value != null) {
+            return Boolean.parseBoolean(value);
+        }
+        return defaultValue;
+    }
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\infrastructure\service\LogServiceImpl.java ===
+package com.supermercado.infrastructure.service;
+
+import com.supermercado.application.port.ILogService;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+
+public class LogServiceImpl implements ILogService {
+
+    private final PrintStream out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+    private final PrintStream err = new PrintStream(System.err, true, StandardCharsets.UTF_8);
+
+    @Override
+    public void info(String mensaje) {
+        out.println(mensaje);
+    }
+
+    @Override
+    public void debug(String mensaje) {
+        out.println("[DEBUG] " + mensaje);
+    }
+
+    @Override
+    public void warn(String mensaje) {
+        out.println("ADVERTENCIA: " + mensaje);
+    }
+
+    @Override
+    public void error(String mensaje) {
+        err.println("ERROR: " + mensaje);
+    }
+
+    @Override
+    public void error(String mensaje, Throwable throwable) {
+        err.println("ERROR: " + mensaje);
+        throwable.printStackTrace(err);
+    }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\infrastructure\service\ReporteExcelImpl.java ===
+package com.supermercado.infrastructure.service;
+
+import com.supermercado.application.dto.EstadisticasDTO;
+import com.supermercado.application.port.IReporteExportador;
+import com.supermercado.application.port.ILogService;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+public class ReporteExcelImpl implements IReporteExportador {
+    
+    private final ILogService logService;
+    
+    public ReporteExcelImpl(ILogService logService) {
+        this.logService = logService;
+    }
+    
+    @Override
+    public void exportar(EstadisticasDTO estadisticas, String rutaArchivo) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(rutaArchivo))) {
+            writer.println("=== REPORTE DE SIMULACI?N ===");
+            writer.println("Fecha: " + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            writer.println();
+            writer.println("ESTAD?STICAS GENERALES");
+            writer.println("----------------------------------------");
+            writer.println("Total clientes atendidos: " + estadisticas.getTotalClientesAtendidos());
+            writer.println("Total art?culos vendidos: " + estadisticas.getTotalArticulosVendidos());
+            writer.println("Total minutos de atenci?n: " + estadisticas.getTotalMinutosAtencion());
+            writer.println("Clientes en cola: " + estadisticas.getClientesEnCola());
+            writer.println("Cajero Estrella: " + estadisticas.getCajeroEstrella());
+            writer.println("Tiempo promedio de atenci?n: " + String.format("%.2f", estadisticas.getTiempoPromedioAtencion()));
+            writer.println("Art?culos promedio: " + String.format("%.2f", estadisticas.getArticulosPromedio()));
+            writer.println("----------------------------------------");
+            
+            logService.info("Reporte exportado a: " + rutaArchivo);
+        } catch (IOException e) {
+            logService.error("Error al exportar reporte", e);
+        }
+    }
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\presentation\controller\SimulacionController.java ===
+package com.supermercado.presentation.controller;
+
+import com.supermercado.application.dto.ConfiguracionDTO;
+import com.supermercado.application.dto.EstadisticasDTO;
+import com.supermercado.application.usecase.IniciarSimulacionUseCase;
+import com.supermercado.application.port.ILogService;
+import com.supermercado.infrastructure.config.AppConfig;
+import com.supermercado.presentation.view.SimuladorFrame;
+
+public class SimulacionController {
+    
+    private final ILogService logService;
+    private final IniciarSimulacionUseCase iniciarSimulacionUseCase;
+    private final SimuladorFrame view;
+    private Thread hiloSimulacion;
+    private boolean simulacionActiva;
+    private boolean pausado = false;
+    private ConfiguracionDTO configuracionActual;
+
+    public SimulacionController(SimuladorFrame view) {
+        this.view = view;
+        this.logService = AppConfig.getInstance().getLogService();
+        this.iniciarSimulacionUseCase = AppConfig.getInstance().getIniciarSimulacionUseCase();
+        this.simulacionActiva = false;
+        logService.info("Controlador de simulacion inicializado");
+        
+        this.iniciarSimulacionUseCase.setOnEstadisticasUpdate(this::actualizarEstadisticas);
+        // INYECCIÃ“N DIRECTA - Pasar el frame directamente
+        this.iniciarSimulacionUseCase.setOnEstadisticasDirect(view::actualizarEstadisticasDirecto);
+        System.out.println("CONTROLLER - InyecciÃ³n directa configurada");
+        this.iniciarSimulacionUseCase.setOnCajaUpdate(this::actualizarCaja);
+        this.iniciarSimulacionUseCase.setOnLogUpdate(this::agregarLog);
+    }
+
+    public void iniciarSimulacion(ConfiguracionDTO config) {
+        if (simulacionActiva) {
+            logService.warn("Intento de iniciar simulacion cuando ya esta activa");
+            return;
+        }
+        
+        if (config == null) {
+            logService.error("Configuracion nula");
+            view.mostrarError("Error", "La configuracion es nula");
+            return;
+        }
+        
+        this.configuracionActual = config;
+        this.pausado = false;
+        logService.info("Iniciando simulacion con configuracion");
+        
+        try {
+            simulacionActiva = true;
+            view.habilitarBotonIniciar(false);
+            view.habilitarBotonDetener(true);
+            view.limpiarLog();
+            
+            hiloSimulacion = new Thread(() -> {
+                try {
+                    iniciarSimulacionUseCase.ejecutar(config);
+                    view.agregarLog("=== SIMULACION COMPLETADA ===");
+                    view.mostrarMensaje("Simulacion completada exitosamente");
+                    view.habilitarBotonIniciar(true);
+                    view.habilitarBotonDetener(false);
+                    simulacionActiva = false;
+                    pausado = false;
+                    view.cambiarEstadoPausa(false);
+                } catch (InterruptedException e) {
+                    view.agregarLog("=== SIMULACION INTERRUMPIDA ===");
+                    view.habilitarBotonIniciar(true);
+                    view.habilitarBotonDetener(false);
+                    simulacionActiva = false;
+                    pausado = false;
+                    view.cambiarEstadoPausa(false);
+                } catch (Exception e) {
+                    logService.error("Error en la simulacion", e);
+                    view.mostrarError("Error", "Error en la simulacion: " + e.getMessage());
+                    view.habilitarBotonIniciar(true);
+                    view.habilitarBotonDetener(false);
+                    simulacionActiva = false;
+                    pausado = false;
+                    view.cambiarEstadoPausa(false);
+                }
+            });
+            hiloSimulacion.start();
+            
+        } catch (Exception e) {
+            logService.error("Error al iniciar la simulacion", e);
+            view.mostrarError("Error", "No se pudo iniciar la simulacion");
+            simulacionActiva = false;
+            pausado = false;
+            view.habilitarBotonIniciar(true);
+            view.habilitarBotonDetener(false);
+        }
+    }
+    
+    private void actualizarEstadisticas(EstadisticasDTO estadisticas) {
+        if (estadisticas != null) {
+            view.actualizarEstadisticas(estadisticas);
+        }
+    }
+    
+    private void actualizarCaja(String[] data) {
+        if (data.length >= 5) {
+            try {
+                int numCaja = Integer.parseInt(data[0]);
+                String estado = data[1];
+                int cola = Integer.parseInt(data[2]);
+                String clienteInfo = data[3];
+                String tipo = data[4];
+                view.actualizarCajaConTipo(numCaja, estado, cola, clienteInfo, tipo);
+            } catch (NumberFormatException e) {
+                // Ignorar
+            }
+        }
+    }
+    
+    private void agregarLog(String mensaje) {
+        view.agregarLog(mensaje);
+    }
+    
+    public void detenerSimulacion() {
+        if (!simulacionActiva) {
+            logService.warn("Intento de detener simulacion cuando no esta activa");
+            return;
+        }
+        
+        logService.info("Deteniendo simulacion");
+        iniciarSimulacionUseCase.detener();
+        view.agregarLog("=== SIMULACION DETENIDA ===");
+        
+        if (hiloSimulacion != null && hiloSimulacion.isAlive()) {
+            hiloSimulacion.interrupt();
+        }
+        
+        simulacionActiva = false;
+        pausado = false;
+        view.habilitarBotonIniciar(true);
+        view.habilitarBotonDetener(false);
+        view.cambiarEstadoPausa(false);
+        view.mostrarMensaje("Simulacion detenida");
+    }
+    
+    public void pausarSimulacion() {
+        if (!simulacionActiva) {
+            logService.warn("Intento de pausar simulacion cuando no esta activa");
+            return;
+        }
+        
+        if (!pausado) {
+            // Pausar
+            logService.info("Pausando simulacion");
+            iniciarSimulacionUseCase.pausar();
+            pausado = true;
+            view.agregarLog("=== SIMULACION PAUSADA ===");
+            view.cambiarEstadoPausa(true);
+        } else {
+            // Reanudar
+            logService.info("Reanudando simulacion");
+            iniciarSimulacionUseCase.reanudar();
+            pausado = false;
+            view.agregarLog("=== SIMULACION REANUDADA ===");
+            view.cambiarEstadoPausa(false);
+        }
+    }
+    
+    public void reanudarSimulacion() {
+        if (!simulacionActiva || !pausado) {
+            logService.warn("Intento de reanudar simulacion cuando no esta pausada");
+            return;
+        }
+        
+        logService.info("Reanudando simulacion");
+        iniciarSimulacionUseCase.reanudar();
+        pausado = false;
+        view.agregarLog("=== SIMULACION REANUDADA ===");
+        view.cambiarEstadoPausa(false);
+    }
+    
+    public boolean isSimulacionActiva() {
+        return simulacionActiva;
+    }
+    
+    public boolean isPausado() {
+        return pausado;
+    }
+}
+
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\presentation\view\DialogoConfiguracion.java ===
+package com.supermercado.presentation.view;
+
+import com.supermercado.application.dto.ConfiguracionDTO;
+import com.supermercado.infrastructure.repository.ConfiguracionRepositorioImpl;
+import com.supermercado.infrastructure.config.AppConfig;
+
+import javax.swing.*;
+import javax.swing.border.*;
+import java.awt.*;
+
+public class DialogoConfiguracion extends JDialog {
+    private static final long serialVersionUID = 1L;
+
+    private JSpinner spinnerHorasSimuladas;
+    private JSpinner spinnerCajasNormales;
+    private JSpinner spinnerCajasRapidas;
+    private JSpinner spinnerProbabilidad;
+    private JSpinner spinnerLimiteClientes;
+    private JSpinner spinnerTiempoNormalMin;
+    private JSpinner spinnerTiempoNormalMax;
+    private JSpinner spinnerTiempoRapidaMin;
+    private JSpinner spinnerTiempoRapidaMax;
+    private JSpinner spinnerArticulosMin;
+    private JSpinner spinnerArticulosMax;
+    private JSpinner spinnerDuracionReal;
+
+    private boolean confirmado = false;
+    private ConfiguracionDTO configuracion;
+
+    private static final Color COLOR_BG = new Color(236, 240, 241);
+    private static final Color COLOR_WHITE = Color.WHITE;
+    private static final Color COLOR_TEXT_DARK = new Color(44, 62, 80);
+    private static final Color COLOR_BORDER = new Color(189, 195, 199);
+    private static final Color COLOR_BTN_CANCEL = new Color(52, 73, 94);
+    private static final Color COLOR_BTN_START = new Color(46, 204, 113);
+    private static final Color COLOR_BTN_START_HOVER = new Color(39, 174, 96);
+
+    public DialogoConfiguracion(JFrame parent, ConfiguracionDTO config) {
+        super(parent, "Configuracion del Simulador", true);
+        
+        // PRIMERO: Intentar cargar configuración guardada
+        ConfiguracionDTO cargada = null;
+        try {
+            ConfiguracionRepositorioImpl repo = new ConfiguracionRepositorioImpl(
+                AppConfig.getInstance().getLogService()
+            );
+            cargada = repo.cargar();
+            System.out.println("📂 Configuración cargada del archivo");
+        } catch (Exception e) {
+            System.out.println("⚠️ No se pudo cargar configuración: " + e.getMessage());
+        }
+        
+        // USAR la configuración cargada o la que vino por parámetro
+        if (cargada != null && cargada.getHorasSimuladas() > 0) {
+            this.configuracion = cargada;
+        } else if (config != null) {
+            this.configuracion = config;
+        } else {
+            this.configuracion = new ConfiguracionDTO.Builder().build();
+        }
+        
+        initUI();
+        cargarValoresEnSpinners();
+    }
+
+    private void cargarValoresEnSpinners() {
+        if (configuracion != null) {
+            spinnerHorasSimuladas.setValue(configuracion.getHorasSimuladas());
+            spinnerDuracionReal.setValue(configuracion.getDuracionRealSegundos());
+            spinnerCajasNormales.setValue(configuracion.getNumCajasNormales());
+            spinnerCajasRapidas.setValue(configuracion.getNumCajasRapidas());
+            spinnerProbabilidad.setValue(configuracion.getProbabilidadLlegadaCliente());
+            spinnerLimiteClientes.setValue(configuracion.getLimiteClientes());
+            spinnerTiempoNormalMin.setValue(configuracion.getTiempoCajaNormalMin());
+            spinnerTiempoNormalMax.setValue(configuracion.getTiempoCajaNormalMax());
+            spinnerTiempoRapidaMin.setValue(configuracion.getTiempoCajaRapidaMin());
+            spinnerTiempoRapidaMax.setValue(configuracion.getTiempoCajaRapidaMax());
+            spinnerArticulosMin.setValue(configuracion.getArticulosClienteMin());
+            spinnerArticulosMax.setValue(configuracion.getArticulosClienteMax());
+        }
+    }
+
+    private void initUI() {
+        setLayout(new BorderLayout(0, 0));
+        getContentPane().setBackground(COLOR_BG);
+
+        JPanel panelTitulo = new JPanel(new BorderLayout());
+        panelTitulo.setBackground(new Color(26, 82, 118));
+        panelTitulo.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25));
+
+        JLabel titulo = new JLabel("Configuracion del Simulador de Supermercado");
+        titulo.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        titulo.setForeground(COLOR_WHITE);
+        panelTitulo.add(titulo, BorderLayout.WEST);
+        add(panelTitulo, BorderLayout.NORTH);
+
+        JPanel panelGeneral = new JPanel();
+        panelGeneral.setLayout(new BoxLayout(panelGeneral, BoxLayout.Y_AXIS));
+        panelGeneral.setBackground(COLOR_BG);
+        panelGeneral.setBorder(BorderFactory.createEmptyBorder(10, 25, 10, 25));
+
+        panelGeneral.add(crearSeccion("1. Tiempo de Simulacion", crearPanelTiempo()));
+        panelGeneral.add(Box.createVerticalStrut(8));
+        panelGeneral.add(crearSeccion("2. Cajas Registradoras", crearPanelCajas()));
+        panelGeneral.add(Box.createVerticalStrut(8));
+        panelGeneral.add(crearSeccion("3. Flujo de Clientes", crearPanelClientes()));
+        panelGeneral.add(Box.createVerticalStrut(8));
+        panelGeneral.add(crearSeccion("4. Tiempos de Atencion", crearPanelTiempos()));
+        panelGeneral.add(Box.createVerticalStrut(8));
+        panelGeneral.add(crearSeccion("5. Articulos por Cliente", crearPanelArticulos()));
+
+        JScrollPane scrollPane = new JScrollPane(panelGeneral);
+        scrollPane.setBorder(null);
+        scrollPane.getViewport().setBackground(COLOR_BG);
+        scrollPane.setPreferredSize(new Dimension(700, 380));
+        scrollPane.getVerticalScrollBar().setUnitIncrement(12);
+        add(scrollPane, BorderLayout.CENTER);
+
+        // Panel de botones
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 12));
+        panelBotones.setBackground(COLOR_BG);
+        panelBotones.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, COLOR_BORDER));
+
+        JButton btnCancelar = new JButton(" Cancelar ");
+        btnCancelar.setBackground(COLOR_BTN_CANCEL);
+        btnCancelar.setForeground(COLOR_WHITE);
+        btnCancelar.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        btnCancelar.setOpaque(true);
+        btnCancelar.setBorder(BorderFactory.createLineBorder(new Color(40, 55, 70), 1));
+        btnCancelar.setContentAreaFilled(true);
+        btnCancelar.setFocusPainted(false);
+        btnCancelar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnCancelar.addActionListener(e -> dispose());
+
+        JButton btnAceptar = new JButton(" Iniciar Simulacion ");
+        btnAceptar.setBackground(COLOR_BTN_START);
+        btnAceptar.setForeground(COLOR_WHITE);
+        btnAceptar.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnAceptar.setOpaque(true);
+        btnAceptar.setBorder(BorderFactory.createLineBorder(new Color(30, 132, 73), 1));
+        btnAceptar.setContentAreaFilled(true);
+        btnAceptar.setFocusPainted(false);
+        btnAceptar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnAceptar.addActionListener(e -> {
+            if (validarCampos()) {
+                guardarConfiguracion();
+                // GUARDAR EN ARCHIVO
+                try {
+                    ConfiguracionRepositorioImpl repo = new ConfiguracionRepositorioImpl(
+                        AppConfig.getInstance().getLogService()
+                    );
+                    repo.guardar(this.configuracion);
+                    System.out.println("✅ Configuracion guardada correctamente");
+                } catch (Exception ex) {
+                    System.err.println("❌ Error al guardar: " + ex.getMessage());
+                }
+                confirmado = true;
+                dispose();
+            }
+        });
+
+        btnAceptar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnAceptar.setBackground(COLOR_BTN_START_HOVER);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnAceptar.setBackground(COLOR_BTN_START);
+            }
+        });
+
+        panelBotones.add(btnCancelar);
+        panelBotones.add(btnAceptar);
+        add(panelBotones, BorderLayout.SOUTH);
+
+        setSize(780, 600);
+        setMinimumSize(new Dimension(720, 520));
+        setLocationRelativeTo(getParent());
+        setResizable(true);
+    }
+
+    private JPanel crearSeccion(String titulo, JPanel contenido) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(COLOR_BG);
+
+        TitledBorder border = BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(COLOR_BORDER, 1),
+            titulo,
+            TitledBorder.LEFT,
+            TitledBorder.TOP,
+            new Font("Segoe UI", Font.BOLD, 12),
+            COLOR_TEXT_DARK
+        );
+        panel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createEmptyBorder(2, 0, 2, 0),
+            border
+        ));
+
+        contenido.setBackground(COLOR_BG);
+        panel.add(contenido, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel crearPanelTiempo() {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
+        spinnerHorasSimuladas = crearSpinner(10, 1, 24, 1);
+        spinnerDuracionReal = crearSpinner(30, 5, 300, 5);
+        panel.add(new JLabel("Horas simuladas:"));
+        panel.add(spinnerHorasSimuladas);
+        panel.add(new JLabel("  Duracion real (seg):"));
+        panel.add(spinnerDuracionReal);
+        return panel;
+    }
+
+    private JPanel crearPanelCajas() {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
+        spinnerCajasNormales = crearSpinner(6, 1, 20, 1);
+        spinnerCajasRapidas = crearSpinner(2, 0, 10, 1);
+        panel.add(new JLabel("Normales:"));
+        panel.add(spinnerCajasNormales);
+        panel.add(new JLabel("  Rapidas:"));
+        panel.add(spinnerCajasRapidas);
+        return panel;
+    }
+
+    private JPanel crearPanelClientes() {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
+        spinnerProbabilidad = crearSpinner(50, 1, 100, 5);
+        spinnerLimiteClientes = crearSpinner(0, 0, 5000, 10);
+        panel.add(new JLabel("Probabilidad (%):"));
+        panel.add(spinnerProbabilidad);
+        panel.add(new JLabel("  Max. clientes:"));
+        panel.add(spinnerLimiteClientes);
+        return panel;
+    }
+
+    private JPanel crearPanelTiempos() {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        spinnerTiempoNormalMin = crearSpinner(2, 1, 30, 1);
+        spinnerTiempoNormalMax = crearSpinner(8, 1, 60, 1);
+        spinnerTiempoRapidaMin = crearSpinner(1, 1, 15, 1);
+        spinnerTiempoRapidaMax = crearSpinner(5, 1, 30, 1);
+        panel.add(new JLabel("Normal min:"));
+        panel.add(spinnerTiempoNormalMin);
+        panel.add(new JLabel(" max:"));
+        panel.add(spinnerTiempoNormalMax);
+        panel.add(new JLabel("  Rapida min:"));
+        panel.add(spinnerTiempoRapidaMin);
+        panel.add(new JLabel(" max:"));
+        panel.add(spinnerTiempoRapidaMax);
+        return panel;
+    }
+
+    private JPanel crearPanelArticulos() {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
+        spinnerArticulosMin = crearSpinner(1, 1, 20, 1);
+        spinnerArticulosMax = crearSpinner(20, 1, 200, 1);
+        panel.add(new JLabel("Minimo:"));
+        panel.add(spinnerArticulosMin);
+        panel.add(new JLabel("  Maximo:"));
+        panel.add(spinnerArticulosMax);
+        return panel;
+    }
+
+    private JSpinner crearSpinner(int valor, int min, int max, int step) {
+        int v = Math.max(min, Math.min(max, valor));
+        JSpinner spinner = new JSpinner(new SpinnerNumberModel(v, min, max, step));
+        spinner.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        return spinner;
+    }
+
+    private boolean validarCampos() {
+        int tNMin = (Integer) spinnerTiempoNormalMin.getValue();
+        int tNMax = (Integer) spinnerTiempoNormalMax.getValue();
+        int tRMin = (Integer) spinnerTiempoRapidaMin.getValue();
+        int tRMax = (Integer) spinnerTiempoRapidaMax.getValue();
+        int aMin = (Integer) spinnerArticulosMin.getValue();
+        int aMax = (Integer) spinnerArticulosMax.getValue();
+
+        if (tNMin > tNMax) {
+            JOptionPane.showMessageDialog(this, "Tiempo minimo de caja normal no puede ser mayor al maximo.",
+                "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        if (tRMin > tRMax) {
+            JOptionPane.showMessageDialog(this, "Tiempo minimo de caja rapida no puede ser mayor al maximo.",
+                "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        if (aMin > aMax) {
+            JOptionPane.showMessageDialog(this, "Articulos minimos no pueden superar a los maximos.",
+                "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+
+    private void guardarConfiguracion() {
+        this.configuracion = new ConfiguracionDTO.Builder()
+            .horasSimuladas((Integer) spinnerHorasSimuladas.getValue())
+            .duracionRealSegundos((Integer) spinnerDuracionReal.getValue())
+            .numCajasNormales((Integer) spinnerCajasNormales.getValue())
+            .numCajasRapidas((Integer) spinnerCajasRapidas.getValue())
+            .probabilidadLlegadaCliente((Integer) spinnerProbabilidad.getValue())
+            .limiteClientes((Integer) spinnerLimiteClientes.getValue())
+            .tiempoCajaNormalMin((Integer) spinnerTiempoNormalMin.getValue())
+            .tiempoCajaNormalMax((Integer) spinnerTiempoNormalMax.getValue())
+            .tiempoCajaRapidaMin((Integer) spinnerTiempoRapidaMin.getValue())
+            .tiempoCajaRapidaMax((Integer) spinnerTiempoRapidaMax.getValue())
+            .articulosClienteMin((Integer) spinnerArticulosMin.getValue())
+            .articulosClienteMax((Integer) spinnerArticulosMax.getValue())
+            .build();
+    }
+
+    public boolean isConfirmado() { return confirmado; }
+    public ConfiguracionDTO getConfiguracion() { return configuracion; }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\presentation\view\PanelCajas.java ===
+package com.supermercado.presentation.view;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class PanelCajas extends JPanel {
+
+    private static final long serialVersionUID = 1L;
+    private JPanel[] panelesCajas;
+    private JLabel[] lblEstados;
+    private JLabel[] lblColas;
+    private JLabel[] lblClientes;
+    private JLabel[] lblTipos;
+    private JProgressBar[] barrasProgreso;
+    private int numCajas;
+
+    private static final Color COLOR_VERDE = Theme.STATUS_VERDE;
+    private static final Color COLOR_AMARILLO = Theme.STATUS_AMARILLO;
+    private static final Color COLOR_NARANJA = Theme.STATUS_NARANJA;
+    private static final Color COLOR_ROJO = Theme.STATUS_ROJO;
+    private static final Color COLOR_PAUSA = Theme.STATUS_PAUSA;
+    private static final Color COLOR_LIBRE = Theme.STATUS_LIBRE;
+
+    public PanelCajas() {
+        setLayout(new GridLayout(0, 2, 10, 10));
+        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        setBackground(Theme.BACKGROUND);
+        inicializarCajas(3);
+    }
+
+    public void inicializarCajas(int numCajas) {
+        this.numCajas = numCajas;
+        this.panelesCajas = new JPanel[numCajas];
+        this.lblEstados = new JLabel[numCajas];
+        this.lblColas = new JLabel[numCajas];
+        this.lblClientes = new JLabel[numCajas];
+        this.lblTipos = new JLabel[numCajas];
+        this.barrasProgreso = new JProgressBar[numCajas];
+
+        removeAll();
+
+        for (int i = 0; i < numCajas; i++) {
+            panelesCajas[i] = crearPanelCaja(i + 1);
+            add(panelesCajas[i]);
+        }
+
+        revalidate();
+        repaint();
+    }
+
+    private JPanel crearPanelCaja(int numero) {
+        JPanel panel = new JPanel(new BorderLayout(5, 5));
+        panel.setBackground(Color.WHITE);
+        panel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Theme.PRIMARY_BLUE, 2),
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
+
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setBackground(Theme.PRIMARY_BLUE);
+        headerPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        JLabel lblNombre = new JLabel("CAJA " + numero);
+        lblNombre.setFont(Theme.FONT_HEADER);
+        lblNombre.setForeground(Color.WHITE);
+        headerPanel.add(lblNombre, BorderLayout.WEST);
+
+        lblTipos[numero - 1] = new JLabel(" NORMAL ");
+        lblTipos[numero - 1].setFont(Theme.FONT_SMALL);
+        lblTipos[numero - 1].setForeground(Color.WHITE);
+        lblTipos[numero - 1].setBackground(COLOR_VERDE);
+        lblTipos[numero - 1].setOpaque(true);
+        lblTipos[numero - 1].setBorder(BorderFactory.createEmptyBorder(2, 8, 2, 8));
+        headerPanel.add(lblTipos[numero - 1], BorderLayout.EAST);
+
+        panel.add(headerPanel, BorderLayout.NORTH);
+
+        JPanel panelInfo = new JPanel(new GridBagLayout());
+        panelInfo.setBackground(Color.WHITE);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(3, 5, 3, 5);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+
+        lblEstados[numero - 1] = new JLabel("Estado: LIBRE");
+        lblEstados[numero - 1].setFont(Theme.FONT_NORMAL);
+        panelInfo.add(lblEstados[numero - 1], gbc);
+        gbc.gridy++;
+
+        lblColas[numero - 1] = new JLabel("En cola: 0");
+        lblColas[numero - 1].setFont(Theme.FONT_NORMAL);
+        panelInfo.add(lblColas[numero - 1], gbc);
+        gbc.gridy++;
+
+        barrasProgreso[numero - 1] = new JProgressBar(0, 10);
+        barrasProgreso[numero - 1].setStringPainted(true);
+        barrasProgreso[numero - 1].setFont(Theme.FONT_SMALL);
+        barrasProgreso[numero - 1].setBackground(new Color(235, 240, 245));
+        barrasProgreso[numero - 1].setString("0 / 10");
+        panelInfo.add(barrasProgreso[numero - 1], gbc);
+        gbc.gridy++;
+
+        lblClientes[numero - 1] = new JLabel("Atendiendo: -");
+        lblClientes[numero - 1].setFont(Theme.FONT_NORMAL);
+        lblClientes[numero - 1].setForeground(Color.GRAY);
+        panelInfo.add(lblClientes[numero - 1], gbc);
+
+        panel.add(panelInfo, BorderLayout.CENTER);
+        return panel;
+    }
+
+    public void actualizarCaja(int numCaja, String estado, int cola, String clienteInfo) {
+        actualizarCaja(numCaja, estado, cola, clienteInfo, null);
+    }
+
+    public void actualizarCaja(int numCaja, String estado, int cola, String clienteInfo, String tipo) {
+        if (numCaja > 0 && numCaja <= numCajas) {
+            int idx = numCaja - 1;
+
+            lblEstados[idx].setText("Estado: " + estado);
+            lblColas[idx].setText("En cola: " + cola);
+            lblClientes[idx].setText("Atendiendo: " + (clienteInfo.isEmpty() ? "-" : clienteInfo));
+
+            if (tipo != null) {
+                if ("R".equals(tipo)) {
+                    lblTipos[idx].setText(" RAPIDA ");
+                    lblTipos[idx].setBackground(new Color(241, 196, 15));
+                    lblTipos[idx].setForeground(Color.BLACK);
+                } else {
+                    lblTipos[idx].setText(" NORMAL ");
+                    lblTipos[idx].setBackground(COLOR_VERDE);
+                    lblTipos[idx].setForeground(Color.WHITE);
+                }
+            }
+
+            int valorBarra = Math.min(cola, 10);
+            barrasProgreso[idx].setValue(valorBarra);
+            barrasProgreso[idx].setString(cola + " / 10");
+
+            // ============================================================
+            // COLOR DE LA BARRA - CAMBIA SEGUN LA COLA
+            // ============================================================
+            Color colorBarra;
+            
+            // Primero verificar si está pausado
+            if ("PAUSADA".equals(estado)) {
+                colorBarra = COLOR_PAUSA;
+            } 
+            // Luego según nivel de cola
+            else if (cola <= 2) {
+                colorBarra = COLOR_VERDE;      // Verde - Poca cola
+            } else if (cola <= 4) {
+                colorBarra = COLOR_AMARILLO;   // Amarillo - Cola media
+            } else if (cola <= 7) {
+                colorBarra = COLOR_NARANJA;    // Naranja - Cola alta
+            } else {
+                colorBarra = COLOR_ROJO;       // Rojo - Cola crítica (>7)
+            }
+            
+            barrasProgreso[idx].setForeground(colorBarra);
+            // ============================================================
+
+            // Color del borde y header según estado
+            Color borderColor, headerColor;
+            if ("ATENDIENDO".equals(estado)) {
+                borderColor = COLOR_VERDE;
+                headerColor = COLOR_VERDE;
+            } else if ("PAUSADA".equals(estado)) {
+                borderColor = COLOR_PAUSA;
+                headerColor = COLOR_PAUSA;
+            } else if (cola > 7) {
+                borderColor = COLOR_ROJO;
+                headerColor = COLOR_ROJO;
+            } else if (cola > 4) {
+                borderColor = COLOR_NARANJA;
+                headerColor = COLOR_NARANJA;
+            } else if (cola > 2) {
+                borderColor = COLOR_AMARILLO;
+                headerColor = COLOR_AMARILLO;
+            } else if (cola > 0) {
+                borderColor = COLOR_VERDE;
+                headerColor = COLOR_VERDE;
+            } else {
+                borderColor = COLOR_LIBRE;
+                headerColor = COLOR_LIBRE;
+            }
+
+            panelesCajas[idx].setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(borderColor, 3),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+            ));
+
+            Component[] components = panelesCajas[idx].getComponents();
+            for (Component comp : components) {
+                if (comp instanceof JPanel) {
+                    JPanel header = (JPanel) comp;
+                    if (header.getComponentCount() > 1) {
+                        header.setBackground(headerColor);
+                        break;
+                    }
+                }
+            }
+
+            // Color del texto del estado
+            if ("ATENDIENDO".equals(estado)) {
+                lblEstados[idx].setForeground(COLOR_VERDE);
+            } else if ("PAUSADA".equals(estado)) {
+                lblEstados[idx].setForeground(COLOR_PAUSA);
+            } else if (cola > 7) {
+                lblEstados[idx].setForeground(COLOR_ROJO);
+            } else if (cola > 4) {
+                lblEstados[idx].setForeground(COLOR_NARANJA);
+            } else if (cola > 2) {
+                lblEstados[idx].setForeground(COLOR_AMARILLO);
+            } else {
+                lblEstados[idx].setForeground(Color.BLACK);
+            }
+        }
+    }
+
+    public void reiniciar() {
+        for (int i = 0; i < numCajas; i++) {
+            actualizarCaja(i + 1, "LIBRE", 0, "");
+        }
+    }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\presentation\view\PanelDiagnostico.java ===
+package com.supermercado.presentation.view;
+
+import com.supermercado.application.dto.DiagnosticoDTO;
+import com.supermercado.application.usecase.DiagnosticarConfiguracionUseCase;
+import com.supermercado.domain.model.Caja;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import java.awt.*;
+import java.util.List;
+
+public class PanelDiagnostico extends JPanel {
+    
+    private static final long serialVersionUID = 1L;
+    
+    private JTable tablaDiagnostico;
+    private JTextArea txtResumen;
+    private JButton btnActualizar;
+    private DiagnosticarConfiguracionUseCase diagnosticarUseCase;
+    private List<Caja> cajasReferencia;
+    
+    private static final Color COLOR_VERDE = new Color(46, 204, 113);
+    private static final Color COLOR_AMARILLO = new Color(241, 196, 15);
+    private static final Color COLOR_NARANJA = new Color(243, 156, 18);
+    private static final Color COLOR_ROJO = new Color(231, 76, 60);
+    
+    public PanelDiagnostico() {
+        this.diagnosticarUseCase = new DiagnosticarConfiguracionUseCase();
+        setLayout(new BorderLayout(10, 10));
+        setBorder(BorderFactory.createTitledBorder("Diagnostico del Sistema"));
+        inicializarComponentes();
+    }
+    
+    private void inicializarComponentes() {
+        String[] columnas = {"Caja", "Nivel", "Estado", "Mensaje", "Sugerencia"};
+        tablaDiagnostico = new JTable(new DefaultTableModel(columnas, 0)) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        tablaDiagnostico.setRowHeight(30);
+        tablaDiagnostico.getTableHeader().setReorderingAllowed(false);
+        
+        JScrollPane scroll = new JScrollPane(tablaDiagnostico);
+        scroll.setPreferredSize(new Dimension(0, 200));
+        add(scroll, BorderLayout.CENTER);
+        
+        JPanel panelInferior = new JPanel(new BorderLayout(10, 5));
+        
+        txtResumen = new JTextArea(4, 40);
+        txtResumen.setEditable(false);
+        txtResumen.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        txtResumen.setBackground(new Color(245, 245, 250));
+        panelInferior.add(new JScrollPane(txtResumen), BorderLayout.CENTER);
+        
+        JPanel panelBotones = new JPanel(new FlowLayout());
+        btnActualizar = new JButton("Actualizar Diagnostico");
+        btnActualizar.addActionListener(e -> actualizarDiagnostico());
+        panelBotones.add(btnActualizar);
+        panelInferior.add(panelBotones, BorderLayout.EAST);
+        
+        add(panelInferior, BorderLayout.SOUTH);
+    }
+    
+    public void setCajas(List<Caja> cajas) {
+        this.cajasReferencia = cajas;
+        actualizarDiagnostico();
+    }
+    
+    public void actualizarDiagnostico() {
+        if (cajasReferencia == null || cajasReferencia.isEmpty()) {
+            txtResumen.setText("No hay datos de cajas disponibles. Ejecute una simulacion primero.");
+            return;
+        }
+        
+        DiagnosticoDTO diagnostico = diagnosticarUseCase.ejecutar(cajasReferencia);
+        
+        DefaultTableModel model = (DefaultTableModel) tablaDiagnostico.getModel();
+        model.setRowCount(0);
+        
+        for (DiagnosticoDTO.DiagnosticoItem item : diagnostico.getItems()) {
+            String nivelDisplay = item.getIcono() + " " + item.getNivel();
+            String estadoDisplay = item.getColaActual() + "/" + item.getColaMaxima();
+            
+            model.addRow(new Object[]{
+                item.getCajaId(),
+                nivelDisplay,
+                estadoDisplay,
+                item.getMensaje(),
+                item.getSugerencia()
+            });
+        }
+        
+        // Aplicar colores a las filas
+        tablaDiagnostico.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                
+                String nivel = table.getValueAt(row, 1).toString();
+                Color bgColor = Color.WHITE;
+                
+                if (nivel.contains("CRITICO")) {
+                    bgColor = COLOR_ROJO;
+                    c.setForeground(Color.WHITE);
+                } else if (nivel.contains("ALERTA")) {
+                    bgColor = COLOR_NARANJA;
+                    c.setForeground(Color.WHITE);
+                } else if (nivel.contains("ATENCION")) {
+                    bgColor = COLOR_AMARILLO;
+                    c.setForeground(Color.BLACK);
+                } else {
+                    bgColor = COLOR_VERDE;
+                    c.setForeground(Color.WHITE);
+                }
+                
+                if (!isSelected) {
+                    c.setBackground(bgColor);
+                }
+                return c;
+            }
+        });
+        
+        txtResumen.setText(diagnostico.getResumenEjecutivo());
+    }
+    
+    public void limpiar() {
+        DefaultTableModel model = (DefaultTableModel) tablaDiagnostico.getModel();
+        model.setRowCount(0);
+        txtResumen.setText("");
+    }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\presentation\view\PanelEstadisticas.java ===
+package com.supermercado.presentation.view;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class PanelEstadisticas extends JPanel {
+
+    private static final long serialVersionUID = 1L;
+
+    private JLabel lblHora;
+    private JLabel lblAtendidos;
+    private JLabel lblEnCola;
+    private JLabel lblGenerados;
+    private JLabel lblArticulos;
+    private JLabel lblPromedio;
+    private JLabel lblCajeroEstrella;
+
+    public PanelEstadisticas() {
+        setLayout(new GridLayout(7, 2, 10, 5));
+        setBackground(Theme.BACKGROUND);
+        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // Usar colores de Theme
+        Font labelFont = new Font("Segoe UI", Font.BOLD, 12);
+        Font valueFont = new Font("Segoe UI", Font.PLAIN, 12);
+
+        add(crearLabel("Hora Simulada:", labelFont));
+        lblHora = crearValor("08:00", valueFont);
+        add(lblHora);
+
+        add(crearLabel("Clientes Atendidos:", labelFont));
+        lblAtendidos = crearValor("0", valueFont);
+        add(lblAtendidos);
+
+        add(crearLabel("En Cola Ahora:", labelFont));
+        lblEnCola = crearValor("0", valueFont);
+        add(lblEnCola);
+
+        add(crearLabel("Clientes Generados:", labelFont));
+        lblGenerados = crearValor("0", valueFont);
+        add(lblGenerados);
+
+        add(crearLabel("Articulos Vendidos:", labelFont));
+        lblArticulos = crearValor("0", valueFont);
+        add(lblArticulos);
+
+        add(crearLabel("Prom. Atencion (min):", labelFont));
+        lblPromedio = crearValor("0.0", valueFont);
+        add(lblPromedio);
+
+        add(crearLabel("Cajero Estrella:", labelFont));
+        lblCajeroEstrella = crearValor("-", valueFont);
+        add(lblCajeroEstrella);
+    }
+
+    private JLabel crearLabel(String texto, Font font) {
+        JLabel label = new JLabel(texto);
+        label.setFont(font);
+        label.setForeground(Theme.TEXT_PRIMARY);
+        return label;
+    }
+
+    private JLabel crearValor(String texto, Font font) {
+        JLabel label = new JLabel(texto);
+        label.setFont(font);
+        label.setForeground(Theme.PRIMARY_BLUE);
+        return label;
+    }
+
+    public void actualizarEstadisticasAvanzadas(
+            String hora, int atendidos, int articulos, int enCola,
+            int generados, double promedio, String cajeroEstrella) {
+        SwingUtilities.invokeLater(() -> {
+            lblHora.setText(hora != null ? hora : "08:00");
+            lblAtendidos.setText(String.valueOf(atendidos));
+            lblArticulos.setText(String.valueOf(articulos));
+            lblEnCola.setText(String.valueOf(enCola));
+            lblGenerados.setText(String.valueOf(generados));
+            lblPromedio.setText(String.format("%.1f", promedio));
+            lblCajeroEstrella.setText(cajeroEstrella != null ? cajeroEstrella : "-");
+        });
+    }
+
+    public void reiniciar() {
+        actualizarEstadisticasAvanzadas("08:00", 0, 0, 0, 0, 0.0, "-");
+    }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\presentation\view\PanelRecomendaciones.java ===
+package com.supermercado.presentation.view;
+
+import com.supermercado.application.dto.RecomendacionDTO;
+import com.supermercado.application.usecase.RecomendarMejoraUseCase;
+import com.supermercado.domain.model.Caja;
+import com.supermercado.domain.model.Configuracion;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.List;
+
+public class PanelRecomendaciones extends JPanel {
+    
+    private static final long serialVersionUID = 1L;
+    
+    private JTextArea txtRecomendacion;
+    private JButton btnAnalizar;
+    private JButton btnAceptar;
+    private JButton btnRechazar;
+    private RecomendarMejoraUseCase recomendarUseCase;
+    private List<Caja> cajasReferencia;
+    private Configuracion configuracionReferencia;
+    private RecomendacionDTO recomendacionActual;
+    
+    private static final Color COLOR_CRITICO = new Color(231, 76, 60);
+    private static final Color COLOR_ALTO = new Color(243, 156, 18);
+    private static final Color COLOR_NORMAL = new Color(46, 204, 113);
+    
+    public PanelRecomendaciones() {
+        this.recomendarUseCase = new RecomendarMejoraUseCase();
+        setLayout(new BorderLayout(10, 10));
+        setBorder(BorderFactory.createTitledBorder("Recomendaciones de Mejora"));
+        inicializarComponentes();
+    }
+    
+    private void inicializarComponentes() {
+        JPanel panelCentral = new JPanel(new BorderLayout(10, 10));
+        
+        txtRecomendacion = new JTextArea();
+        txtRecomendacion.setEditable(false);
+        txtRecomendacion.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        txtRecomendacion.setBackground(new Color(250, 250, 255));
+        txtRecomendacion.setText("Presione 'Analizar' para obtener recomendaciones basadas en la simulacion actual.");
+        JScrollPane scroll = new JScrollPane(txtRecomendacion);
+        scroll.setPreferredSize(new Dimension(0, 200));
+        panelCentral.add(scroll, BorderLayout.CENTER);
+        
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 5));
+        
+        btnAnalizar = new JButton("Analizar y Recomendar");
+        btnAnalizar.addActionListener(e -> analizarYRecomendar());
+        panelBotones.add(btnAnalizar);
+        
+        btnAceptar = new JButton("Aceptar Recomendacion");
+        btnAceptar.setEnabled(false);
+        btnAceptar.addActionListener(e -> aceptarRecomendacion());
+        panelBotones.add(btnAceptar);
+        
+        btnRechazar = new JButton("Rechazar");
+        btnRechazar.setEnabled(false);
+        btnRechazar.addActionListener(e -> rechazarRecomendacion());
+        panelBotones.add(btnRechazar);
+        
+        panelCentral.add(panelBotones, BorderLayout.SOUTH);
+        
+        add(panelCentral, BorderLayout.CENTER);
+    }
+    
+    public void setDatos(List<Caja> cajas, Configuracion configuracion) {
+        this.cajasReferencia = cajas;
+        this.configuracionReferencia = configuracion;
+        btnAnalizar.setEnabled(cajas != null && !cajas.isEmpty());
+    }
+    
+    private void analizarYRecomendar() {
+        if (cajasReferencia == null || cajasReferencia.isEmpty()) {
+            txtRecomendacion.setText("No hay datos de cajas disponibles. Ejecute una simulacion primero.");
+            return;
+        }
+        
+        recomendacionActual = recomendarUseCase.ejecutar(cajasReferencia, configuracionReferencia);
+        
+        String prioridad = recomendacionActual.getPrioridad();
+        String mensaje = recomendacionActual.getMensaje();
+        
+        if ("CRITICO".equals(prioridad)) {
+            txtRecomendacion.setBackground(COLOR_CRITICO);
+            txtRecomendacion.setForeground(Color.WHITE);
+        } else if ("ALTO".equals(prioridad)) {
+            txtRecomendacion.setBackground(COLOR_ALTO);
+            txtRecomendacion.setForeground(Color.BLACK);
+        } else {
+            txtRecomendacion.setBackground(COLOR_NORMAL);
+            txtRecomendacion.setForeground(Color.BLACK);
+        }
+        
+        txtRecomendacion.setText(mensaje);
+        
+        btnAceptar.setEnabled(true);
+        btnRechazar.setEnabled(true);
+    }
+    
+    private void aceptarRecomendacion() {
+        if (recomendacionActual != null) {
+            JOptionPane.showMessageDialog(this,
+                "Recomendacion aceptada.\n" +
+                "Configuracion sugerida: " + recomendacionActual.getConfiguracionSugerida() + "\n" +
+                "Mejora estimada: " + String.format("%.1f", recomendacionActual.getMejoraEstimada()) + "%",
+                "Recomendacion Aceptada",
+                JOptionPane.INFORMATION_MESSAGE);
+            
+            btnAceptar.setEnabled(false);
+            btnRechazar.setEnabled(false);
+        }
+    }
+    
+    private void rechazarRecomendacion() {
+        if (recomendacionActual != null) {
+            JOptionPane.showMessageDialog(this,
+                "Recomendacion rechazada.\n" +
+                "Manteniendo configuracion actual.",
+                "Recomendacion Rechazada",
+                JOptionPane.INFORMATION_MESSAGE);
+            
+            btnAceptar.setEnabled(false);
+            btnRechazar.setEnabled(false);
+        }
+    }
+    
+    public void limpiar() {
+        txtRecomendacion.setText("Presione 'Analizar' para obtener recomendaciones.");
+        txtRecomendacion.setBackground(new Color(250, 250, 255));
+        txtRecomendacion.setForeground(Color.BLACK);
+        btnAceptar.setEnabled(false);
+        btnRechazar.setEnabled(false);
+        recomendacionActual = null;
+    }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\presentation\view\PanelTeoriaColas.java ===
+package com.supermercado.presentation.view;
+
+import com.supermercado.application.usecase.TeoriaColasUseCase;
+import com.supermercado.domain.model.Configuracion;
+import com.supermercado.domain.model.Recomendacion;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class PanelTeoriaColas extends JPanel {
+    
+    private static final long serialVersionUID = 1L;
+    
+    private JTextArea txtMetricas;
+    private JTextArea txtRecomendacion;
+    private JButton btnCalcular;
+    private TeoriaColasUseCase teoriaColasUseCase;
+    
+    public PanelTeoriaColas() {
+        this.teoriaColasUseCase = new TeoriaColasUseCase();
+        setLayout(new BorderLayout(10, 10));
+        setBorder(BorderFactory.createTitledBorder("Teoria de Colas - Analisis Avanzado"));
+        inicializarComponentes();
+    }
+    
+    private void inicializarComponentes() {
+        JPanel panelCentral = new JPanel(new GridLayout(1, 2, 10, 10));
+        
+        txtMetricas = new JTextArea();
+        txtMetricas.setEditable(false);
+        txtMetricas.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        txtMetricas.setBackground(new Color(240, 240, 245));
+        txtMetricas.setText("Presione 'Calcular' para obtener metricas de teoria de colas.");
+        JScrollPane scrollMetricas = new JScrollPane(txtMetricas);
+        scrollMetricas.setBorder(BorderFactory.createTitledBorder("Metricas M/M/c"));
+        panelCentral.add(scrollMetricas);
+        
+        txtRecomendacion = new JTextArea();
+        txtRecomendacion.setEditable(false);
+        txtRecomendacion.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        txtRecomendacion.setBackground(new Color(255, 250, 240));
+        txtRecomendacion.setText("Las recomendaciones basadas en teoria de colas apareceran aqui.");
+        JScrollPane scrollRecomendacion = new JScrollPane(txtRecomendacion);
+        scrollRecomendacion.setBorder(BorderFactory.createTitledBorder("Recomendacion"));
+        panelCentral.add(scrollRecomendacion);
+        
+        add(panelCentral, BorderLayout.CENTER);
+        
+        JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        btnCalcular = new JButton("Calcular Metricas");
+        btnCalcular.addActionListener(e -> calcularMetricas());
+        panelInferior.add(btnCalcular);
+        
+        add(panelInferior, BorderLayout.SOUTH);
+    }
+    
+    public void calcularMetricas(Configuracion configuracion) {
+        if (configuracion == null) {
+            JOptionPane.showMessageDialog(this, 
+                "No hay configuracion disponible.", 
+                "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        String metricas = teoriaColasUseCase.ejecutar(configuracion);
+        txtMetricas.setText(metricas);
+        
+        Recomendacion recomendacion = teoriaColasUseCase.obtenerRecomendacion(configuracion);
+        txtRecomendacion.setText(recomendacion.getMensaje());
+    }
+    
+    private void calcularMetricas() {
+        JOptionPane.showMessageDialog(this,
+            "Primero establezca una configuracion desde el panel de simulacion.",
+            "Informacion",
+            JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    public void limpiar() {
+        txtMetricas.setText("Presione 'Calcular' para obtener metricas.");
+        txtRecomendacion.setText("Las recomendaciones apareceran aqui.");
+    }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\presentation\view\SimuladorFrame.java ===
+package com.supermercado.presentation.view;
+
+import com.supermercado.application.dto.ConfiguracionDTO;
+import com.supermercado.application.dto.EstadisticasDTO;
+import com.supermercado.application.port.IConfiguracionRepositorio;
+import com.supermercado.application.port.ILogService;
+import com.supermercado.infrastructure.config.AppConfig;
+import com.supermercado.infrastructure.repository.ConfiguracionRepositorioImpl;
+import com.supermercado.presentation.controller.SimulacionController;
+
+import javax.swing.*;
+import java.awt.*;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+
+public class SimuladorFrame extends JFrame {
+
+    private static final long serialVersionUID = 1L;
+
+    private SimulacionController controller;
+    private ConfiguracionDTO configuracion;
+    private final ILogService logService;
+    private final IConfiguracionRepositorio configRepo;
+
+    private JButton btnIniciar;
+    private JButton btnDetener;
+    private JButton btnPausar;
+    private JButton btnReiniciar;
+    private JTextArea areaLog;
+    private PanelCajas panelCajas;
+    private PanelEstadisticas panelStats;
+    private JButton btnConfigurar;
+
+    public SimuladorFrame() {
+        this.logService = AppConfig.getInstance().getLogService();
+        this.configRepo = new ConfiguracionRepositorioImpl(logService);
+        this.configuracion = configRepo.cargar();
+        setTitle("Simulador de Supermercado - Gestion de Calidad");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(1200, 800);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout(10, 10));
+
+        inicializarComponentes();
+    }
+
+    public void setController(SimulacionController controller) {
+        this.controller = controller;
+    }
+
+    public void setConfiguracion(ConfiguracionDTO configuracion) {
+        this.configuracion = configuracion;
+        if (panelCajas != null && configuracion != null) {
+            int totalCajas = configuracion.getNumCajasNormales() + configuracion.getNumCajasRapidas();
+            panelCajas.inicializarCajas(totalCajas);
+            for (int i = 1; i <= configuracion.getNumCajasRapidas(); i++) {
+                panelCajas.actualizarCaja(i, "LIBRE", 0, "", "R");
+            }
+            for (int i = configuracion.getNumCajasRapidas() + 1; i <= totalCajas; i++) {
+                panelCajas.actualizarCaja(i, "LIBRE", 0, "", "N");
+            }
+        }
+    }
+
+    private void inicializarComponentes() {
+        JPanel panelControl = crearPanelControl();
+        add(panelControl, BorderLayout.NORTH);
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        splitPane.setDividerLocation(700);
+
+        panelCajas = new PanelCajas();
+        JScrollPane scrollCajas = new JScrollPane(panelCajas);
+        scrollCajas.setBorder(BorderFactory.createTitledBorder("Cajas Registradoras"));
+
+        JPanel panelDerecho = new JPanel(new BorderLayout(5, 5));
+
+        areaLog = new JTextArea(20, 30);
+        areaLog.setEditable(false);
+        areaLog.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        JScrollPane scrollLog = new JScrollPane(areaLog);
+        scrollLog.setBorder(BorderFactory.createTitledBorder("Log de Eventos"));
+
+        panelStats = new PanelEstadisticas();
+        JScrollPane scrollStats = new JScrollPane(panelStats);
+        scrollStats.setBorder(BorderFactory.createTitledBorder("Estadisticas en Tiempo Real"));
+
+        panelDerecho.add(scrollLog, BorderLayout.CENTER);
+        panelDerecho.add(scrollStats, BorderLayout.SOUTH);
+
+        splitPane.setLeftComponent(scrollCajas);
+        splitPane.setRightComponent(panelDerecho);
+
+        add(splitPane, BorderLayout.CENTER);
+    }
+
+    private JPanel crearPanelControl() {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        panel.setBackground(Theme.PRIMARY_BLUE);
+        panel.setBorder(BorderFactory.createTitledBorder("Control de Simulacion"));
+        panel.setOpaque(true);
+
+        btnIniciar = new JButton(" Iniciar");
+        btnIniciar.setBackground(Theme.SECONDARY_ORANGE);
+        btnIniciar.setForeground(Color.BLACK);
+        btnIniciar.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btnIniciar.setOpaque(true);
+        btnIniciar.setBorder(BorderFactory.createLineBorder(new Color(200, 150, 0), 1));
+        btnIniciar.addActionListener(e -> {
+            if (controller != null && configuracion != null) {
+                int totalCajas = configuracion.getNumCajasNormales() + configuracion.getNumCajasRapidas();
+                panelCajas.inicializarCajas(totalCajas);
+                for (int i = 1; i <= configuracion.getNumCajasRapidas(); i++) {
+                    panelCajas.actualizarCaja(i, "LIBRE", 0, "", "R");
+                }
+                for (int i = configuracion.getNumCajasRapidas() + 1; i <= totalCajas; i++) {
+                    panelCajas.actualizarCaja(i, "LIBRE", 0, "", "N");
+                }
+                controller.iniciarSimulacion(configuracion);
+            }
+        });
+
+        btnPausar = new JButton(" Pausar");
+        btnPausar.setEnabled(false);
+        btnPausar.setBackground(new Color(155, 89, 182));
+        btnPausar.setForeground(Color.WHITE);
+        btnPausar.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btnPausar.setOpaque(true);
+        btnPausar.setBorder(BorderFactory.createLineBorder(new Color(120, 70, 140), 1));
+        btnPausar.addActionListener(e -> {
+            if (controller != null && controller.isSimulacionActiva()) {
+                controller.pausarSimulacion();
+            }
+        });
+
+        btnDetener = new JButton(" Detener");
+        btnDetener.setEnabled(false);
+        btnDetener.setBackground(new Color(231, 76, 60));
+        btnDetener.setForeground(Color.WHITE);
+        btnDetener.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btnDetener.setOpaque(true);
+        btnDetener.setBorder(BorderFactory.createLineBorder(new Color(180, 50, 40), 1));
+        btnDetener.addActionListener(e -> {
+            if (controller != null) {
+                controller.detenerSimulacion();
+                btnPausar.setText(" Pausar");
+                btnPausar.setEnabled(false);
+                cambiarEstadoPausa(false);
+            }
+        });
+
+        btnReiniciar = new JButton(" Reiniciar");
+        btnReiniciar.setBackground(new Color(52, 152, 219));
+        btnReiniciar.setForeground(Color.WHITE);
+        btnReiniciar.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btnReiniciar.setOpaque(true);
+        btnReiniciar.setBorder(BorderFactory.createLineBorder(new Color(40, 120, 180), 1));
+        btnReiniciar.addActionListener(e -> {
+            if (controller != null) {
+                controller.detenerSimulacion();
+                reiniciarVista();
+                agregarLog("Sistema reiniciado");
+                logService.info("Sistema reiniciado");
+            }
+        });
+
+        btnConfigurar = new JButton(" Configurar");
+        btnConfigurar.setBackground(new Color(52, 73, 94));
+        btnConfigurar.setForeground(Color.WHITE);
+        btnConfigurar.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        btnConfigurar.setOpaque(true);
+        btnConfigurar.setBorder(BorderFactory.createLineBorder(new Color(40, 55, 70), 1));
+        btnConfigurar.addActionListener(e -> {
+            DialogoConfiguracion dialogo = new DialogoConfiguracion(SimuladorFrame.this, this.configuracion);
+            dialogo.setVisible(true);
+            if (dialogo.isConfirmado()) {
+                this.configuracion = dialogo.getConfiguracion();
+                configRepo.guardar(this.configuracion);
+                int totalCajas = configuracion.getNumCajasNormales() + configuracion.getNumCajasRapidas();
+                panelCajas.inicializarCajas(totalCajas);
+                for (int i = 1; i <= configuracion.getNumCajasRapidas(); i++) {
+                    panelCajas.actualizarCaja(i, "LIBRE", 0, "", "R");
+                }
+                for (int i = configuracion.getNumCajasRapidas() + 1; i <= totalCajas; i++) {
+                    panelCajas.actualizarCaja(i, "LIBRE", 0, "", "N");
+                }
+                agregarLog("Configuracion actualizada: " + totalCajas + " cajas (" +
+                    configuracion.getNumCajasRapidas() + " rapidas, " +
+                    configuracion.getNumCajasNormales() + " normales)");
+                logService.info("Configuracion actualizada desde GUI");
+            }
+        });
+
+        panel.add(btnIniciar);
+        panel.add(btnPausar);
+        panel.add(btnDetener);
+        panel.add(btnReiniciar);
+        panel.add(btnConfigurar);
+
+        return panel;
+    }
+
+    private void reiniciarVista() {
+        areaLog.setText("");
+        panelCajas.reiniciar();
+        panelStats.reiniciar();
+        btnIniciar.setEnabled(true);
+        btnDetener.setEnabled(false);
+        btnPausar.setEnabled(false);
+        btnPausar.setText(" Pausar");
+        cambiarEstadoPausa(false);
+
+        if (configuracion != null && panelCajas != null) {
+            int totalCajas = configuracion.getNumCajasNormales() + configuracion.getNumCajasRapidas();
+            panelCajas.inicializarCajas(totalCajas);
+            for (int i = 1; i <= configuracion.getNumCajasRapidas(); i++) {
+                panelCajas.actualizarCaja(i, "LIBRE", 0, "", "R");
+            }
+            for (int i = configuracion.getNumCajasRapidas() + 1; i <= totalCajas; i++) {
+                panelCajas.actualizarCaja(i, "LIBRE", 0, "", "N");
+            }
+        }
+    }
+
+    public void limpiarLog() {
+        areaLog.setText("");
+    }
+
+    public void habilitarBotonIniciar(boolean habilitado) {
+        btnIniciar.setEnabled(habilitado);
+    }
+
+    public void habilitarBotonDetener(boolean habilitado) {
+        btnDetener.setEnabled(habilitado);
+        if (habilitado) {
+            btnPausar.setEnabled(true);
+            btnPausar.setText(" Pausar");
+            cambiarEstadoPausa(false);
+        } else {
+            btnPausar.setEnabled(false);
+        }
+    }
+
+    public void cambiarEstadoPausa(boolean pausado) {
+        if (pausado) {
+            btnPausar.setText(" Reanudar");
+            btnPausar.setBackground(new Color(46, 204, 113));
+        } else {
+            btnPausar.setText(" Pausar");
+            btnPausar.setBackground(new Color(155, 89, 182));
+        }
+    }
+
+    // ============================================================
+    // MÉTODO DIRECTO PARA ACTUALIZAR ESTADÍSTICAS
+    // ============================================================
+    public void actualizarEstadisticasDirecto(EstadisticasDTO estadisticas) {
+        System.out.println("FRAME - actualizarEstadisticasDirecto INICIO");
+        if (panelStats != null && estadisticas != null) {
+            // Crear copias finales para la lambda
+            final String horaFinal;
+            final int atendidosFinal;
+            final int articulosFinal;
+            final int enColaFinal;
+            final int generadosFinal;
+            final double promedioFinal;
+            final String cajeroFinal;
+            
+            String hora = estadisticas.getHoraSimulada();
+            System.out.println("FRAME - Hora recibida directa: '" + hora + "'");
+            
+            if (hora == null || hora.isEmpty()) {
+                horaFinal = "08:00";
+            } else {
+                horaFinal = hora;
+            }
+            
+            atendidosFinal = estadisticas.getTotalClientesAtendidos();
+            articulosFinal = estadisticas.getTotalArticulosVendidos();
+            enColaFinal = estadisticas.getClientesEnCola();
+            generadosFinal = estadisticas.getClientesGenerados();
+            promedioFinal = estadisticas.getTiempoPromedioAtencion();
+            cajeroFinal = estadisticas.getCajeroEstrella();
+            
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    panelStats.actualizarEstadisticasAvanzadas(
+                        horaFinal,
+                        atendidosFinal,
+                        articulosFinal,
+                        enColaFinal,
+                        generadosFinal,
+                        promedioFinal,
+                        cajeroFinal
+                    );
+                    System.out.println("FRAME - Panel actualizado con hora: " + horaFinal);
+                }
+            });
+        } else {
+            System.err.println("FRAME - panelStats o estadisticas es NULL en directo");
+        }
+    }
+
+    public void actualizarEstadisticas(EstadisticasDTO estadisticas) {
+        actualizarEstadisticasDirecto(estadisticas);
+    }
+
+    public void agregarLog(String mensaje) {
+        SwingUtilities.invokeLater(() -> {
+            String timestamp = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+            areaLog.append("[" + timestamp + "] " + mensaje + "\n");
+            areaLog.setCaretPosition(areaLog.getDocument().getLength());
+        });
+    }
+
+    public void mostrarMensaje(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, "Informacion", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void mostrarError(String titulo, String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, titulo, JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void actualizarCaja(int numCaja, String estado, int cola, String clienteInfo) {
+        panelCajas.actualizarCaja(numCaja, estado, cola, clienteInfo);
+    }
+
+    public void actualizarCajaConTipo(int numCaja, String estado, int cola, String clienteInfo, String tipo) {
+        panelCajas.actualizarCaja(numCaja, estado, cola, clienteInfo, tipo);
+    }
+}
+
+=== C:\Users\ASUS\Documents\DClass\SimulacionSupermercadoCalidad\src\main\java\com\supermercado\presentation\view\Theme.java ===
+package com.supermercado.presentation.view;
+
+import java.awt.*;
+
+public class Theme {
+    public static final Color PRIMARY_BLUE = new Color(41, 128, 185);
+    public static final Color PRIMARY_DARK = new Color(26, 82, 118);
+    public static final Color SECONDARY_ORANGE = new Color(241, 196, 15);
+    public static final Color SECONDARY_GREEN = new Color(46, 204, 113);
+    public static final Color SECONDARY_RED = new Color(231, 76, 60);
+    public static final Color BACKGROUND = new Color(236, 240, 241);
+    public static final Color CARD_BACKGROUND = Color.WHITE;
+    public static final Color TEXT_PRIMARY = new Color(44, 62, 80);
+    public static final Color TEXT_SECONDARY = new Color(127, 140, 141);
+    public static final Color TEXT_LIGHT = Color.WHITE;
+    public static final Color BORDER_LIGHT = new Color(189, 195, 199);
+    public static final Color BORDER_DARK = new Color(149, 165, 166);
+    public static final Color STATUS_VERDE = new Color(46, 204, 113);
+    public static final Color STATUS_AMARILLO = new Color(241, 196, 15);
+    public static final Color STATUS_NARANJA = new Color(243, 156, 18);
+    public static final Color STATUS_ROJO = new Color(231, 76, 60);
+    public static final Color STATUS_PAUSA = new Color(155, 89, 182);
+    public static final Color STATUS_LIBRE = new Color(149, 165, 166);
+    public static final Font FONT_TITLE = new Font("Segoe UI", Font.BOLD, 18);
+    public static final Font FONT_HEADER = new Font("Segoe UI", Font.BOLD, 14);
+    public static final Font FONT_NORMAL = new Font("Segoe UI", Font.PLAIN, 12);
+    public static final Font FONT_SMALL = new Font("Segoe UI", Font.PLAIN, 10);
+}

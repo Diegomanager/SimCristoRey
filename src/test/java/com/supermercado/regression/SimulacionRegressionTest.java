@@ -1,8 +1,8 @@
 package com.supermercado.regression;
 
-import com.supermercado.application.dto.ConfiguracionDTO;
-import com.supermercado.application.usecase.IniciarSimulacionUseCase;
-import com.supermercado.domain.service.SimulacionEngine;
+import com.supermercado.application.supermercado.dto.ConfiguracionDTO;
+import com.supermercado.application.supermercado.usecase.IniciarSimulacionUseCase;
+import com.supermercado.domain.supermercado.service.SimulacionEngine;
 import com.supermercado.infrastructure.adapter.event.EventBusAdapter;
 import com.supermercado.infrastructure.service.LogServiceImpl;
 import org.junit.jupiter.api.BeforeEach;

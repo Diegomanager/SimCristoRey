@@ -1,6 +1,6 @@
 package com.supermercado.infrastructure.service;
 
-import com.supermercado.application.port.ILogService;
+import com.supermercado.application.supermercado.port.ILogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

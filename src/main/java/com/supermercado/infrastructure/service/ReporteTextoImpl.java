@@ -1,8 +1,8 @@
 package com.supermercado.infrastructure.service;
 
-import com.supermercado.application.dto.EstadisticasDTO;
-import com.supermercado.application.port.IReporteExportador;
-import com.supermercado.application.port.ILogService;
+import com.supermercado.application.supermercado.dto.EstadisticasDTO;
+import com.supermercado.application.supermercado.port.IReporteExportador;
+import com.supermercado.application.supermercado.port.ILogService;
 
 import java.io.FileWriter;
 import java.io.IOException;

@@ -1,10 +1,10 @@
 package com.supermercado.infrastructure.adapter.ui;
 
-import com.supermercado.application.dto.EstadisticasDTO;
-import com.supermercado.application.port.ILogService;
-import com.supermercado.domain.event.*;
+import com.supermercado.application.supermercado.dto.EstadisticasDTO;
+import com.supermercado.application.supermercado.port.ILogService;
+import com.supermercado.domain.supermercado.event.*;
 import com.supermercado.infrastructure.adapter.event.EventBusAdapter;
-import com.supermercado.presentation.view.SimuladorFrame;
+import com.supermercado.presentation.supermercado.view.SimuladorFrame;
 import javax.swing.SwingUtilities;
 
 public class SwingEventAdapter {

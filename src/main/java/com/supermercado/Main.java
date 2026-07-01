@@ -1,13 +1,13 @@
 package com.supermercado;
 
-import com.supermercado.application.dto.ConfiguracionDTO;
-import com.supermercado.application.port.IConfiguracionRepositorio;
-import com.supermercado.application.port.ILogService;
+import com.supermercado.application.supermercado.dto.ConfiguracionDTO;
+import com.supermercado.application.supermercado.port.IConfiguracionRepositorio;
+import com.supermercado.application.supermercado.port.ILogService;
 import com.supermercado.infrastructure.adapter.event.EventBusAdapter;
 import com.supermercado.infrastructure.adapter.ui.SwingEventAdapter;
 import com.supermercado.infrastructure.config.AppConfig;
-import com.supermercado.presentation.controller.SimulacionController;
-import com.supermercado.presentation.view.SimuladorFrame;
+import com.supermercado.presentation.supermercado.controller.SimulacionController;
+import com.supermercado.presentation.supermercado.view.SimuladorFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

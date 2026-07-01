@@ -1,10 +1,10 @@
 package com.supermercado.infrastructure.config;
 
-import com.supermercado.application.port.IConfiguracionRepositorio;
-import com.supermercado.application.port.ILogService;
-import com.supermercado.application.port.IReporteExportador;
-import com.supermercado.application.usecase.*;
-import com.supermercado.domain.service.SimulacionEngine;
+import com.supermercado.application.supermercado.port.IConfiguracionRepositorio;
+import com.supermercado.application.supermercado.port.ILogService;
+import com.supermercado.application.supermercado.port.IReporteExportador;
+import com.supermercado.application.supermercado.usecase.*;
+import com.supermercado.domain.supermercado.service.SimulacionEngine;
 import com.supermercado.infrastructure.adapter.event.EventBusAdapter;
 import com.supermercado.infrastructure.repository.ConfiguracionRepositorioImpl;
 import com.supermercado.infrastructure.service.LogServiceImpl;

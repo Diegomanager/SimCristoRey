@@ -1,6 +1,6 @@
 package com.supermercado.infrastructure.adapter.event;
 
-import com.supermercado.application.port.IEventPublisher;
+import com.supermercado.application.supermercado.port.IEventPublisher;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

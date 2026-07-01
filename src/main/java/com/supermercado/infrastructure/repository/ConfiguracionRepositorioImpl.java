@@ -1,8 +1,8 @@
 package com.supermercado.infrastructure.repository;
 
-import com.supermercado.application.dto.ConfiguracionDTO;
-import com.supermercado.application.port.IConfiguracionRepositorio;
-import com.supermercado.application.port.ILogService;
+import com.supermercado.application.supermercado.dto.ConfiguracionDTO;
+import com.supermercado.application.supermercado.port.IConfiguracionRepositorio;
+import com.supermercado.application.supermercado.port.ILogService;
 
 import java.io.File;
 import java.io.FileInputStream;

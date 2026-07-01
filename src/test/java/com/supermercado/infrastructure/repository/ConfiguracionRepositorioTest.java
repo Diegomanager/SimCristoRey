@@ -1,7 +1,7 @@
 package com.supermercado.infrastructure.repository;
 
-import com.supermercado.application.dto.ConfiguracionDTO;
-import com.supermercado.application.port.ILogService;
+import com.supermercado.application.supermercado.dto.ConfiguracionDTO;
+import com.supermercado.application.supermercado.port.ILogService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

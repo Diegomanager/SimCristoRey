@@ -16,10 +16,11 @@ public class SimuladorCooperativaService {
     private double intervaloLlegadaMinutos = 1.0;
 
     // ── Estado ────────────────────────────────────────────────────────────────
-    private volatile boolean corriendo      = false;
-    private volatile boolean pausado        = false;
-    private volatile boolean faseRezagados  = false;
-    private long tiempoSimuladoActual       = 0;
+    private volatile boolean corriendo          = false;
+    private volatile boolean pausado            = false;
+    private volatile boolean faseRezagados      = false;
+    private volatile boolean fasePrincipalFinalizada = false;
+    private long tiempoSimuladoActual           = 0;
 
     // ── Entidades ─────────────────────────────────────────────────────────────
     private SalaEspera              salaEspera;
@@ -66,6 +67,7 @@ public class SimuladorCooperativaService {
         corriendo     = true;
         pausado       = false;
         faseRezagados = false;
+        fasePrincipalFinalizada = false;
         tiempoSimuladoActual = 0;
         generador.reiniciar();
         estadisticas.reiniciar();
@@ -73,20 +75,29 @@ public class SimuladorCooperativaService {
         hiloMotor = new Thread(this::bucleMotor, "Motor-Cooperativa");
         hiloMotor.setDaemon(true);
         hiloMotor.start();
-        publicar(new EventoSimulacion(TipoEvento.SIMULACION_INICIADA, "Simulacion iniciada"));
+        publicar(new EventoSimulacion(TipoEvento.SIMULACION_INICIADA, "Simulacion iniciada", tiempoSimuladoActual));
+    }
+
+    // NUEVO: iniciar fase de rezagados (llamado desde UI)
+    public void iniciarFaseRezagados() {
+        if (!fasePrincipalFinalizada || faseRezagados) return;
+        faseRezagados = true;
+        publicar(new EventoSimulacion(TipoEvento.FASE_REZAGADOS_INICIADA,
+                "Fase de rezagados iniciada. Socios en sala: " + salaEspera.getTotalEsperando(),
+                tiempoSimuladoActual));
     }
 
     public void pausar() {
         if (!corriendo || pausado) return;
         pausado = true;
-        publicar(new EventoSimulacion(TipoEvento.SIMULACION_PAUSADA, "Simulacion pausada"));
+        publicar(new EventoSimulacion(TipoEvento.SIMULACION_PAUSADA, "Simulacion pausada", tiempoSimuladoActual));
     }
 
     public void reanudar() {
         if (!corriendo || !pausado) return;
         pausado = false;
         synchronized (this) { notifyAll(); }
-        publicar(new EventoSimulacion(TipoEvento.SIMULACION_REANUDADA, "Simulacion reanudada"));
+        publicar(new EventoSimulacion(TipoEvento.SIMULACION_REANUDADA, "Simulacion reanudada", tiempoSimuladoActual));
     }
 
     public void detener() {
@@ -97,7 +108,7 @@ public class SimuladorCooperativaService {
             hiloMotor.interrupt();
         }
         publicar(new EventoSimulacion(TipoEvento.SIMULACION_DETENIDA,
-                "Simulacion detenida manualmente"));
+                "Simulacion detenida manualmente", tiempoSimuladoActual));
     }
 
     public void reiniciar() {
@@ -107,7 +118,9 @@ public class SimuladorCooperativaService {
         generador.reiniciar();
         estadisticas.reiniciar();
         tiempoSimuladoActual = 0;
-        publicar(new EventoSimulacion(TipoEvento.SIMULACION_REINICIADA, "Simulacion reiniciada"));
+        fasePrincipalFinalizada = false;
+        faseRezagados = false;
+        publicar(new EventoSimulacion(TipoEvento.SIMULACION_REINICIADA, "Simulacion reiniciada", 0));
     }
 
     // =========================================================================
@@ -128,7 +141,8 @@ public class SimuladorCooperativaService {
 
             tiempoSimuladoActual++;
 
-            if (!faseRezagados) {
+            if (!faseRezagados && !fasePrincipalFinalizada) {
+                // FASE PRINCIPAL: generar socios
                 acumuladorLlegada += 1.0;
                 while (acumuladorLlegada >= intervaloLlegadaMinutos
                         && generador.getTotalGenerados() < maxSocios) {
@@ -137,38 +151,47 @@ public class SimuladorCooperativaService {
                     salaEspera.agregarSocio(s);
                     publicar(new EventoSimulacion(TipoEvento.SOCIO_GENERADO,
                             "Socio " + s.getFicha() + " llego – " +
-                            (s.getServicio() != null ? s.getServicio().getNombre() : "General")));
+                            (s.getServicio() != null ? s.getServicio().getNombre() : "General"),
+                            tiempoSimuladoActual));
+                }
+
+                // Asignar socios a cajas libres (si hay)
+                procesarAsignaciones();
+
+                // Procesar atenciones
+                procesarAtenciones();
+
+                // Verificar fin de fase principal
+                boolean tiempoCumplido = tiempoSimuladoActual >= duracionSimuladaMinutos;
+                boolean limiteAlcanzado = generador.getTotalGenerados() >= maxSocios;
+
+                if (tiempoCumplido || limiteAlcanzado) {
+                    fasePrincipalFinalizada = true;
+                    String motivo = limiteAlcanzado
+                            ? "Limite de socios alcanzado (" + maxSocios + ")"
+                            : "Tiempo de jornada cumplido (" + duracionSimuladaMinutos + " min)";
+                    publicar(new EventoSimulacion(TipoEvento.FASE_PRINCIPAL_FINALIZADA,
+                            motivo + ". Socios en sala: " + salaEspera.getTotalEsperando(),
+                            tiempoSimuladoActual));
+                    // No detenemos la simulación, esperamos que la UI decida si iniciar rezagados
+                }
+
+            } else if (faseRezagados) {
+                // FASE DE REZAGADOS: solo atender socios pendientes
+                procesarAsignaciones();
+                procesarAtenciones();
+
+                if (salaEspera.isEmpty() && cajas.stream().noneMatch(c -> c.getEstado() == EstadoCaja.OCUPADA)) {
+                    corriendo = false;
+                    publicar(new EventoSimulacion(TipoEvento.SIMULACION_FINALIZADA,
+                            "Simulacion finalizada. Total atendidos: " + estadisticas.getTotalAtendidos() +
+                            ". Rezagados: " + (generador.getTotalGenerados() - estadisticas.getTotalAtendidos()),
+                            tiempoSimuladoActual));
+                    break;
                 }
             }
 
-            procesarAsignaciones();
-            procesarAtenciones();
-
-            if (!faseRezagados && tiempoSimuladoActual >= duracionSimuladaMinutos) {
-                publicar(new EventoSimulacion(TipoEvento.FASE_REZAGADOS_INICIADA,
-                        "Tiempo cumplido. Rezagados en sala: " + salaEspera.getTotalEsperando()
-                        + ". Iniciando fase de drenaje..."));
-                faseRezagados = true;
-            }
-
-            if (faseRezagados && salaEspera.isEmpty()
-                    && cajas.stream().noneMatch(c -> c.getEstado() == EstadoCaja.OCUPADA)) {
-                corriendo = false;
-                String motivo = generador.getTotalGenerados() >= maxSocios
-                        ? "limite de socios alcanzado (" + maxSocios + ")"
-                        : "tiempo de jornada cumplido (" + duracionSimuladaMinutos + " min)";
-                publicar(new EventoSimulacion(TipoEvento.SIMULACION_FINALIZADA,
-                        "Simulacion finalizada por " + motivo +
-                        ". Total atendidos: " + estadisticas.getTotalAtendidos()));
-                break;
-            }
-
-            if (!faseRezagados && generador.getTotalGenerados() >= maxSocios) {
-                publicar(new EventoSimulacion(TipoEvento.FASE_REZAGADOS_INICIADA,
-                        "Limite de socios (" + maxSocios + ") alcanzado. Drenando sala..."));
-                faseRezagados = true;
-            }
-
+            // Esperar tick
             try {
                 Thread.sleep(msPorMinutoSimulado);
             } catch (InterruptedException e) {
@@ -189,7 +212,8 @@ public class SimuladorCooperativaService {
             asignador.confirmarAsignacion(socio, caja, tiempoSimuladoActual);
             publicar(new EventoSimulacion(TipoEvento.SOCIO_ASIGNADO,
                     "Socio " + socio.getFicha() + " asignado a " + caja.getId()
-                    + " (" + caja.getTipo().getNombre() + ")"));
+                    + " (" + caja.getTipo().getNombre() + ")",
+                    tiempoSimuladoActual));
         }
     }
 
@@ -208,7 +232,8 @@ public class SimuladorCooperativaService {
                 publicar(new EventoSimulacion(TipoEvento.SOCIO_ATENDIDO,
                         "Socio " + socio.getFicha() + " atendido en " + caja.getId()
                         + " | Monto: Bs " + String.format("%.2f", socio.getMonto())
-                        + " | Espera: " + (socio.getTiempoInicioAtencion() - socio.getTiempoLlegada()) + " min"));
+                        + " | Espera: " + (socio.getTiempoInicioAtencion() - socio.getTiempoLlegada()) + " min",
+                        tiempoSimuladoActual));
             }
         }
     }
@@ -231,6 +256,7 @@ public class SimuladorCooperativaService {
     public boolean isCorriendo()     { return corriendo; }
     public boolean isPausado()       { return pausado; }
     public boolean isFaseRezagados() { return faseRezagados; }
+    public boolean isFasePrincipalFinalizada() { return fasePrincipalFinalizada; }
     public long getTiempoSimulado()  { return tiempoSimuladoActual; }
     public SalaEspera getSalaEspera(){ return salaEspera; }
     public List<Caja> getCajas()     { return cajas; }

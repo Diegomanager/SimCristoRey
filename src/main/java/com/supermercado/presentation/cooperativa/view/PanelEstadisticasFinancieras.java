@@ -17,7 +17,7 @@ public class PanelEstadisticasFinancieras extends JPanel {
     private final JLabel lblAtencion        = etiqueta("0.0 min");
     private final JLabel lblMonto           = etiqueta("Bs 0.00");
     private final JLabel lblCajeroEstrella  = etiqueta("N/A");
-    private final JLabel lblEficiencia      = etiqueta("0.00");
+    private final JLabel lblEficiencia      = etiqueta("0.00 socios/min");
     private final JTextArea areaServicios   = new JTextArea(6, 20);
 
     private final NumberFormat nf = NumberFormat.getNumberInstance(new Locale("es","BO"));
@@ -42,13 +42,13 @@ public class PanelEstadisticasFinancieras extends JPanel {
         grid.add(label("Monto total:"));       grid.add(lblMonto);
         grid.add(new JSeparator());            grid.add(new JSeparator());
         grid.add(label("Cajero Estrella:"));   grid.add(lblCajeroEstrella);
-        grid.add(label("Eficiencia:"));        grid.add(lblEficiencia);
+        grid.add(label("Productividad:"));     grid.add(lblEficiencia); // Etiqueta más clara
 
         areaServicios.setEditable(false);
         areaServicios.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
         areaServicios.setBackground(new Color(245, 245, 250));
         JScrollPane scrollServicios = new JScrollPane(areaServicios);
-        scrollServicios.setBorder(BorderFactory.createTitledBorder("Por servicio"));
+        scrollServicios.setBorder(BorderFactory.createTitledBorder("Atendidos por servicio"));
 
         add(grid,            BorderLayout.NORTH);
         add(scrollServicios, BorderLayout.CENTER);
@@ -65,7 +65,8 @@ public class PanelEstadisticasFinancieras extends JPanel {
 
             String estrella = est.getCajeroEstrella();
             lblCajeroEstrella.setText(estrella);
-            lblEficiencia.setText(String.format("%.2f", est.getEficienciaCajero(estrella)));
+            double eficiencia = est.getEficienciaCajero(estrella);
+            lblEficiencia.setText(String.format("%.2f socios/min", eficiencia));
 
             Map<String, Integer> porServicio = est.getAtendidosPorServicio();
             StringBuilder sb = new StringBuilder();

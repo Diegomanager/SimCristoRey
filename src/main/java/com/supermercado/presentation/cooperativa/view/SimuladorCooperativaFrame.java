@@ -25,6 +25,7 @@ public class SimuladorCooperativaFrame extends JFrame {
 
     private final JButton btnIniciar    = new JButton("Iniciar");
     private final JButton btnPausar     = new JButton("Pausar");
+    private final JButton btnReanudar   = new JButton("Reanudar");
     private final JButton btnDetener    = new JButton("Detener");
     private final JButton btnReiniciar  = new JButton("Reiniciar");
     private final JButton btnConfig     = new JButton("Config");
@@ -49,6 +50,7 @@ public class SimuladorCooperativaFrame extends JFrame {
         barraControl.add(new JSeparator(SwingConstants.VERTICAL));
         barraControl.add(btnIniciar);
         barraControl.add(btnPausar);
+        barraControl.add(btnReanudar);
         barraControl.add(btnDetener);
         barraControl.add(btnReiniciar);
         barraControl.add(new JSeparator(SwingConstants.VERTICAL));
@@ -64,15 +66,14 @@ public class SimuladorCooperativaFrame extends JFrame {
         add(tabs, BorderLayout.CENTER);
 
         btnPausar.setEnabled(false);
+        btnReanudar.setEnabled(false);
         btnDetener.setEnabled(false);
         btnReiniciar.setEnabled(false);
 
         btnConfig.addActionListener(e -> abrirConfiguracion());
         btnIniciar.addActionListener(e -> iniciarSimulacion());
-        btnPausar.addActionListener(e -> {
-            if (simulador.isPausado()) { simulador.reanudar(); btnPausar.setText("Pausar"); }
-            else                       { simulador.pausar();   btnPausar.setText("Reanudar"); }
-        });
+        btnPausar.addActionListener(e -> simulador.pausar());
+        btnReanudar.addActionListener(e -> simulador.reanudar());
         btnDetener.addActionListener(e -> simulador.detener());
         btnReiniciar.addActionListener(e -> {
             simulador.reiniciar();
@@ -81,6 +82,7 @@ public class SimuladorCooperativaFrame extends JFrame {
             panelLog.limpiar();
             btnIniciar.setEnabled(true);
             btnPausar.setEnabled(false);
+            btnReanudar.setEnabled(false);
             btnDetener.setEnabled(false);
             lblEstado.setText("Estado: En espera");
         });
@@ -104,19 +106,61 @@ public class SimuladorCooperativaFrame extends JFrame {
                     lblEstado.setForeground(new Color(0, 120, 0));
                     btnIniciar.setEnabled(false);
                     btnPausar.setEnabled(true);
+                    btnReanudar.setEnabled(false);
                     btnDetener.setEnabled(true);
                     btnReiniciar.setEnabled(false);
                 }
                 case SIMULACION_PAUSADA -> {
                     lblEstado.setText("Estado: Pausado");
                     lblEstado.setForeground(Color.ORANGE);
+                    btnPausar.setEnabled(false);
+                    btnReanudar.setEnabled(true);
                 }
                 case SIMULACION_REANUDADA -> {
                     lblEstado.setText("Estado: Corriendo");
                     lblEstado.setForeground(new Color(0, 120, 0));
+                    btnPausar.setEnabled(true);
+                    btnReanudar.setEnabled(false);
+                }
+                case FASE_PRINCIPAL_FINALIZADA -> {
+                    lblEstado.setText("Estado: Fase principal finalizada");
+                    lblEstado.setForeground(new Color(0, 0, 180));
+                    btnPausar.setEnabled(false);
+                    btnReanudar.setEnabled(false);
+                    btnDetener.setEnabled(false);
+
+                    // Preguntar si iniciar fase de rezagados
+                    int sociosEnSala = simulador.getSalaEspera().getTotalEsperando();
+                    if (sociosEnSala > 0) {
+                        int respuesta = JOptionPane.showConfirmDialog(
+                                this,
+                                "Hay " + sociosEnSala + " socios en la sala de espera.\n" +
+                                "¿Desea iniciar la fase de rezagados para atenderlos?",
+                                "Fase de Rezagados",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.QUESTION_MESSAGE
+                        );
+                        if (respuesta == JOptionPane.YES_OPTION) {
+                            simulador.iniciarFaseRezagados();
+                            lblEstado.setText("Estado: Rezagados en progreso...");
+                            lblEstado.setForeground(new Color(180, 100, 0));
+                        } else {
+                            // Finalizar simulación sin atender rezagados
+                            simulador.detener();
+                            // Mostrar estadísticas finales con rezagados
+                            mostrarEstadisticasFinales();
+                        }
+                    } else {
+                        // No hay socios en sala, finalizar automáticamente
+                        JOptionPane.showMessageDialog(this,
+                                "No hay socios en sala. La simulación ha finalizado.",
+                                "Simulación finalizada",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        simulador.detener();
+                    }
                 }
                 case FASE_REZAGADOS_INICIADA -> {
-                    lblEstado.setText("Estado: Drenando rezagados...");
+                    lblEstado.setText("Estado: Rezagados en progreso...");
                     lblEstado.setForeground(new Color(180, 100, 0));
                 }
                 case SIMULACION_FINALIZADA -> {
@@ -124,28 +168,59 @@ public class SimuladorCooperativaFrame extends JFrame {
                     lblEstado.setForeground(new Color(0, 0, 180));
                     btnIniciar.setEnabled(false);
                     btnPausar.setEnabled(false);
+                    btnReanudar.setEnabled(false);
                     btnDetener.setEnabled(false);
                     btnReiniciar.setEnabled(true);
-                    JOptionPane.showMessageDialog(this,
-                            evento.getMensaje(), "Simulacion Finalizada",
-                            JOptionPane.INFORMATION_MESSAGE);
+                    mostrarEstadisticasFinales();
                 }
-                case SIMULACION_DETENIDA, SIMULACION_REINICIADA -> {
+                case SIMULACION_DETENIDA -> {
                     lblEstado.setText("Estado: Detenido");
                     lblEstado.setForeground(Color.DARK_GRAY);
                     btnIniciar.setEnabled(true);
                     btnPausar.setEnabled(false);
+                    btnReanudar.setEnabled(false);
                     btnDetener.setEnabled(false);
                     btnReiniciar.setEnabled(true);
-                    btnPausar.setText("Pausar");
+                }
+                case SIMULACION_REINICIADA -> {
+                    lblEstado.setText("Estado: Reiniciado");
+                    lblEstado.setForeground(Color.DARK_GRAY);
+                    btnIniciar.setEnabled(true);
+                    btnPausar.setEnabled(false);
+                    btnReanudar.setEnabled(false);
+                    btnDetener.setEnabled(false);
+                    btnReiniciar.setEnabled(false);
                 }
                 default -> {}
             }
         });
     }
 
+    private void mostrarEstadisticasFinales() {
+        // Implementar diálogo con estadísticas finales (puede ser un panel emergente)
+        // Por ahora mostramos un mensaje simple
+        int atendidos = simulador.getEstadisticas().getTotalAtendidos();
+        int generados = simulador.getGenerador().getTotalGenerados();
+        int rezagados = generados - atendidos;
+        double monto = simulador.getEstadisticas().getMontoTotal();
+        String estrella = simulador.getEstadisticas().getCajeroEstrella();
+
+        JOptionPane.showMessageDialog(this,
+            "=== ESTADISTICAS FINALES ===\n" +
+            "Socios generados: " + generados + "\n" +
+            "Socios atendidos: " + atendidos + "\n" +
+            "Socios rezagados: " + rezagados + "\n" +
+            "Monto total: Bs " + String.format("%.2f", monto) + "\n" +
+            "Cajero Estrella: " + estrella,
+            "Estadisticas Finales",
+            JOptionPane.INFORMATION_MESSAGE);
+    }
+
     private void refrescarUI() {
-        if (!simulador.isCorriendo() && !simulador.isFaseRezagados()) return;
+        if (!simulador.isCorriendo() && !simulador.isFaseRezagados() && !simulador.isFasePrincipalFinalizada()) {
+            // Si no está corriendo ni en rezagados, no actualizar
+            return;
+        }
 
         lblTiempo.setText("Tiempo: " + simulador.getTiempoSimulado() + " min sim");
 
@@ -161,7 +236,7 @@ public class SimuladorCooperativaFrame extends JFrame {
     }
 
     private void abrirConfiguracion() {
-        if (simulador.isCorriendo()) {
+        if (simulador.isCorriendo() || simulador.isFasePrincipalFinalizada()) {
             JOptionPane.showMessageDialog(this,
                     "Deten la simulacion antes de cambiar la configuracion.",
                     "Aviso", JOptionPane.WARNING_MESSAGE);
@@ -185,6 +260,7 @@ public class SimuladorCooperativaFrame extends JFrame {
         simulador.iniciar();
     }
 
+    // ── Datos por defecto ─────────────────────────────────────────────────────
     private List<ServicioFinanciero> serviciosPorDefecto() {
         List<ServicioFinanciero> lista = new ArrayList<>();
 
@@ -241,7 +317,16 @@ public class SimuladorCooperativaFrame extends JFrame {
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override public void windowClosing(WindowEvent e) {
-                if (simulador.isCorriendo()) simulador.detener();
+                if (simulador.isCorriendo() || simulador.isFasePrincipalFinalizada()) {
+                    int confirm = JOptionPane.showConfirmDialog(
+                            SimuladorCooperativaFrame.this,
+                            "La simulación está en progreso. ¿Desea detenerla y salir?",
+                            "Salir",
+                            JOptionPane.YES_NO_OPTION
+                    );
+                    if (confirm != JOptionPane.YES_OPTION) return;
+                    simulador.detener();
+                }
                 timerUI.stop();
                 dispose();
             }

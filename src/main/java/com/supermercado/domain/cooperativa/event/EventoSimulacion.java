@@ -1,25 +1,34 @@
 package com.supermercado.domain.cooperativa.event;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-
 public class EventoSimulacion {
     private final TipoEvento tipo;
     private final String     mensaje;
-    private final String     hora;
+    private final long       tiempoSimulado; // minutos simulados
 
-    public EventoSimulacion(TipoEvento tipo, String mensaje) {
+    public EventoSimulacion(TipoEvento tipo, String mensaje, long tiempoSimulado) {
         this.tipo    = tipo;
         this.mensaje = mensaje;
-        this.hora    = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+        this.tiempoSimulado = tiempoSimulado;
+    }
+
+    public EventoSimulacion(TipoEvento tipo, String mensaje) {
+        this(tipo, mensaje, 0);
     }
 
     public TipoEvento getTipo()    { return tipo; }
     public String     getMensaje() { return mensaje; }
-    public String     getHora()    { return hora; }
+    public long       getTiempoSimulado() { return tiempoSimulado; }
+
+    public String getHoraSimulada() {
+        if (tiempoSimulado <= 0) return "??:??";
+        int horas = (int) (tiempoSimulado / 60);
+        int mins  = (int) (tiempoSimulado % 60);
+        return String.format("%02d:%02d", horas + 8, mins); // 8:00 de apertura
+    }
 
     @Override
     public String toString() {
+        String hora = getHoraSimulada();
         return "[" + hora + "] " + tipo.name() + ": " + mensaje;
     }
 }

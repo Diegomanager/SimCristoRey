@@ -1,10 +1,14 @@
 com\supermercado\infrastructure\service\ReporteTextoImpl.class
+com\supermercado\application\cooperativa\dto\EstadisticasFinancierasDTO.class
+com\supermercado\application\cooperativa\dto\TipoCajaDTO.class
 com\supermercado\presentation\supermercado\view\DialogoConfiguracion$1.class
 com\supermercado\domain\supermercado\service\TeoriaColasService.class
 com\supermercado\domain\supermercado\model\Caja.class
+com\supermercado\application\cooperativa\dto\CajaDTO.class
 com\supermercado\domain\supermercado\service\DiagnosticoService.class
 com\supermercado\domain\supermercado\event\SimulacionDetenidaEvent.class
 com\supermercado\presentation\supermercado\view\PanelDiagnostico$2.class
+com\supermercado\application\cooperativa\dto\SocioDTO.class
 com\supermercado\application\supermercado\dto\OptimizacionDTO$ResultadoOptimizacion.class
 com\supermercado\application\supermercado\usecase\ConfigurarSimulacionUseCase.class
 com\supermercado\infrastructure\adapter\ui\SwingEventAdapter.class
@@ -29,6 +33,7 @@ com\supermercado\presentation\supermercado\view\PanelCajas$1.class
 com\supermercado\application\supermercado\usecase\ReanudarSimulacionUseCase.class
 com\supermercado\domain\cooperativa\service\AsignadorCajasService.class
 com\supermercado\domain\supermercado\service\OptimizadorService.class
+com\supermercado\application\cooperativa\dto\EstadoSimulacionDTO.class
 com\supermercado\application\supermercado\usecase\AsignarClienteUseCase.class
 com\supermercado\application\supermercado\usecase\ObtenerEstadisticasUseCase.class
 com\supermercado\application\supermercado\usecase\CompararConfiguracionesUseCase.class
@@ -43,9 +48,11 @@ com\supermercado\application\supermercado\usecase\GenerarClienteUseCase.class
 com\supermercado\domain\cooperativa\event\SimulacionCooperativaPausadaEvent.class
 com\supermercado\domain\cooperativa\model\SalaEspera.class
 com\supermercado\domain\cooperativa\model\TipoCaja.class
+com\supermercado\application\cooperativa\dto\ServicioDTO.class
 com\supermercado\application\supermercado\port\IEventPublisher.class
 com\supermercado\domain\supermercado\model\Configuracion.class
 com\supermercado\domain\cooperativa\event\FaseRezagadosIniciadaEvent.class
+com\supermercado\application\cooperativa\dto\ConfiguracionCooperativaDTO.class
 com\supermercado\domain\supermercado\model\Cliente.class
 com\supermercado\domain\cooperativa\event\SimulacionCooperativaIniciadaEvent.class
 com\supermercado\application\supermercado\usecase\TeoriaColasUseCase.class
@@ -83,6 +90,7 @@ com\supermercado\application\supermercado\usecase\PausarSimulacionUseCase.class
 com\supermercado\domain\cooperativa\model\EstadoCaja.class
 com\supermercado\domain\supermercado\service\SimuladorService.class
 com\supermercado\application\supermercado\usecase\ReiniciarSimulacionUseCase.class
+com\supermercado\application\cooperativa\usecase\IniciarSimulacionCooperativaUseCase.class
 com\supermercado\domain\supermercado\service\OptimizadorService$ResultadoOptimizacion.class
 com\supermercado\presentation\supermercado\view\PanelEstadisticas.class
 com\supermercado\application\supermercado\usecase\CalcularTiempoEsperaUseCase.class

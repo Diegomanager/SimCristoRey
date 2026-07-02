@@ -1,6 +1,7 @@
 package com.supermercado.domain.cooperativa.model;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 public class SalaEspera {
@@ -18,6 +19,11 @@ public class SalaEspera {
 
     public Socio siguienteSocio() {
         return colaUnica.poll();
+    }
+
+    // NUEVO: verSiguiente (peek)
+    public Socio verSiguiente() {
+        return colaUnica.peek();
     }
 
     public boolean isEmpty() {
@@ -39,5 +45,9 @@ public class SalaEspera {
     public void reiniciar() {
         colaUnica.clear();
         totalSociosAtendidos = 0;
+    }
+
+    public List<Socio> getSociosEnEspera() {
+        return new LinkedList<>(colaUnica);
     }
 }

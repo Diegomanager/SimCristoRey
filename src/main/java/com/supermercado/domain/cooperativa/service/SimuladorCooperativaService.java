@@ -1,239 +1,239 @@
 package com.supermercado.domain.cooperativa.service;
 
-import com.supermercado.domain.cooperativa.event.*;
 import com.supermercado.domain.cooperativa.model.*;
-import com.supermercado.infrastructure.adapter.event.EventBusAdapter;
+import com.supermercado.domain.cooperativa.event.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
 public class SimuladorCooperativaService {
-    private final SalaEspera salaEspera;
-    private final List<Caja> cajas;
-    private final List<ServicioFinanciero> servicios;
-    private final List<TipoCaja> tiposCaja;
-    private final GeneradorSociosService generadorSocios;
-    private final AsignadorCajasService asignadorCajas;
-    private final EstadisticasFinancierasService estadisticasService;
-    private final EventBusAdapter eventBus;
 
-    private ScheduledExecutorService executor;
-    private AtomicBoolean ejecutando;
-    private AtomicBoolean pausado;
-    private AtomicBoolean detenido;
-    private AtomicBoolean faseRezagados;
+    // ── Configuracion ─────────────────────────────────────────────────────────
+    private int    duracionSimuladaMinutos = 480;
+    private long   msPorMinutoSimulado     = 62L;
+    private int    maxSocios               = 400;
+    private double intervaloLlegadaMinutos = 1.0;
 
-    private int duracionPrincipal; // en minutos simulados
-    private int sociosGenerados;
-    private int sociosAtendidos;
-    private int sociosRezagados;
-    private long tiempoInicioSimulacion;
-    private long tiempoInicioFaseRezagados;
+    // ── Estado ────────────────────────────────────────────────────────────────
+    private volatile boolean corriendo      = false;
+    private volatile boolean pausado        = false;
+    private volatile boolean faseRezagados  = false;
+    private long tiempoSimuladoActual       = 0;
 
-    public SimuladorCooperativaService(
-            List<ServicioFinanciero> servicios,
-            List<TipoCaja> tiposCaja,
-            List<Caja> cajas,
-            EventBusAdapter eventBus) {
-        this.salaEspera = new SalaEspera();
-        this.servicios = servicios;
-        this.tiposCaja = tiposCaja;
-        this.cajas = cajas;
-        this.eventBus = eventBus;
-        this.generadorSocios = new GeneradorSociosService();
-        this.asignadorCajas = new AsignadorCajasService();
-        this.estadisticasService = new EstadisticasFinancierasService();
-        this.ejecutando = new AtomicBoolean(false);
-        this.pausado = new AtomicBoolean(false);
-        this.detenido = new AtomicBoolean(false);
-        this.faseRezagados = new AtomicBoolean(false);
+    // ── Entidades ─────────────────────────────────────────────────────────────
+    private SalaEspera              salaEspera;
+    private List<Caja>              cajas;
+    private List<ServicioFinanciero> servicios;
+
+    // ── Servicios ──────────────────────────────────────────────────────────────
+    private final GeneradorSociosService    generador    = new GeneradorSociosService();
+    private final AsignadorCajasService     asignador    = new AsignadorCajasService();
+    private final EstadisticasFinancierasService estadisticas = new EstadisticasFinancierasService();
+
+    // ── Listeners ─────────────────────────────────────────────────────────────
+    private final List<Consumer<EventoSimulacion>> listeners = new CopyOnWriteArrayList<>();
+
+    // ── Hilo ──────────────────────────────────────────────────────────────────
+    private Thread hiloMotor;
+
+    // =========================================================================
+    // Configuracion
+    // =========================================================================
+    public void configurar(int duracionMinutos, long msPorMinuto, int maxSocios,
+                           double intervaloLlegada, List<ServicioFinanciero> servicios,
+                           List<Caja> cajas) {
+        this.duracionSimuladaMinutos  = duracionMinutos;
+        this.msPorMinutoSimulado      = Math.max(1L, msPorMinuto);
+        this.maxSocios                = maxSocios;
+        this.intervaloLlegadaMinutos  = intervaloLlegada;
+        this.servicios                = servicios != null ? servicios : new ArrayList<>();
+        this.cajas                    = cajas     != null ? cajas     : new ArrayList<>();
+        this.salaEspera               = new SalaEspera();
+        generador.setServicios(this.servicios);
     }
 
-    public void iniciarSimulacion(int duracionPrincipal) {
-        if (ejecutando.get()) {
-            return;
-        }
-        
-        // Reiniciar estado
-        this.duracionPrincipal = duracionPrincipal;
-        this.sociosGenerados = 0;
-        this.sociosAtendidos = 0;
-        this.sociosRezagados = 0;
-        this.tiempoInicioSimulacion = System.currentTimeMillis();
-        this.faseRezagados.set(false);
-        this.detenido.set(false);
-        this.pausado.set(false);
-        this.ejecutando.set(true);
-        
-        // Reiniciar sala de espera y cajas
-        salaEspera.reiniciar();
-        cajas.forEach(Caja::reiniciar);
-        generadorSocios.reiniciarContador();
-        
-        // Publicar evento de inicio
-        eventBus.publish(new SimulacionCooperativaIniciadaEvent());
-        
-        // Iniciar ejecución en hilo separado
-        executor = Executors.newSingleThreadScheduledExecutor();
-        executor.scheduleAtFixedRate(this::tickSimulacion, 0, 1, TimeUnit.MILLISECONDS);
+    public static long calcularEscala(int duracionSimuladaMinutos, int duracionRealSeg) {
+        if (duracionSimuladaMinutos <= 0 || duracionRealSeg <= 0) return 62L;
+        return Math.max(1L, (long) duracionRealSeg * 1000L / duracionSimuladaMinutos);
     }
 
-    private void tickSimulacion() {
-        if (detenido.get()) {
-            return;
-        }
-        
-        if (pausado.get()) {
-            return;
-        }
-        
-        // Verificar si terminó la fase principal
-        long tiempoTranscurrido = System.currentTimeMillis() - tiempoInicioSimulacion;
-        long minutosTranscurridos = tiempoTranscurrido / 1000 / 60; // simplificado para pruebas
-        
-        if (!faseRezagados.get() && minutosTranscurridos >= duracionPrincipal) {
-            iniciarFaseRezagados();
-            return;
-        }
-        
-        if (faseRezagados.get()) {
-            tickFaseRezagados();
-        } else {
-            tickFasePrincipal();
-        }
-    }
+    // =========================================================================
+    // Control
+    // =========================================================================
+    public void iniciar() {
+        if (corriendo) return;
+        corriendo     = true;
+        pausado       = false;
+        faseRezagados = false;
+        tiempoSimuladoActual = 0;
+        generador.reiniciar();
+        estadisticas.reiniciar();
 
-    private void tickFasePrincipal() {
-        // Generar socios (simplificado: 1 por tick)
-        Socio nuevoSocio = generadorSocios.generarSocio(servicios, tiposCaja);
-        salaEspera.agregarSocio(nuevoSocio);
-        sociosGenerados++;
-        eventBus.publish(new SocioGeneradoEvent(nuevoSocio));
-        
-        // Asignar socios a cajas libres
-        int asignados = asignadorCajas.asignarTodosPosibles(salaEspera, cajas);
-        if (asignados > 0) {
-            // Publicar eventos de asignación (los detalles se manejan internamente)
-        }
-        
-        // Procesar finalización de atenciones
-        for (Caja caja : cajas) {
-            if (caja.getEstado() == EstadoCaja.OCUPADA) {
-                // Simular que la atención toma tiempo (simplificado: finaliza después de duracionEstimada ticks)
-                // En una implementación real, se usaría un timer
-                // Por ahora, asumimos que finaliza después de la duración estimada
-                // Para simplificar, finalizamos inmediatamente en el próximo tick
-                caja.finalizarAtencion();
-                sociosAtendidos++;
-                eventBus.publish(new SocioAtendidoEvent(caja.getSocioActual(), caja));
-            }
-        }
-    }
-
-    private void tickFaseRezagados() {
-        // No generar nuevos socios, solo atender rezagados
-        if (salaEspera.isEmpty()) {
-            // Verificar si todas las cajas están libres
-            boolean todasLibres = cajas.stream().allMatch(c -> c.getEstado() == EstadoCaja.LIBRE);
-            if (todasLibres) {
-                finalizarSimulacion();
-                return;
-            }
-        }
-        
-        // Asignar socios a cajas libres
-        asignadorCajas.asignarTodosPosibles(salaEspera, cajas);
-        
-        // Procesar finalización de atenciones
-        for (Caja caja : cajas) {
-            if (caja.getEstado() == EstadoCaja.OCUPADA) {
-                caja.finalizarAtencion();
-                sociosAtendidos++;
-                eventBus.publish(new SocioAtendidoEvent(caja.getSocioActual(), caja));
-            }
-        }
-    }
-
-    private void iniciarFaseRezagados() {
-        if (faseRezagados.get()) {
-            return;
-        }
-        
-        sociosRezagados = salaEspera.getTotalEsperando();
-        tiempoInicioFaseRezagados = System.currentTimeMillis();
-        faseRezagados.set(true);
-        
-        eventBus.publish(new FaseRezagadosIniciadaEvent(sociosRezagados));
-    }
-
-    private void finalizarSimulacion() {
-        if (!ejecutando.get()) {
-            return;
-        }
-        
-        detenido.set(true);
-        ejecutando.set(false);
-        executor.shutdown();
-        
-        eventBus.publish(new SimulacionCooperativaFinalizadaEvent());
+        hiloMotor = new Thread(this::bucleMotor, "Motor-Cooperativa");
+        hiloMotor.setDaemon(true);
+        hiloMotor.start();
+        publicar(new EventoSimulacion(TipoEvento.SIMULACION_INICIADA, "Simulacion iniciada"));
     }
 
     public void pausar() {
-        pausado.set(true);
-        eventBus.publish(new SimulacionCooperativaPausadaEvent());
+        if (!corriendo || pausado) return;
+        pausado = true;
+        publicar(new EventoSimulacion(TipoEvento.SIMULACION_PAUSADA, "Simulacion pausada"));
     }
 
     public void reanudar() {
-        pausado.set(false);
-        eventBus.publish(new SimulacionCooperativaReanudadaEvent());
+        if (!corriendo || !pausado) return;
+        pausado = false;
+        synchronized (this) { notifyAll(); }
+        publicar(new EventoSimulacion(TipoEvento.SIMULACION_REANUDADA, "Simulacion reanudada"));
     }
 
     public void detener() {
-        detenido.set(true);
-        ejecutando.set(false);
-        if (executor != null) {
-            executor.shutdownNow();
+        corriendo = false;
+        pausado   = false;
+        if (hiloMotor != null) {
+            synchronized (this) { notifyAll(); }
+            hiloMotor.interrupt();
         }
-        eventBus.publish(new SimulacionCooperativaDetenidaEvent());
+        publicar(new EventoSimulacion(TipoEvento.SIMULACION_DETENIDA,
+                "Simulacion detenida manualmente"));
     }
 
-    public boolean isEjecutando() {
-        return ejecutando.get();
+    public void reiniciar() {
+        detener();
+        if (salaEspera != null) salaEspera.reiniciar();
+        if (cajas != null) cajas.forEach(Caja::reiniciar);
+        generador.reiniciar();
+        estadisticas.reiniciar();
+        tiempoSimuladoActual = 0;
+        publicar(new EventoSimulacion(TipoEvento.SIMULACION_REINICIADA, "Simulacion reiniciada"));
     }
 
-    public boolean isPausado() {
-        return pausado.get();
+    // =========================================================================
+    // Motor
+    // =========================================================================
+    private void bucleMotor() {
+        double acumuladorLlegada = 0.0;
+
+        while (corriendo) {
+            if (pausado) {
+                synchronized (this) {
+                    while (pausado && corriendo) {
+                        try { wait(200); } catch (InterruptedException e) { Thread.currentThread().interrupt(); return; }
+                    }
+                }
+                continue;
+            }
+
+            tiempoSimuladoActual++;
+
+            if (!faseRezagados) {
+                acumuladorLlegada += 1.0;
+                while (acumuladorLlegada >= intervaloLlegadaMinutos
+                        && generador.getTotalGenerados() < maxSocios) {
+                    acumuladorLlegada -= intervaloLlegadaMinutos;
+                    Socio s = generador.generarSocio(tiempoSimuladoActual);
+                    salaEspera.agregarSocio(s);
+                    publicar(new EventoSimulacion(TipoEvento.SOCIO_GENERADO,
+                            "Socio " + s.getFicha() + " llego – " +
+                            (s.getServicio() != null ? s.getServicio().getNombre() : "General")));
+                }
+            }
+
+            procesarAsignaciones();
+            procesarAtenciones();
+
+            if (!faseRezagados && tiempoSimuladoActual >= duracionSimuladaMinutos) {
+                publicar(new EventoSimulacion(TipoEvento.FASE_REZAGADOS_INICIADA,
+                        "Tiempo cumplido. Rezagados en sala: " + salaEspera.getTotalEsperando()
+                        + ". Iniciando fase de drenaje..."));
+                faseRezagados = true;
+            }
+
+            if (faseRezagados && salaEspera.isEmpty()
+                    && cajas.stream().noneMatch(c -> c.getEstado() == EstadoCaja.OCUPADA)) {
+                corriendo = false;
+                String motivo = generador.getTotalGenerados() >= maxSocios
+                        ? "limite de socios alcanzado (" + maxSocios + ")"
+                        : "tiempo de jornada cumplido (" + duracionSimuladaMinutos + " min)";
+                publicar(new EventoSimulacion(TipoEvento.SIMULACION_FINALIZADA,
+                        "Simulacion finalizada por " + motivo +
+                        ". Total atendidos: " + estadisticas.getTotalAtendidos()));
+                break;
+            }
+
+            if (!faseRezagados && generador.getTotalGenerados() >= maxSocios) {
+                publicar(new EventoSimulacion(TipoEvento.FASE_REZAGADOS_INICIADA,
+                        "Limite de socios (" + maxSocios + ") alcanzado. Drenando sala..."));
+                faseRezagados = true;
+            }
+
+            try {
+                Thread.sleep(msPorMinutoSimulado);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
     }
 
-    public boolean isDetenido() {
-        return detenido.get();
+    private void procesarAsignaciones() {
+        while (!salaEspera.isEmpty()) {
+            Socio siguiente = salaEspera.verSiguiente();
+            if (siguiente == null) break;
+            Optional<Caja> cajaOpt = asignador.asignar(siguiente, cajas);
+            if (cajaOpt.isEmpty()) break;
+            Socio socio = salaEspera.siguienteSocio();
+            Caja  caja  = cajaOpt.get();
+            asignador.confirmarAsignacion(socio, caja, tiempoSimuladoActual);
+            publicar(new EventoSimulacion(TipoEvento.SOCIO_ASIGNADO,
+                    "Socio " + socio.getFicha() + " asignado a " + caja.getId()
+                    + " (" + caja.getTipo().getNombre() + ")"));
+        }
     }
 
-    public boolean isFaseRezagados() {
-        return faseRezagados.get();
+    private void procesarAtenciones() {
+        for (Caja caja : cajas) {
+            if (caja.getEstado() != EstadoCaja.OCUPADA) continue;
+            Socio socio = caja.getSocioActual();
+            if (socio == null) continue;
+
+            long tiempoEnCaja = tiempoSimuladoActual - socio.getTiempoInicioAtencion();
+            if (tiempoEnCaja >= socio.getDuracionEstimada()) {
+                socio.setTiempoSalida(tiempoSimuladoActual);
+                socio.setAtendida(true);
+                estadisticas.registrarAtencion(socio, caja);
+                caja.finalizarAtencion(tiempoSimuladoActual);
+                publicar(new EventoSimulacion(TipoEvento.SOCIO_ATENDIDO,
+                        "Socio " + socio.getFicha() + " atendido en " + caja.getId()
+                        + " | Monto: Bs " + String.format("%.2f", socio.getMonto())
+                        + " | Espera: " + (socio.getTiempoInicioAtencion() - socio.getTiempoLlegada()) + " min"));
+            }
+        }
     }
 
-    public int getSociosGenerados() {
-        return sociosGenerados;
+    // =========================================================================
+    // Eventos
+    // =========================================================================
+    public void addListener(Consumer<EventoSimulacion> listener) { listeners.add(listener); }
+    public void removeListener(Consumer<EventoSimulacion> listener) { listeners.remove(listener); }
+
+    private void publicar(EventoSimulacion evento) {
+        for (Consumer<EventoSimulacion> l : listeners) {
+            try { l.accept(evento); } catch (Exception ignored) {}
+        }
     }
 
-    public int getSociosAtendidos() {
-        return sociosAtendidos;
-    }
-
-    public int getSociosRezagados() {
-        return sociosRezagados;
-    }
-
-    public int getSociosEnEspera() {
-        return salaEspera.getTotalEsperando();
-    }
-
-    public List<Caja> getCajas() {
-        return new ArrayList<>(cajas);
-    }
+    // =========================================================================
+    // Getters
+    // =========================================================================
+    public boolean isCorriendo()     { return corriendo; }
+    public boolean isPausado()       { return pausado; }
+    public boolean isFaseRezagados() { return faseRezagados; }
+    public long getTiempoSimulado()  { return tiempoSimuladoActual; }
+    public SalaEspera getSalaEspera(){ return salaEspera; }
+    public List<Caja> getCajas()     { return cajas; }
+    public EstadisticasFinancierasService getEstadisticas() { return estadisticas; }
+    public GeneradorSociosService getGenerador() { return generador; }
 }

@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.supermercado.regression.SimulacionRegressionTest" time="28.209" tests="5" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="java.specification.version" value="25"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+    <property name="sun.jnu.encoding" value="Cp1252"/>
+    <property name="java.class.path" value="C:\Users\ASUS\Documents\DClass\SimCristoRey\target\test-classes;C:\Users\ASUS\Documents\DClass\SimCristoRey\target\classes;C:\Users\ASUS\.m2\repository\org\slf4j\slf4j-api\2.0.9\slf4j-api-2.0.9.jar;C:\Users\ASUS\.m2\repository\ch\qos\logback\logback-classic\1.4.14\logback-classic-1.4.14.jar;C:\Users\ASUS\.m2\repository\ch\qos\logback\logback-core\1.4.14\logback-core-1.4.14.jar;C:\Users\ASUS\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.10.0\junit-jupiter-api-5.10.0.jar;C:\Users\ASUS\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\ASUS\.m2\repository\org\junit\platform\junit-platform-commons\1.10.0\junit-platform-commons-1.10.0.jar;C:\Users\ASUS\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\ASUS\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.10.0\junit-jupiter-engine-5.10.0.jar;C:\Users\ASUS\.m2\repository\org\junit\platform\junit-platform-engine\1.10.0\junit-platform-engine-1.10.0.jar;C:\Users\ASUS\.m2\repository\org\mockito\mockito-core\5.6.0\mockito-core-5.6.0.jar;C:\Users\ASUS\.m2\repository\net\bytebuddy\byte-buddy\1.14.8\byte-buddy-1.14.8.jar;C:\Users\ASUS\.m2\repository\net\bytebuddy\byte-buddy-agent\1.14.8\byte-buddy-agent-1.14.8.jar;C:\Users\ASUS\.m2\repository\org\objenesis\objenesis\3.3\objenesis-3.3.jar;C:\Users\ASUS\.m2\repository\org\mockito\mockito-junit-jupiter\5.6.0\mockito-junit-jupiter-5.6.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-java\4.15.0\selenium-java-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-api\4.15.0\selenium-api-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-chrome-driver\4.15.0\selenium-chrome-driver-4.15.0.jar;C:\Users\ASUS\.m2\repository\com\google\auto\service\auto-service-annotations\1.1.1\auto-service-annotations-1.1.1.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-chromium-driver\4.15.0\selenium-chromium-driver-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-json\4.15.0\selenium-json-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-manager\4.15.0\selenium-manager-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-devtools-v117\4.15.0\selenium-devtools-v117-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-devtools-v118\4.15.0\selenium-devtools-v118-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-devtools-v119\4.15.0\selenium-devtools-v119-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-devtools-v85\4.15.0\selenium-devtools-v85-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-edge-driver\4.15.0\selenium-edge-driver-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-firefox-driver\4.15.0\selenium-firefox-driver-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-http\4.15.0\selenium-http-4.15.0.jar;C:\Users\ASUS\.m2\repository\dev\failsafe\failsafe\3.3.2\failsafe-3.3.2.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-ie-driver\4.15.0\selenium-ie-driver-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-remote-driver\4.15.0\selenium-remote-driver-4.15.0.jar;C:\Users\ASUS\.m2\repository\com\google\guava\guava\32.1.2-jre\guava-32.1.2-jre.jar;C:\Users\ASUS\.m2\repository\com\google\guava\failureaccess\1.0.1\failureaccess-1.0.1.jar;C:\Users\ASUS\.m2\repository\com\google\guava\listenablefuture\9999.0-empty-to-avoid-conflict-with-guava\listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar;C:\Users\ASUS\.m2\repository\com\google\code\findbugs\jsr305\3.0.2\jsr305-3.0.2.jar;C:\Users\ASUS\.m2\repository\org\checkerframework\checker-qual\3.33.0\checker-qual-3.33.0.jar;C:\Users\ASUS\.m2\repository\com\google\errorprone\error_prone_annotations\2.18.0\error_prone_annotations-2.18.0.jar;C:\Users\ASUS\.m2\repository\com\google\j2objc\j2objc-annotations\2.8\j2objc-annotations-2.8.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-api\1.28.0\opentelemetry-api-1.28.0.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-context\1.28.0\opentelemetry-context-1.28.0.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-exporter-logging\1.28.0\opentelemetry-exporter-logging-1.28.0.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-sdk-metrics\1.28.0\opentelemetry-sdk-metrics-1.28.0.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-extension-incubator\1.28.0-alpha\opentelemetry-extension-incubator-1.28.0-alpha.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-sdk-logs\1.28.0\opentelemetry-sdk-logs-1.28.0.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-sdk-common\1.28.0\opentelemetry-sdk-common-1.28.0.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-sdk-extension-autoconfigure-spi\1.28.0\opentelemetry-sdk-extension-autoconfigure-spi-1.28.0.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-sdk-extension-autoconfigure\1.28.0\opentelemetry-sdk-extension-autoconfigure-1.28.0.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-api-events\1.28.0-alpha\opentelemetry-api-events-1.28.0-alpha.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-sdk-trace\1.28.0\opentelemetry-sdk-trace-1.28.0.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-sdk\1.28.0\opentelemetry-sdk-1.28.0.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-semconv\1.28.0-alpha\opentelemetry-semconv-1.28.0-alpha.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-os\4.15.0\selenium-os-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\apache\commons\commons-exec\1.3\commons-exec-1.3.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-safari-driver\4.15.0\selenium-safari-driver-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-support\4.15.0\selenium-support-4.15.0.jar;C:\Users\ASUS\.m2\repository\io\github\bonigarcia\webdrivermanager\5.6.2\webdrivermanager-5.6.2.jar;C:\Users\ASUS\.m2\repository\com\google\code\gson\gson\2.10.1\gson-2.10.1.jar;C:\Users\ASUS\.m2\repository\com\github\docker-java\docker-java\3.3.4\docker-java-3.3.4.jar;C:\Users\ASUS\.m2\repository\com\github\docker-java\docker-java-core\3.3.4\docker-java-core-3.3.4.jar;C:\Users\ASUS\.m2\repository\com\github\docker-java\docker-java-api\3.3.4\docker-java-api-3.3.4.jar;C:\Users\ASUS\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.10.3\jackson-annotations-2.10.3.jar;C:\Users\ASUS\.m2\repository\commons-io\commons-io\2.13.0\commons-io-2.13.0.jar;C:\Users\ASUS\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.10.3\jackson-databind-2.10.3.jar;C:\Users\ASUS\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.10.3\jackson-core-2.10.3.jar;C:\Users\ASUS\.m2\repository\org\bouncycastle\bcpkix-jdk18on\1.76\bcpkix-jdk18on-1.76.jar;C:\Users\ASUS\.m2\repository\org\bouncycastle\bcprov-jdk18on\1.76\bcprov-jdk18on-1.76.jar;C:\Users\ASUS\.m2\repository\org\bouncycastle\bcutil-jdk18on\1.76\bcutil-jdk18on-1.76.jar;C:\Users\ASUS\.m2\repository\org\slf4j\jcl-over-slf4j\1.7.30\jcl-over-slf4j-1.7.30.jar;C:\Users\ASUS\.m2\repository\com\github\docker-java\docker-java-transport-httpclient5\3.3.4\docker-java-transport-httpclient5-3.3.4.jar;C:\Users\ASUS\.m2\repository\com\github\docker-java\docker-java-transport\3.3.4\docker-java-transport-3.3.4.jar;C:\Users\ASUS\.m2\repository\net\java\dev\jna\jna\5.13.0\jna-5.13.0.jar;C:\Users\ASUS\.m2\repository\org\brotli\dec\0.1.2\dec-0.1.2.jar;C:\Users\ASUS\.m2\repository\org\apache\commons\commons-lang3\3.13.0\commons-lang3-3.13.0.jar;C:\Users\ASUS\.m2\repository\org\apache\commons\commons-compress\1.24.0\commons-compress-1.24.0.jar;C:\Users\ASUS\.m2\repository\org\apache\httpcomponents\client5\httpclient5\5.2.1\httpclient5-5.2.1.jar;C:\Users\ASUS\.m2\repository\org\apache\httpcomponents\core5\httpcore5\5.2\httpcore5-5.2.jar;C:\Users\ASUS\.m2\repository\org\apache\httpcomponents\core5\httpcore5-h2\5.2\httpcore5-h2-5.2.jar;"/>
+    <property name="java.vm.vendor" value="Eclipse Adoptium"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="user.variant" value=""/>
+    <property name="java.vendor.url" value="https://adoptium.net/"/>
+    <property name="user.timezone" value="America/La_Paz"/>
+    <property name="os.name" value="Windows 11"/>
+    <property name="java.vm.specification.version" value="25"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="user.country" value="BO"/>
+    <property name="sun.boot.library.path" value="C:\Users\ASUS\AppData\Local\Programs\Eclipse Adoptium\jdk-25.0.3.9-hotspot\bin"/>
+    <property name="sun.java.command" value="C:\Users\ASUS\AppData\Local\Temp\surefire11306556543679040399\surefirebooter-20260702145320674_3.jar C:\Users\ASUS\AppData\Local\Temp\surefire11306556543679040399 2026-07-02T14-53-20_395-jvmRun1 surefire-20260702145320674_1tmp surefire_0-20260702145320674_2tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="C:\Users\ASUS\Documents\DClass\SimCristoRey\target\test-classes;C:\Users\ASUS\Documents\DClass\SimCristoRey\target\classes;C:\Users\ASUS\.m2\repository\org\slf4j\slf4j-api\2.0.9\slf4j-api-2.0.9.jar;C:\Users\ASUS\.m2\repository\ch\qos\logback\logback-classic\1.4.14\logback-classic-1.4.14.jar;C:\Users\ASUS\.m2\repository\ch\qos\logback\logback-core\1.4.14\logback-core-1.4.14.jar;C:\Users\ASUS\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.10.0\junit-jupiter-api-5.10.0.jar;C:\Users\ASUS\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\ASUS\.m2\repository\org\junit\platform\junit-platform-commons\1.10.0\junit-platform-commons-1.10.0.jar;C:\Users\ASUS\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\ASUS\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.10.0\junit-jupiter-engine-5.10.0.jar;C:\Users\ASUS\.m2\repository\org\junit\platform\junit-platform-engine\1.10.0\junit-platform-engine-1.10.0.jar;C:\Users\ASUS\.m2\repository\org\mockito\mockito-core\5.6.0\mockito-core-5.6.0.jar;C:\Users\ASUS\.m2\repository\net\bytebuddy\byte-buddy\1.14.8\byte-buddy-1.14.8.jar;C:\Users\ASUS\.m2\repository\net\bytebuddy\byte-buddy-agent\1.14.8\byte-buddy-agent-1.14.8.jar;C:\Users\ASUS\.m2\repository\org\objenesis\objenesis\3.3\objenesis-3.3.jar;C:\Users\ASUS\.m2\repository\org\mockito\mockito-junit-jupiter\5.6.0\mockito-junit-jupiter-5.6.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-java\4.15.0\selenium-java-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-api\4.15.0\selenium-api-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-chrome-driver\4.15.0\selenium-chrome-driver-4.15.0.jar;C:\Users\ASUS\.m2\repository\com\google\auto\service\auto-service-annotations\1.1.1\auto-service-annotations-1.1.1.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-chromium-driver\4.15.0\selenium-chromium-driver-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-json\4.15.0\selenium-json-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-manager\4.15.0\selenium-manager-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-devtools-v117\4.15.0\selenium-devtools-v117-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-devtools-v118\4.15.0\selenium-devtools-v118-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-devtools-v119\4.15.0\selenium-devtools-v119-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-devtools-v85\4.15.0\selenium-devtools-v85-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-edge-driver\4.15.0\selenium-edge-driver-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-firefox-driver\4.15.0\selenium-firefox-driver-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-http\4.15.0\selenium-http-4.15.0.jar;C:\Users\ASUS\.m2\repository\dev\failsafe\failsafe\3.3.2\failsafe-3.3.2.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-ie-driver\4.15.0\selenium-ie-driver-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-remote-driver\4.15.0\selenium-remote-driver-4.15.0.jar;C:\Users\ASUS\.m2\repository\com\google\guava\guava\32.1.2-jre\guava-32.1.2-jre.jar;C:\Users\ASUS\.m2\repository\com\google\guava\failureaccess\1.0.1\failureaccess-1.0.1.jar;C:\Users\ASUS\.m2\repository\com\google\guava\listenablefuture\9999.0-empty-to-avoid-conflict-with-guava\listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar;C:\Users\ASUS\.m2\repository\com\google\code\findbugs\jsr305\3.0.2\jsr305-3.0.2.jar;C:\Users\ASUS\.m2\repository\org\checkerframework\checker-qual\3.33.0\checker-qual-3.33.0.jar;C:\Users\ASUS\.m2\repository\com\google\errorprone\error_prone_annotations\2.18.0\error_prone_annotations-2.18.0.jar;C:\Users\ASUS\.m2\repository\com\google\j2objc\j2objc-annotations\2.8\j2objc-annotations-2.8.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-api\1.28.0\opentelemetry-api-1.28.0.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-context\1.28.0\opentelemetry-context-1.28.0.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-exporter-logging\1.28.0\opentelemetry-exporter-logging-1.28.0.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-sdk-metrics\1.28.0\opentelemetry-sdk-metrics-1.28.0.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-extension-incubator\1.28.0-alpha\opentelemetry-extension-incubator-1.28.0-alpha.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-sdk-logs\1.28.0\opentelemetry-sdk-logs-1.28.0.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-sdk-common\1.28.0\opentelemetry-sdk-common-1.28.0.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-sdk-extension-autoconfigure-spi\1.28.0\opentelemetry-sdk-extension-autoconfigure-spi-1.28.0.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-sdk-extension-autoconfigure\1.28.0\opentelemetry-sdk-extension-autoconfigure-1.28.0.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-api-events\1.28.0-alpha\opentelemetry-api-events-1.28.0-alpha.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-sdk-trace\1.28.0\opentelemetry-sdk-trace-1.28.0.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-sdk\1.28.0\opentelemetry-sdk-1.28.0.jar;C:\Users\ASUS\.m2\repository\io\opentelemetry\opentelemetry-semconv\1.28.0-alpha\opentelemetry-semconv-1.28.0-alpha.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-os\4.15.0\selenium-os-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\apache\commons\commons-exec\1.3\commons-exec-1.3.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-safari-driver\4.15.0\selenium-safari-driver-4.15.0.jar;C:\Users\ASUS\.m2\repository\org\seleniumhq\selenium\selenium-support\4.15.0\selenium-support-4.15.0.jar;C:\Users\ASUS\.m2\repository\io\github\bonigarcia\webdrivermanager\5.6.2\webdrivermanager-5.6.2.jar;C:\Users\ASUS\.m2\repository\com\google\code\gson\gson\2.10.1\gson-2.10.1.jar;C:\Users\ASUS\.m2\repository\com\github\docker-java\docker-java\3.3.4\docker-java-3.3.4.jar;C:\Users\ASUS\.m2\repository\com\github\docker-java\docker-java-core\3.3.4\docker-java-core-3.3.4.jar;C:\Users\ASUS\.m2\repository\com\github\docker-java\docker-java-api\3.3.4\docker-java-api-3.3.4.jar;C:\Users\ASUS\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.10.3\jackson-annotations-2.10.3.jar;C:\Users\ASUS\.m2\repository\commons-io\commons-io\2.13.0\commons-io-2.13.0.jar;C:\Users\ASUS\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.10.3\jackson-databind-2.10.3.jar;C:\Users\ASUS\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.10.3\jackson-core-2.10.3.jar;C:\Users\ASUS\.m2\repository\org\bouncycastle\bcpkix-jdk18on\1.76\bcpkix-jdk18on-1.76.jar;C:\Users\ASUS\.m2\repository\org\bouncycastle\bcprov-jdk18on\1.76\bcprov-jdk18on-1.76.jar;C:\Users\ASUS\.m2\repository\org\bouncycastle\bcutil-jdk18on\1.76\bcutil-jdk18on-1.76.jar;C:\Users\ASUS\.m2\repository\org\slf4j\jcl-over-slf4j\1.7.30\jcl-over-slf4j-1.7.30.jar;C:\Users\ASUS\.m2\repository\com\github\docker-java\docker-java-transport-httpclient5\3.3.4\docker-java-transport-httpclient5-3.3.4.jar;C:\Users\ASUS\.m2\repository\com\github\docker-java\docker-java-transport\3.3.4\docker-java-transport-3.3.4.jar;C:\Users\ASUS\.m2\repository\net\java\dev\jna\jna\5.13.0\jna-5.13.0.jar;C:\Users\ASUS\.m2\repository\org\brotli\dec\0.1.2\dec-0.1.2.jar;C:\Users\ASUS\.m2\repository\org\apache\commons\commons-lang3\3.13.0\commons-lang3-3.13.0.jar;C:\Users\ASUS\.m2\repository\org\apache\commons\commons-compress\1.24.0\commons-compress-1.24.0.jar;C:\Users\ASUS\.m2\repository\org\apache\httpcomponents\client5\httpclient5\5.2.1\httpclient5-5.2.1.jar;C:\Users\ASUS\.m2\repository\org\apache\httpcomponents\core5\httpcore5\5.2\httpcore5-5.2.jar;C:\Users\ASUS\.m2\repository\org\apache\httpcomponents\core5\httpcore5-h2\5.2\httpcore5-h2-5.2.jar;"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="C:\Users\ASUS"/>
+    <property name="user.language" value="es"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2026-04-21"/>
+    <property name="java.home" value="C:\Users\ASUS\AppData\Local\Programs\Eclipse Adoptium\jdk-25.0.3.9-hotspot"/>
+    <property name="file.separator" value="\"/>
+    <property name="basedir" value="C:\Users\ASUS\Documents\DClass\SimCristoRey"/>
+    <property name="java.vm.compressedOopsMode" value="32-bit"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="surefire.real.class.path" value="C:\Users\ASUS\AppData\Local\Temp\surefire11306556543679040399\surefirebooter-20260702145320674_3.jar"/>
+    <property name="user.script" value=""/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="25.0.3+9-LTS"/>
+    <property name="user.name" value="ASUS"/>
+    <property name="stdout.encoding" value="Cp1252"/>
+    <property name="path.separator" value=";"/>
+    <property name="os.version" value="10.0"/>
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
+    <property name="java.vendor.version" value="Temurin-25.0.3+9"/>
+    <property name="localRepository" value="C:\Users\ASUS\.m2\repository"/>
+    <property name="java.vendor.url.bug" value="https://github.com/adoptium/adoptium-support/issues"/>
+    <property name="java.io.tmpdir" value="C:\Users\ASUS\AppData\Local\Temp\"/>
+    <property name="java.version" value="25.0.3"/>
+    <property name="user.dir" value="C:\Users\ASUS\Documents\DClass\SimCristoRey"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="native.encoding" value="Cp1252"/>
+    <property name="java.library.path" value="C:\Users\ASUS\AppData\Local\Programs\Eclipse Adoptium\jdk-25.0.3.9-hotspot\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\maven\apache-maven-3.9.16\bin;C:\Users\ASUS\AppData\Local\Programs\Eclipse Adoptium\jdk-25.0.3.9-hotspot\bin;C:\Users\ASUS\AppData\Local\Programs\Python\Python313\Scripts\;C:\Users\ASUS\AppData\Local\Programs\Python\Python313\;C:\Users\ASUS\AppData\Local\Programs\Python\Launcher\;C:\Users\ASUS\AppData\Local\Microsoft\WindowsApps;C:\Users\ASUS\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\ASUS\AppData\Roaming\npm;."/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="stderr.encoding" value="Cp1252"/>
+    <property name="java.vendor" value="Eclipse Adoptium"/>
+    <property name="java.vm.version" value="25.0.3+9-LTS"/>
+    <property name="stdin.encoding" value="Cp1252"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="69.0"/>
+  </properties>
+  <testcase name="testRegression_InicioSimulacion" classname="com.supermercado.regression.SimulacionRegressionTest" time="6.766">
+    <system-out><![CDATA[14:53:26.568 [main] INFO  c.s.i.service.LogServiceImpl - === INICIANDO SIMULACION ===
+14:53:26.568 [main] INFO  c.s.i.service.LogServiceImpl - Horario: 08:00 - 9:00 (1 horas)
+14:53:26.571 [main] INFO  c.s.i.service.LogServiceImpl - Duracion real: 8s | Tiempo simulado: 1h
+14:53:26.571 [main] INFO  c.s.i.service.LogServiceImpl - Cajas Normales: 2 | Cajas Rapidas: 1
+14:53:26.571 [main] INFO  c.s.i.service.LogServiceImpl - Total cajas creadas: 3
+14:53:26.571 [main] INFO  c.s.i.service.LogServiceImpl - Escala: 1 min simulado = 133ms reales
+14:53:26.797 [main] INFO  c.s.i.service.LogServiceImpl - [08:01] Cliente-Cliente-1 generado | Articulos: 10 (RAPIDO)
+[ASIGNACION] Cliente Cliente-1 (RAPIDO) - Articulos: 10
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-1 asignado a caja CAJA 1 (cola ahora 1)
+14:53:26.808 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:01] Atendiendo: Cliente-1 en CAJA 1 (2 min)
+14:53:27.088 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-1 en CAJA 1
+14:53:27.561 [main] INFO  c.s.i.service.LogServiceImpl - [08:07] Cliente-Cliente-2 generado | Articulos: 10 (RAPIDO)
+[ASIGNACION] Cliente Cliente-2 (RAPIDO) - Articulos: 10
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-2 asignado a caja CAJA 1 (cola ahora 1)
+14:53:27.604 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:07] Atendiendo: Cliente-2 en CAJA 1 (2 min)
+14:53:27.637 [main] INFO  c.s.i.service.LogServiceImpl - [08:07] Cliente-Cliente-3 generado | Articulos: 4 (RAPIDO)
+[ASIGNACION] Cliente Cliente-3 (RAPIDO) - Articulos: 4
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-3 asignado a caja CAJA 1 (cola ahora 1)
+14:53:27.717 [main] INFO  c.s.i.service.LogServiceImpl - [08:08] Cliente-Cliente-4 generado | Articulos: 9 (RAPIDO)
+[ASIGNACION] Cliente Cliente-4 (RAPIDO) - Articulos: 9
+  Caja CAJA 1 (Rapida: true) cola=1
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-4 asignado a caja CAJA 2 (cola ahora 1)
+14:53:27.789 [hilo-caja-CAJA 2] INFO  c.s.i.service.LogServiceImpl - [08:09] Atendiendo: Cliente-4 en CAJA 2 (1 min)
+14:53:27.871 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-2 en CAJA 1
+14:53:27.938 [hilo-caja-CAJA 2] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-4 en CAJA 2
+14:53:28.216 [main] INFO  c.s.i.service.LogServiceImpl - [08:12] Cliente-Cliente-5 generado | Articulos: 4 (RAPIDO)
+[ASIGNACION] Cliente Cliente-5 (RAPIDO) - Articulos: 4
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-5 asignado a caja CAJA 1 (cola ahora 1)
+14:53:28.233 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:12] Atendiendo: Cliente-5 en CAJA 1 (1 min)
+14:53:28.369 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-5 en CAJA 1
+14:53:28.603 [main] INFO  c.s.i.service.LogServiceImpl - [08:15] Cliente-Cliente-6 generado | Articulos: 7 (RAPIDO)
+[ASIGNACION] Cliente Cliente-6 (RAPIDO) - Articulos: 7
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-6 asignado a caja CAJA 1 (cola ahora 1)
+14:53:28.684 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:15] Atendiendo: Cliente-6 en CAJA 1 (2 min)
+14:53:28.751 [main] INFO  c.s.i.service.LogServiceImpl - [08:16] Cliente-Cliente-7 generado | Articulos: 3 (RAPIDO)
+[ASIGNACION] Cliente Cliente-7 (RAPIDO) - Articulos: 3
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-7 asignado a caja CAJA 1 (cola ahora 1)
+14:53:28.954 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-6 en CAJA 1
+14:53:28.970 [main] INFO  c.s.i.service.LogServiceImpl - [08:17] Cliente-Cliente-8 generado | Articulos: 7 (RAPIDO)
+[ASIGNACION] Cliente Cliente-8 (RAPIDO) - Articulos: 7
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-8 asignado a caja CAJA 1 (cola ahora 1)
+14:53:29.020 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:17] Atendiendo: Cliente-8 en CAJA 1 (2 min)
+14:53:29.037 [main] INFO  c.s.i.service.LogServiceImpl - [08:18] Cliente-Cliente-9 generado | Articulos: 3 (RAPIDO)
+[ASIGNACION] Cliente Cliente-9 (RAPIDO) - Articulos: 3
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-9 asignado a caja CAJA 1 (cola ahora 1)
+14:53:29.171 [main] INFO  c.s.i.service.LogServiceImpl - [08:19] Cliente-Cliente-10 generado | Articulos: 1 (RAPIDO)
+[ASIGNACION] Cliente Cliente-10 (RAPIDO) - Articulos: 1
+  Caja CAJA 1 (Rapida: true) cola=1
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-10 asignado a caja CAJA 2 (cola ahora 1)
+14:53:29.249 [hilo-caja-CAJA 2] INFO  c.s.i.service.LogServiceImpl - [08:19] Atendiendo: Cliente-10 en CAJA 2 (2 min)
+14:53:29.287 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-8 en CAJA 1
+14:53:29.320 [main] INFO  c.s.i.service.LogServiceImpl - [08:20] Cliente-Cliente-11 generado | Articulos: 7 (RAPIDO)
+[ASIGNACION] Cliente Cliente-11 (RAPIDO) - Articulos: 7
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-11 asignado a caja CAJA 1 (cola ahora 1)
+14:53:29.355 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:20] Atendiendo: Cliente-11 en CAJA 1 (1 min)
+14:53:29.496 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-11 en CAJA 1
+14:53:29.520 [hilo-caja-CAJA 2] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-10 en CAJA 2
+14:53:29.521 [main] INFO  c.s.i.service.LogServiceImpl - [08:22] Cliente-Cliente-12 generado | Articulos: 1 (RAPIDO)
+[ASIGNACION] Cliente Cliente-12 (RAPIDO) - Articulos: 1
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-12 asignado a caja CAJA 1 (cola ahora 1)
+14:53:29.570 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:22] Atendiendo: Cliente-12 en CAJA 1 (2 min)
+14:53:29.839 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-12 en CAJA 1
+14:53:29.958 [main] INFO  c.s.i.service.LogServiceImpl - [08:25] Cliente-Cliente-13 generado | Articulos: 3 (RAPIDO)
+[ASIGNACION] Cliente Cliente-13 (RAPIDO) - Articulos: 3
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-13 asignado a caja CAJA 1 (cola ahora 1)
+14:53:29.989 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:25] Atendiendo: Cliente-13 en CAJA 1 (2 min)
+14:53:30.267 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-13 en CAJA 1
+14:53:30.332 [main] INFO  c.s.i.service.LogServiceImpl - [08:28] Cliente-Cliente-14 generado | Articulos: 5 (RAPIDO)
+[ASIGNACION] Cliente Cliente-14 (RAPIDO) - Articulos: 5
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-14 asignado a caja CAJA 1 (cola ahora 1)
+14:53:30.348 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:28] Atendiendo: Cliente-14 en CAJA 1 (1 min)
+14:53:30.491 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-14 en CAJA 1
+14:53:30.959 [main] INFO  c.s.i.service.LogServiceImpl - [08:32] Cliente-Cliente-15 generado | Articulos: 7 (RAPIDO)
+[ASIGNACION] Cliente Cliente-15 (RAPIDO) - Articulos: 7
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-15 asignado a caja CAJA 1 (cola ahora 1)
+14:53:31.034 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:32] Atendiendo: Cliente-15 en CAJA 1 (1 min)
+14:53:31.102 [main] INFO  c.s.i.service.LogServiceImpl - [08:33] Cliente-Cliente-16 generado | Articulos: 5 (RAPIDO)
+[ASIGNACION] Cliente Cliente-16 (RAPIDO) - Articulos: 5
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-16 asignado a caja CAJA 1 (cola ahora 1)
+14:53:31.182 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-15 en CAJA 1
+14:53:31.733 [main] INFO  c.s.i.service.LogServiceImpl - [08:38] Cliente-Cliente-17 generado | Articulos: 7 (RAPIDO)
+[ASIGNACION] Cliente Cliente-17 (RAPIDO) - Articulos: 7
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-17 asignado a caja CAJA 1 (cola ahora 1)
+14:53:31.813 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:39] Atendiendo: Cliente-17 en CAJA 1 (1 min)
+14:53:31.957 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-17 en CAJA 1
+14:53:31.973 [main] INFO  c.s.i.service.LogServiceImpl - [08:40] Cliente-Cliente-18 generado | Articulos: 5 (RAPIDO)
+[ASIGNACION] Cliente Cliente-18 (RAPIDO) - Articulos: 5
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-18 asignado a caja CAJA 1 (cola ahora 1)
+14:53:32.037 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:40] Atendiendo: Cliente-18 en CAJA 1 (1 min)
+14:53:32.179 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-18 en CAJA 1
+14:53:32.532 [main] INFO  c.s.i.service.LogServiceImpl - [08:44] Cliente-Cliente-19 generado | Articulos: 8 (RAPIDO)
+[ASIGNACION] Cliente Cliente-19 (RAPIDO) - Articulos: 8
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-19 asignado a caja CAJA 1 (cola ahora 1)
+14:53:32.580 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:44] Atendiendo: Cliente-19 en CAJA 1 (2 min)
+14:53:32.852 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-19 en CAJA 1
+14:53:32.931 [main] INFO  c.s.i.service.LogServiceImpl - [08:47] Cliente-Cliente-20 generado | Articulos: 4 (RAPIDO)
+[ASIGNACION] Cliente Cliente-20 (RAPIDO) - Articulos: 4
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-20 asignado a caja CAJA 1 (cola ahora 1)
+14:53:33.012 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:47] Atendiendo: Cliente-20 en CAJA 1 (2 min)
+14:53:33.012 [main] INFO  c.s.i.service.LogServiceImpl - Limite de 20 clientes alcanzado.
+14:53:33.012 [main] INFO  c.s.i.service.LogServiceImpl - Esperando que terminen atenciones activas...
+14:53:33.283 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-20 en CAJA 1
+14:53:33.331 [main] INFO  c.s.i.service.LogServiceImpl - Todas las atenciones activas finalizadas naturalmente.
+14:53:33.331 [main] INFO  c.s.i.service.LogServiceImpl - Vaciando colas manualmente...
+14:53:33.331 [main] INFO  c.s.i.service.LogServiceImpl - Clientes en cola al cierre: 0
+14:53:33.331 [main] INFO  c.s.i.service.LogServiceImpl - ADVERTENCIA: Clientes perdidos: 4
+14:53:33.331 [main] INFO  c.s.i.service.LogServiceImpl - 
+============ ESTADISTICAS FINALES ============
+14:53:33.331 [main] INFO  c.s.i.service.LogServiceImpl -   CAJA 1: 14 clientes | Cola maxima: 1 | RAPIDA
+14:53:33.331 [main] INFO  c.s.i.service.LogServiceImpl -   CAJA 2: 2 clientes | Cola maxima: 1 | NORMAL
+14:53:33.331 [main] INFO  c.s.i.service.LogServiceImpl -   CAJA 3: 0 clientes | Cola maxima: 0 | NORMAL
+14:53:33.331 [main] INFO  c.s.i.service.LogServiceImpl - ----------------------------------------------
+14:53:33.331 [main] INFO  c.s.i.service.LogServiceImpl -   Total clientes atendidos: 16
+14:53:33.331 [main] INFO  c.s.i.service.LogServiceImpl -   Total articulos vendidos: 95
+14:53:33.331 [main] INFO  c.s.i.service.LogServiceImpl -   Total minutos de atencion: 25
+14:53:33.331 [main] INFO  c.s.i.service.LogServiceImpl -   Clientes generados: 20
+14:53:33.331 [main] INFO  c.s.i.service.LogServiceImpl -   Prom. articulos/cliente: 5,94
+14:53:33.331 [main] INFO  c.s.i.service.LogServiceImpl -   Prom. minutos/cliente: 1,56
+14:53:33.331 [main] INFO  c.s.i.service.LogServiceImpl -   Cajero Estrella: CAJA 1
+14:53:33.331 [main] INFO  c.s.i.service.LogServiceImpl - ==============================================
+
+14:53:33.331 [main] INFO  c.s.i.service.LogServiceImpl - === SIMULACION COMPLETADA ===
+]]></system-out>
+  </testcase>
+  <testcase name="testRegression_SimulacionCompleta" classname="com.supermercado.regression.SimulacionRegressionTest" time="16.205">
+    <system-out><![CDATA[14:53:33.331 [Thread-7] INFO  c.s.i.service.LogServiceImpl - === INICIANDO SIMULACION ===
+14:53:33.331 [Thread-7] INFO  c.s.i.service.LogServiceImpl - Horario: 08:00 - 9:00 (1 horas)
+14:53:33.331 [Thread-7] INFO  c.s.i.service.LogServiceImpl - Duracion real: 10s | Tiempo simulado: 1h
+14:53:33.331 [Thread-7] INFO  c.s.i.service.LogServiceImpl - Cajas Normales: 2 | Cajas Rapidas: 1
+14:53:33.331 [Thread-7] INFO  c.s.i.service.LogServiceImpl - Total cajas creadas: 3
+14:53:33.347 [Thread-7] INFO  c.s.i.service.LogServiceImpl - Escala: 1 min simulado = 166ms reales
+14:53:33.637 [Thread-7] INFO  c.s.i.service.LogServiceImpl - [08:01] Cliente-Cliente-1 generado | Articulos: 3 (RAPIDO)
+[ASIGNACION] Cliente Cliente-1 (RAPIDO) - Articulos: 3
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-1 asignado a caja CAJA 1 (cola ahora 1)
+14:53:33.652 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:01] Atendiendo: Cliente-1 en CAJA 1 (1 min)
+14:53:33.828 [Thread-7] INFO  c.s.i.service.LogServiceImpl - [08:02] Cliente-Cliente-2 generado | Articulos: 10 (RAPIDO)
+[ASIGNACION] Cliente Cliente-2 (RAPIDO) - Articulos: 10
+  Caja CAJA 1 (Rapida: true) cola=0
+14:53:33.828 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-1 en CAJA 1
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-2 asignado a caja CAJA 1 (cola ahora 1)
+14:53:33.925 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:03] Atendiendo: Cliente-2 en CAJA 1 (1 min)
+14:53:34.100 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-2 en CAJA 1
+14:53:34.501 [Thread-7] INFO  c.s.i.service.LogServiceImpl - [08:06] Cliente-Cliente-3 generado | Articulos: 9 (RAPIDO)
+[ASIGNACION] Cliente Cliente-3 (RAPIDO) - Articulos: 9
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-3 asignado a caja CAJA 1 (cola ahora 1)
+14:53:34.581 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:06] Atendiendo: Cliente-3 en CAJA 1 (2 min)
+14:53:34.693 [Thread-7] INFO  c.s.i.service.LogServiceImpl - [08:08] Cliente-Cliente-4 generado | Articulos: 10 (RAPIDO)
+[ASIGNACION] Cliente Cliente-4 (RAPIDO) - Articulos: 10
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-4 asignado a caja CAJA 1 (cola ahora 1)
+14:53:34.918 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-3 en CAJA 1
+14:53:35.844 [Thread-7] INFO  c.s.i.service.LogServiceImpl - [08:14] Cliente-Cliente-5 generado | Articulos: 6 (RAPIDO)
+[ASIGNACION] Cliente Cliente-5 (RAPIDO) - Articulos: 6
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-5 asignado a caja CAJA 1 (cola ahora 1)
+14:53:35.876 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:14] Atendiendo: Cliente-5 en CAJA 1 (2 min)
+14:53:35.940 [Thread-7] INFO  c.s.i.service.LogServiceImpl - [08:15] Cliente-Cliente-6 generado | Articulos: 2 (RAPIDO)
+[ASIGNACION] Cliente Cliente-6 (RAPIDO) - Articulos: 2
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-6 asignado a caja CAJA 1 (cola ahora 1)
+14:53:36.212 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-5 en CAJA 1
+14:53:36.228 [Thread-7] INFO  c.s.i.service.LogServiceImpl - [08:17] Cliente-Cliente-7 generado | Articulos: 8 (RAPIDO)
+[ASIGNACION] Cliente Cliente-7 (RAPIDO) - Articulos: 8
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-7 asignado a caja CAJA 1 (cola ahora 1)
+14:53:36.309 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:17] Atendiendo: Cliente-7 en CAJA 1 (1 min)
+14:53:36.325 [Thread-7] INFO  c.s.i.service.LogServiceImpl - [08:17] Cliente-Cliente-8 generado | Articulos: 6 (RAPIDO)
+[ASIGNACION] Cliente Cliente-8 (RAPIDO) - Articulos: 6
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-8 asignado a caja CAJA 1 (cola ahora 1)
+14:53:36.485 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-7 en CAJA 1
+14:53:36.517 [Thread-7] INFO  c.s.i.service.LogServiceImpl - [08:19] Cliente-Cliente-9 generado | Articulos: 10 (RAPIDO)
+[ASIGNACION] Cliente Cliente-9 (RAPIDO) - Articulos: 10
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-9 asignado a caja CAJA 1 (cola ahora 1)
+14:53:36.580 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:19] Atendiendo: Cliente-9 en CAJA 1 (2 min)
+14:53:36.612 [Thread-7] INFO  c.s.i.service.LogServiceImpl - [08:19] Cliente-Cliente-10 generado | Articulos: 10 (RAPIDO)
+[ASIGNACION] Cliente Cliente-10 (RAPIDO) - Articulos: 10
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-10 asignado a caja CAJA 1 (cola ahora 1)
+14:53:36.708 [Thread-7] INFO  c.s.i.service.LogServiceImpl - Limite de 10 clientes alcanzado.
+14:53:36.708 [Thread-7] INFO  c.s.i.service.LogServiceImpl - Esperando que terminen atenciones activas...
+14:53:36.916 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-9 en CAJA 1
+14:53:49.536 [Thread-7] INFO  c.s.i.service.LogServiceImpl -   Forzando finalización de CAJA 1 (cliente Cliente-10)
+14:53:49.536 [Thread-7] INFO  c.s.i.service.LogServiceImpl - Atendidos forzados: 1
+14:53:49.536 [Thread-7] INFO  c.s.i.service.LogServiceImpl - Vaciando colas manualmente...
+14:53:49.536 [Thread-7] INFO  c.s.i.service.LogServiceImpl - Clientes en cola al cierre: 0
+14:53:49.536 [Thread-7] INFO  c.s.i.service.LogServiceImpl - ADVERTENCIA: Clientes perdidos: 3
+14:53:49.536 [Thread-7] INFO  c.s.i.service.LogServiceImpl - 
+============ ESTADISTICAS FINALES ============
+14:53:49.536 [Thread-7] INFO  c.s.i.service.LogServiceImpl -   CAJA 1: 7 clientes | Cola maxima: 1 | RAPIDA
+14:53:49.536 [Thread-7] INFO  c.s.i.service.LogServiceImpl -   CAJA 2: 0 clientes | Cola maxima: 0 | NORMAL
+14:53:49.536 [Thread-7] INFO  c.s.i.service.LogServiceImpl -   CAJA 3: 0 clientes | Cola maxima: 0 | NORMAL
+14:53:49.536 [Thread-7] INFO  c.s.i.service.LogServiceImpl - ----------------------------------------------
+14:53:49.536 [Thread-7] INFO  c.s.i.service.LogServiceImpl -   Total clientes atendidos: 7
+14:53:49.536 [Thread-7] INFO  c.s.i.service.LogServiceImpl -   Total articulos vendidos: 56
+14:53:49.536 [Thread-7] INFO  c.s.i.service.LogServiceImpl -   Total minutos de atencion: 9
+14:53:49.536 [Thread-7] INFO  c.s.i.service.LogServiceImpl -   Clientes generados: 10
+14:53:49.536 [Thread-7] INFO  c.s.i.service.LogServiceImpl -   Prom. articulos/cliente: 8,00
+14:53:49.536 [Thread-7] INFO  c.s.i.service.LogServiceImpl -   Prom. minutos/cliente: 1,29
+14:53:49.536 [Thread-7] INFO  c.s.i.service.LogServiceImpl -   Cajero Estrella: CAJA 1
+14:53:49.536 [Thread-7] INFO  c.s.i.service.LogServiceImpl - ==============================================
+
+14:53:49.536 [Thread-7] INFO  c.s.i.service.LogServiceImpl - === SIMULACION COMPLETADA ===
+]]></system-out>
+  </testcase>
+  <testcase name="testRegression_ConfiguracionValida" classname="com.supermercado.regression.SimulacionRegressionTest" time="0.0"/>
+  <testcase name="testRegression_DetencionSimulacion" classname="com.supermercado.regression.SimulacionRegressionTest" time="2.08">
+    <system-out><![CDATA[14:53:49.536 [Thread-11] INFO  c.s.i.service.LogServiceImpl - === INICIANDO SIMULACION ===
+14:53:49.536 [Thread-11] INFO  c.s.i.service.LogServiceImpl - Horario: 08:00 - 9:00 (1 horas)
+14:53:49.536 [Thread-11] INFO  c.s.i.service.LogServiceImpl - Duracion real: 8s | Tiempo simulado: 1h
+14:53:49.536 [Thread-11] INFO  c.s.i.service.LogServiceImpl - Cajas Normales: 2 | Cajas Rapidas: 1
+14:53:49.536 [Thread-11] INFO  c.s.i.service.LogServiceImpl - Total cajas creadas: 3
+14:53:49.536 [Thread-11] INFO  c.s.i.service.LogServiceImpl - Escala: 1 min simulado = 133ms reales
+14:53:49.536 [Thread-11] INFO  c.s.i.service.LogServiceImpl - [08:00] Cliente-Cliente-1 generado | Articulos: 5 (RAPIDO)
+[ASIGNACION] Cliente Cliente-1 (RAPIDO) - Articulos: 5
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-1 asignado a caja CAJA 1 (cola ahora 1)
+14:53:49.616 [Thread-11] INFO  c.s.i.service.LogServiceImpl - [08:00] Cliente-Cliente-2 generado | Articulos: 7 (RAPIDO)
+[ASIGNACION] Cliente Cliente-2 (RAPIDO) - Articulos: 7
+14:53:49.616 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:00] Atendiendo: Cliente-1 en CAJA 1 (1 min)
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-2 asignado a caja CAJA 1 (cola ahora 1)
+14:53:49.760 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-1 en CAJA 1
+14:53:49.776 [Thread-11] INFO  c.s.i.service.LogServiceImpl - [08:01] Cliente-Cliente-3 generado | Articulos: 9 (RAPIDO)
+[ASIGNACION] Cliente Cliente-3 (RAPIDO) - Articulos: 9
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-3 asignado a caja CAJA 1 (cola ahora 1)
+14:53:49.841 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:01] Atendiendo: Cliente-3 en CAJA 1 (1 min)
+14:53:49.985 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-3 en CAJA 1
+14:53:50.337 [Thread-11] INFO  c.s.i.service.LogServiceImpl - [08:06] Cliente-Cliente-4 generado | Articulos: 6 (RAPIDO)
+[ASIGNACION] Cliente Cliente-4 (RAPIDO) - Articulos: 6
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-4 asignado a caja CAJA 1 (cola ahora 1)
+14:53:50.385 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:06] Atendiendo: Cliente-4 en CAJA 1 (2 min)
+14:53:50.417 [Thread-11] INFO  c.s.i.service.LogServiceImpl - [08:06] Cliente-Cliente-5 generado | Articulos: 4 (RAPIDO)
+[ASIGNACION] Cliente Cliente-5 (RAPIDO) - Articulos: 4
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-5 asignado a caja CAJA 1 (cola ahora 1)
+14:53:50.658 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-4 en CAJA 1
+14:53:50.658 [Thread-11] INFO  c.s.i.service.LogServiceImpl - [08:08] Cliente-Cliente-6 generado | Articulos: 2 (RAPIDO)
+[ASIGNACION] Cliente Cliente-6 (RAPIDO) - Articulos: 2
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-6 asignado a caja CAJA 1 (cola ahora 1)
+14:53:50.738 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:08] Atendiendo: Cliente-6 en CAJA 1 (2 min)
+14:53:50.738 [Thread-11] INFO  c.s.i.service.LogServiceImpl - [08:09] Cliente-Cliente-7 generado | Articulos: 5 (RAPIDO)
+[ASIGNACION] Cliente Cliente-7 (RAPIDO) - Articulos: 5
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-7 asignado a caja CAJA 1 (cola ahora 1)
+14:53:51.009 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-6 en CAJA 1
+14:53:51.138 [Thread-11] INFO  c.s.i.service.LogServiceImpl - [08:12] Cliente-Cliente-8 generado | Articulos: 2 (RAPIDO)
+[ASIGNACION] Cliente Cliente-8 (RAPIDO) - Articulos: 2
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-8 asignado a caja CAJA 1 (cola ahora 1)
+14:53:51.170 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:12] Atendiendo: Cliente-8 en CAJA 1 (2 min)
+14:53:51.442 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-8 en CAJA 1
+14:53:51.553 [main] INFO  c.s.i.service.LogServiceImpl - Simulacion detenida
+14:53:51.616 [Thread-11] INFO  c.s.i.service.LogServiceImpl - Esperando que terminen atenciones activas...
+14:53:51.616 [Thread-11] INFO  c.s.i.service.LogServiceImpl - Todas las atenciones activas finalizadas naturalmente.
+14:53:51.616 [Thread-11] INFO  c.s.i.service.LogServiceImpl - Vaciando colas manualmente...
+14:53:51.616 [Thread-11] INFO  c.s.i.service.LogServiceImpl - Clientes en cola al cierre: 0
+14:53:51.616 [Thread-11] INFO  c.s.i.service.LogServiceImpl - ADVERTENCIA: Clientes perdidos: 3
+14:53:51.616 [Thread-11] INFO  c.s.i.service.LogServiceImpl - 
+============ ESTADISTICAS FINALES ============
+14:53:51.616 [Thread-11] INFO  c.s.i.service.LogServiceImpl -   CAJA 1: 5 clientes | Cola maxima: 1 | RAPIDA
+14:53:51.616 [Thread-11] INFO  c.s.i.service.LogServiceImpl -   CAJA 2: 0 clientes | Cola maxima: 0 | NORMAL
+14:53:51.616 [Thread-11] INFO  c.s.i.service.LogServiceImpl -   CAJA 3: 0 clientes | Cola maxima: 0 | NORMAL
+14:53:51.616 [Thread-11] INFO  c.s.i.service.LogServiceImpl - ----------------------------------------------
+14:53:51.616 [Thread-11] INFO  c.s.i.service.LogServiceImpl -   Total clientes atendidos: 5
+14:53:51.616 [Thread-11] INFO  c.s.i.service.LogServiceImpl -   Total articulos vendidos: 24
+14:53:51.616 [Thread-11] INFO  c.s.i.service.LogServiceImpl -   Total minutos de atencion: 8
+14:53:51.616 [Thread-11] INFO  c.s.i.service.LogServiceImpl -   Clientes generados: 8
+14:53:51.616 [Thread-11] INFO  c.s.i.service.LogServiceImpl -   Prom. articulos/cliente: 4,80
+14:53:51.616 [Thread-11] INFO  c.s.i.service.LogServiceImpl -   Prom. minutos/cliente: 1,60
+14:53:51.616 [Thread-11] INFO  c.s.i.service.LogServiceImpl -   Cajero Estrella: CAJA 1
+14:53:51.616 [Thread-11] INFO  c.s.i.service.LogServiceImpl - ==============================================
+
+14:53:51.616 [Thread-11] INFO  c.s.i.service.LogServiceImpl - === SIMULACION COMPLETADA ===
+]]></system-out>
+  </testcase>
+  <testcase name="testRegression_PausaYReanudacion" classname="com.supermercado.regression.SimulacionRegressionTest" time="3.158">
+    <system-out><![CDATA[14:53:51.616 [Thread-15] INFO  c.s.i.service.LogServiceImpl - === INICIANDO SIMULACION ===
+14:53:51.616 [Thread-15] INFO  c.s.i.service.LogServiceImpl - Horario: 08:00 - 9:00 (1 horas)
+14:53:51.616 [Thread-15] INFO  c.s.i.service.LogServiceImpl - Duracion real: 8s | Tiempo simulado: 1h
+14:53:51.616 [Thread-15] INFO  c.s.i.service.LogServiceImpl - Cajas Normales: 2 | Cajas Rapidas: 1
+14:53:51.616 [Thread-15] INFO  c.s.i.service.LogServiceImpl - Total cajas creadas: 3
+14:53:51.616 [Thread-15] INFO  c.s.i.service.LogServiceImpl - Escala: 1 min simulado = 133ms reales
+14:53:51.777 [Thread-15] INFO  c.s.i.service.LogServiceImpl - [08:01] Cliente-Cliente-1 generado | Articulos: 10 (RAPIDO)
+[ASIGNACION] Cliente Cliente-1 (RAPIDO) - Articulos: 10
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-1 asignado a caja CAJA 1 (cola ahora 1)
+14:53:51.857 [Thread-15] INFO  c.s.i.service.LogServiceImpl - [08:01] Cliente-Cliente-2 generado | Articulos: 4 (RAPIDO)
+[ASIGNACION] Cliente Cliente-2 (RAPIDO) - Articulos: 4
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-2 asignado a caja CAJA 1 (cola ahora 1)
+14:53:51.857 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:01] Atendiendo: Cliente-1 en CAJA 1 (2 min)
+14:53:51.936 [Thread-15] INFO  c.s.i.service.LogServiceImpl - [08:02] Cliente-Cliente-3 generado | Articulos: 9 (RAPIDO)
+[ASIGNACION] Cliente Cliente-3 (RAPIDO) - Articulos: 9
+  Caja CAJA 1 (Rapida: true) cola=1
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-3 asignado a caja CAJA 2 (cola ahora 1)
+14:53:52.016 [hilo-caja-CAJA 2] INFO  c.s.i.service.LogServiceImpl - [08:02] Atendiendo: Cliente-3 en CAJA 2 (2 min)
+14:53:52.128 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-1 en CAJA 1
+14:53:52.289 [hilo-caja-CAJA 2] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-3 en CAJA 2
+14:53:52.498 [Thread-15] INFO  c.s.i.service.LogServiceImpl - [08:06] Cliente-Cliente-4 generado | Articulos: 5 (RAPIDO)
+[ASIGNACION] Cliente Cliente-4 (RAPIDO) - Articulos: 5
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-4 asignado a caja CAJA 1 (cola ahora 1)
+14:53:52.530 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:06] Atendiendo: Cliente-4 en CAJA 1 (1 min)
+14:53:52.657 [Thread-15] INFO  c.s.i.service.LogServiceImpl - [08:07] Cliente-Cliente-5 generado | Articulos: 5 (RAPIDO)
+[ASIGNACION] Cliente Cliente-5 (RAPIDO) - Articulos: 5
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-5 asignado a caja CAJA 1 (cola ahora 1)
+14:53:52.673 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-4 en CAJA 1
+14:53:53.220 [Thread-15] INFO  c.s.i.service.LogServiceImpl - [08:12] Cliente-Cliente-6 generado | Articulos: 8 (RAPIDO)
+[ASIGNACION] Cliente Cliente-6 (RAPIDO) - Articulos: 8
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-6 asignado a caja CAJA 1 (cola ahora 1)
+14:53:53.236 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:12] Atendiendo: Cliente-6 en CAJA 1 (1 min)
+14:53:53.380 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-6 en CAJA 1
+14:53:53.460 [Thread-15] INFO  c.s.i.service.LogServiceImpl - [08:13] Cliente-Cliente-7 generado | Articulos: 5 (RAPIDO)
+[ASIGNACION] Cliente Cliente-7 (RAPIDO) - Articulos: 5
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-7 asignado a caja CAJA 1 (cola ahora 1)
+14:53:53.539 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - [08:14] Atendiendo: Cliente-7 en CAJA 1 (2 min)
+14:53:53.539 [Thread-15] INFO  c.s.i.service.LogServiceImpl - [08:14] Cliente-Cliente-8 generado | Articulos: 2 (RAPIDO)
+[ASIGNACION] Cliente Cliente-8 (RAPIDO) - Articulos: 2
+  Caja CAJA 1 (Rapida: true) cola=0
+  Caja CAJA 2 (Rapida: false) cola=0
+  Caja CAJA 3 (Rapida: false) cola=0
+  Cliente Cliente-8 asignado a caja CAJA 1 (cola ahora 1)
+14:53:53.652 [main] INFO  c.s.i.service.LogServiceImpl - Simulacion pausada
+14:53:53.811 [hilo-caja-CAJA 1] INFO  c.s.i.service.LogServiceImpl - Finalizada atencion de Cliente-7 en CAJA 1
+14:53:54.185 [main] INFO  c.s.i.service.LogServiceImpl - Simulacion reanudada
+14:53:54.695 [main] INFO  c.s.i.service.LogServiceImpl - Simulacion detenida
+14:53:54.774 [Thread-15] INFO  c.s.i.service.LogServiceImpl - Esperando que terminen atenciones activas...
+14:53:54.774 [Thread-15] INFO  c.s.i.service.LogServiceImpl - Todas las atenciones activas finalizadas naturalmente.
+14:53:54.774 [Thread-15] INFO  c.s.i.service.LogServiceImpl - Vaciando colas manualmente...
+14:53:54.774 [Thread-15] INFO  c.s.i.service.LogServiceImpl - Clientes en cola al cierre: 0
+14:53:54.774 [Thread-15] INFO  c.s.i.service.LogServiceImpl - ADVERTENCIA: Clientes perdidos: 3
+14:53:54.774 [Thread-15] INFO  c.s.i.service.LogServiceImpl - 
+============ ESTADISTICAS FINALES ============
+14:53:54.774 [Thread-15] INFO  c.s.i.service.LogServiceImpl -   CAJA 1: 4 clientes | Cola maxima: 1 | RAPIDA
+14:53:54.774 [Thread-15] INFO  c.s.i.service.LogServiceImpl -   CAJA 2: 1 clientes | Cola maxima: 1 | NORMAL
+14:53:54.774 [Thread-15] INFO  c.s.i.service.LogServiceImpl -   CAJA 3: 0 clientes | Cola maxima: 0 | NORMAL
+14:53:54.774 [Thread-15] INFO  c.s.i.service.LogServiceImpl - ----------------------------------------------
+14:53:54.774 [Thread-15] INFO  c.s.i.service.LogServiceImpl -   Total clientes atendidos: 5
+14:53:54.774 [Thread-15] INFO  c.s.i.service.LogServiceImpl -   Total articulos vendidos: 37
+14:53:54.774 [Thread-15] INFO  c.s.i.service.LogServiceImpl -   Total minutos de atencion: 8
+14:53:54.774 [Thread-15] INFO  c.s.i.service.LogServiceImpl -   Clientes generados: 8
+14:53:54.774 [Thread-15] INFO  c.s.i.service.LogServiceImpl -   Prom. articulos/cliente: 7,40
+14:53:54.774 [Thread-15] INFO  c.s.i.service.LogServiceImpl -   Prom. minutos/cliente: 1,60
+14:53:54.774 [Thread-15] INFO  c.s.i.service.LogServiceImpl -   Cajero Estrella: CAJA 1
+14:53:54.774 [Thread-15] INFO  c.s.i.service.LogServiceImpl - ==============================================
+
+14:53:54.774 [Thread-15] INFO  c.s.i.service.LogServiceImpl - === SIMULACION COMPLETADA ===
+]]></system-out>
+  </testcase>
+</testsuite>

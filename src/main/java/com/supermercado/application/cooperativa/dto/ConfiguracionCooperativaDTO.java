@@ -3,16 +3,18 @@ package com.supermercado.application.cooperativa.dto;
 import java.util.List;
 
 public class ConfiguracionCooperativaDTO {
-    private int duracionPrincipal; // en minutos
+    private int duracionPrincipal;
     private int numCajas;
     private List<ServicioDTO> servicios;
     private List<TipoCajaDTO> tiposCaja;
     private int capacidadMaximaSocios;
+    private int horaApertura;
 
     public ConfiguracionCooperativaDTO() {
-        this.duracionPrincipal = 480; // 8 horas por defecto
+        this.duracionPrincipal = 480;
         this.numCajas = 5;
         this.capacidadMaximaSocios = 400;
+        this.horaApertura = 8;
     }
 
     public int getDuracionPrincipal() { return duracionPrincipal; }
@@ -29,4 +31,7 @@ public class ConfiguracionCooperativaDTO {
 
     public int getCapacidadMaximaSocios() { return capacidadMaximaSocios; }
     public void setCapacidadMaximaSocios(int capacidadMaximaSocios) { this.capacidadMaximaSocios = capacidadMaximaSocios; }
+
+    public int getHoraApertura() { return horaApertura; }
+    public void setHoraApertura(int horaApertura) { this.horaApertura = horaApertura; }
 }

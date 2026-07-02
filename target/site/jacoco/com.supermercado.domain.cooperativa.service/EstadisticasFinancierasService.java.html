@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EstadisticasFinancierasService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.domain.cooperativa.service</a> &gt; <span class="el_source">EstadisticasFinancierasService.java</span></div><h1>EstadisticasFinancierasService.java</h1><pre class="source lang-java linenums">package com.supermercado.domain.cooperativa.service;
+
+import com.supermercado.domain.cooperativa.model.Caja;
+import com.supermercado.domain.cooperativa.model.Socio;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
+<span class="nc" id="L11">public class EstadisticasFinancierasService {</span>
+
+<span class="nc" id="L13">    private final AtomicInteger totalAtendidos        = new AtomicInteger(0);</span>
+<span class="nc" id="L14">    private final AtomicLong    sumaEspera            = new AtomicLong(0);</span>
+<span class="nc" id="L15">    private final AtomicLong    sumaAtencion          = new AtomicLong(0);</span>
+<span class="nc" id="L16">    private final AtomicLong    montoTotal            = new AtomicLong(0);</span>
+
+<span class="nc" id="L18">    private final Map&lt;String, Integer&gt; atendidosPorCaja    = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="nc" id="L19">    private final Map&lt;String, Long&gt;    tiempoOcupadoPorCaja = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="nc" id="L20">    private final Map&lt;String, Double&gt;  montoPorCaja         = new ConcurrentHashMap&lt;&gt;();</span>
+
+<span class="nc" id="L22">    private final Map&lt;String, Integer&gt; atendidosPorServicio = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="nc" id="L23">    private final Map&lt;String, Long&gt;    tiempoPorServicio    = new ConcurrentHashMap&lt;&gt;();</span>
+
+    public void registrarAtencion(Socio socio, Caja caja) {
+<span class="nc bnc" id="L26" title="All 4 branches missed.">        if (socio == null || caja == null) return;</span>
+
+<span class="nc" id="L28">        totalAtendidos.incrementAndGet();</span>
+
+<span class="nc" id="L30">        long espera   = socio.getTiempoInicioAtencion() - socio.getTiempoLlegada();</span>
+<span class="nc" id="L31">        long atencion = socio.getTiempoSalida() - socio.getTiempoInicioAtencion();</span>
+<span class="nc" id="L32">        sumaEspera.addAndGet(Math.max(0, espera));</span>
+<span class="nc" id="L33">        sumaAtencion.addAndGet(Math.max(0, atencion));</span>
+<span class="nc" id="L34">        montoTotal.addAndGet((long)(socio.getMonto() * 100));</span>
+
+<span class="nc" id="L36">        String cajaId = caja.getId();</span>
+<span class="nc" id="L37">        atendidosPorCaja.merge(cajaId, 1, Integer::sum);</span>
+<span class="nc" id="L38">        tiempoOcupadoPorCaja.merge(cajaId, Math.max(0, atencion), Long::sum);</span>
+<span class="nc" id="L39">        montoPorCaja.merge(cajaId, socio.getMonto(), Double::sum);</span>
+
+<span class="nc bnc" id="L41" title="All 2 branches missed.">        if (socio.getServicio() != null) {</span>
+<span class="nc" id="L42">            String svc = socio.getServicio().getNombre();</span>
+<span class="nc" id="L43">            atendidosPorServicio.merge(svc, 1, Integer::sum);</span>
+<span class="nc" id="L44">            tiempoPorServicio.merge(svc, Math.max(0, atencion), Long::sum);</span>
+        }
+<span class="nc" id="L46">    }</span>
+
+<span class="nc" id="L48">    public int    getTotalAtendidos()    { return totalAtendidos.get(); }</span>
+<span class="nc" id="L49">    public double getMontoTotal()        { return montoTotal.get() / 100.0; }</span>
+
+    public double getPromedioEspera() {
+<span class="nc" id="L52">        int t = totalAtendidos.get();</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">        return t == 0 ? 0.0 : (double) sumaEspera.get() / t;</span>
+    }
+
+    public double getPromedioAtencion() {
+<span class="nc" id="L57">        int t = totalAtendidos.get();</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">        return t == 0 ? 0.0 : (double) sumaAtencion.get() / t;</span>
+    }
+
+    public String getCajeroEstrella() {
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        if (atendidosPorCaja.isEmpty()) return &quot;N/A&quot;;</span>
+<span class="nc" id="L63">        return atendidosPorCaja.entrySet().stream()</span>
+<span class="nc" id="L64">                .max(Comparator.comparingDouble(e -&gt; calcularEficiencia(e.getKey())))</span>
+<span class="nc" id="L65">                .map(Map.Entry::getKey)</span>
+<span class="nc" id="L66">                .orElse(&quot;N/A&quot;);</span>
+    }
+
+    public double getEficienciaCajero(String cajaId) {
+<span class="nc" id="L70">        return calcularEficiencia(cajaId);</span>
+    }
+
+    private double calcularEficiencia(String cajaId) {
+<span class="nc" id="L74">        int    atendidos = atendidosPorCaja.getOrDefault(cajaId, 0);</span>
+<span class="nc" id="L75">        long   tiempo    = tiempoOcupadoPorCaja.getOrDefault(cajaId, 1L);</span>
+<span class="nc" id="L76">        double monto     = montoPorCaja.getOrDefault(cajaId, 0.0);</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        if (tiempo == 0) return 0;</span>
+<span class="nc" id="L78">        return ((double) atendidos / tiempo) * 1000.0 + monto / 10000.0;</span>
+    }
+
+    public Map&lt;String, Integer&gt; getAtendidosPorServicio() {
+<span class="nc" id="L82">        return Collections.unmodifiableMap(atendidosPorServicio);</span>
+    }
+
+    public Map&lt;String, Double&gt; getMontoPorCaja() {
+<span class="nc" id="L86">        return Collections.unmodifiableMap(montoPorCaja);</span>
+    }
+
+    public double getTiempoPromedioServicio(String nombreServicio) {
+<span class="nc" id="L90">        int    cnt = atendidosPorServicio.getOrDefault(nombreServicio, 0);</span>
+<span class="nc" id="L91">        long   t   = tiempoPorServicio.getOrDefault(nombreServicio, 0L);</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">        return cnt == 0 ? 0.0 : (double) t / cnt;</span>
+    }
+
+    public void reiniciar() {
+<span class="nc" id="L96">        totalAtendidos.set(0);</span>
+<span class="nc" id="L97">        sumaEspera.set(0);</span>
+<span class="nc" id="L98">        sumaAtencion.set(0);</span>
+<span class="nc" id="L99">        montoTotal.set(0);</span>
+<span class="nc" id="L100">        atendidosPorCaja.clear();</span>
+<span class="nc" id="L101">        tiempoOcupadoPorCaja.clear();</span>
+<span class="nc" id="L102">        montoPorCaja.clear();</span>
+<span class="nc" id="L103">        atendidosPorServicio.clear();</span>
+<span class="nc" id="L104">        tiempoPorServicio.clear();</span>
+<span class="nc" id="L105">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

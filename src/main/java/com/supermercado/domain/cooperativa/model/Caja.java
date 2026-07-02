@@ -11,7 +11,7 @@ public class Caja {
     private boolean activa;
     private int totalAtendidos;
     private double montoTotalAtendido;
-    private List<Socio> sociosAtendidos; // historial
+    private List<Socio> sociosAtendidos;
 
     public Caja(String id, TipoCaja tipo) {
         this.id = id;
@@ -21,6 +21,11 @@ public class Caja {
         this.totalAtendidos = 0;
         this.montoTotalAtendido = 0.0;
         this.sociosAtendidos = new ArrayList<>();
+    }
+
+    // Constructor sin argumentos (para compatibilidad)
+    public Caja() {
+        this("C-000", new TipoCaja("GENERAL", "General", "GEN"));
     }
 
     public String getId() { return id; }
@@ -46,16 +51,38 @@ public class Caja {
 
     public List<Socio> getSociosAtendidos() { return sociosAtendidos; }
 
+    // Método original (sin tiempo) - se mantiene
     public void asignarSocio(Socio socio) {
         this.socioActual = socio;
         this.estado = EstadoCaja.OCUPADA;
         socio.setTiempoInicioAtencion(System.currentTimeMillis());
     }
 
+    // NUEVO: con tiempo (para el motor)
+    public void asignarSocio(Socio socio, long tiempoActual) {
+        this.socioActual = socio;
+        this.estado = EstadoCaja.OCUPADA;
+        socio.setTiempoInicioAtencion(tiempoActual);
+    }
+
+    // Método original (sin tiempo)
     public void finalizarAtencion() {
         if (socioActual != null) {
             socioActual.setAtendida(true);
             socioActual.setTiempoSalida(System.currentTimeMillis());
+            this.totalAtendidos++;
+            this.montoTotalAtendido += socioActual.getMonto();
+            this.sociosAtendidos.add(socioActual);
+            this.socioActual = null;
+        }
+        this.estado = EstadoCaja.LIBRE;
+    }
+
+    // NUEVO: con tiempo (para el motor)
+    public void finalizarAtencion(long tiempoActual) {
+        if (socioActual != null) {
+            socioActual.setAtendida(true);
+            socioActual.setTiempoSalida(tiempoActual);
             this.totalAtendidos++;
             this.montoTotalAtendido += socioActual.getMonto();
             this.sociosAtendidos.add(socioActual);

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GeneradorSociosService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.domain.cooperativa.service</a> &gt; <span class="el_source">GeneradorSociosService.java</span></div><h1>GeneradorSociosService.java</h1><pre class="source lang-java linenums">package com.supermercado.domain.cooperativa.service;
+
+import com.supermercado.domain.cooperativa.model.ServicioFinanciero;
+import com.supermercado.domain.cooperativa.model.Socio;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
+<span class="nc" id="L8">public class GeneradorSociosService {</span>
+
+<span class="nc" id="L10">    private final AtomicInteger contadorSocios   = new AtomicInteger(0);</span>
+<span class="nc" id="L11">    private final AtomicInteger contadorFichas   = new AtomicInteger(0);</span>
+<span class="nc" id="L12">    private final Random        random           = new Random();</span>
+
+<span class="nc" id="L14">    private static final Map&lt;String, String&gt; PREFIJOS = Map.of(</span>
+            &quot;GENERAL&quot;,  &quot;GEN&quot;,
+            &quot;CREDITOS&quot;, &quot;CRE&quot;,
+            &quot;RECLAMO&quot;,  &quot;REC&quot;,
+            &quot;AHORRO&quot;,   &quot;AHO&quot;,
+            &quot;MM&quot;,       &quot;MM&quot;
+    );
+
+<span class="nc" id="L22">    private static final double[] LIMITES = { 0.65, 0.85, 0.90, 0.95, 1.00 };</span>
+<span class="nc" id="L23">    private static final String[] TIPOS   = { &quot;GENERAL&quot;, &quot;CREDITOS&quot;, &quot;RECLAMO&quot;, &quot;AHORRO&quot;, &quot;MM&quot; };</span>
+
+<span class="nc" id="L25">    private List&lt;ServicioFinanciero&gt; serviciosDisponibles = new ArrayList&lt;&gt;();</span>
+
+    public void setServicios(List&lt;ServicioFinanciero&gt; servicios) {
+<span class="nc bnc" id="L28" title="All 2 branches missed.">        this.serviciosDisponibles = servicios != null ? servicios : new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L29">    }</span>
+
+    public Socio generarSocio(long tiempoLlegada) {
+<span class="nc" id="L32">        int numSocio = contadorSocios.incrementAndGet();</span>
+
+<span class="nc" id="L34">        String tipoCajaId = sortearTipoCaja();</span>
+<span class="nc" id="L35">        ServicioFinanciero servicio = elegirServicio(tipoCajaId);</span>
+
+<span class="nc" id="L37">        int numFicha   = contadorFichas.incrementAndGet();</span>
+<span class="nc" id="L38">        String prefijo = PREFIJOS.getOrDefault(tipoCajaId, &quot;GEN&quot;);</span>
+<span class="nc" id="L39">        String ficha   = String.format(&quot;%s%03d&quot;, prefijo, numFicha);</span>
+
+<span class="nc" id="L41">        Socio socio = new Socio();</span>
+<span class="nc" id="L42">        socio.setId(&quot;SOC-&quot; + String.format(&quot;%04d&quot;, numSocio));</span>
+<span class="nc" id="L43">        socio.setFicha(ficha);</span>
+<span class="nc" id="L44">        socio.setServicio(servicio);</span>
+<span class="nc" id="L45">        socio.setTiempoLlegada(tiempoLlegada);</span>
+<span class="nc" id="L46">        socio.setAtendida(false);</span>
+
+<span class="nc bnc" id="L48" title="All 2 branches missed.">        if (servicio != null) {</span>
+<span class="nc" id="L49">            double monto = servicio.getMontoMinimo()</span>
+<span class="nc" id="L50">                    + random.nextDouble() * (servicio.getMontoMaximo() - servicio.getMontoMinimo());</span>
+<span class="nc" id="L51">            socio.setMonto(monto);</span>
+
+<span class="nc" id="L53">            int duracion = servicio.getDuracionMinima()</span>
+<span class="nc" id="L54">                    + random.nextInt(Math.max(1,</span>
+<span class="nc" id="L55">                        servicio.getDuracionMaxima() - servicio.getDuracionMinima() + 1));</span>
+<span class="nc" id="L56">            socio.setDuracionEstimada(duracion);</span>
+<span class="nc" id="L57">        } else {</span>
+<span class="nc" id="L58">            socio.setMonto(500 + random.nextDouble() * 4500);</span>
+<span class="nc" id="L59">            socio.setDuracionEstimada(5 + random.nextInt(15));</span>
+        }
+
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        boolean preferente = random.nextDouble() &lt; 0.10;</span>
+<span class="nc" id="L63">        socio.setEsPreferente(preferente);</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        socio.setPrioridad(preferente ? 1 : 3);</span>
+
+<span class="nc" id="L66">        return socio;</span>
+    }
+
+    private String sortearTipoCaja() {
+<span class="nc" id="L70">        double r = random.nextDouble();</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        for (int i = 0; i &lt; LIMITES.length; i++) {</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">            if (r &lt; LIMITES[i]) return TIPOS[i];</span>
+        }
+<span class="nc" id="L74">        return &quot;GENERAL&quot;;</span>
+    }
+
+    private ServicioFinanciero elegirServicio(String tipoCajaId) {
+<span class="nc bnc" id="L78" title="All 2 branches missed.">        if (serviciosDisponibles.isEmpty()) return null;</span>
+<span class="nc" id="L79">        List&lt;ServicioFinanciero&gt; compatibles = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        for (ServicioFinanciero s : serviciosDisponibles) {</span>
+<span class="nc bnc" id="L81" title="All 4 branches missed.">            if (s.isActivo() &amp;&amp; tipoCajaId.equals(s.getTipoCajaRequerido())) {</span>
+<span class="nc" id="L82">                compatibles.add(s);</span>
+            }
+<span class="nc" id="L84">        }</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        if (compatibles.isEmpty()) {</span>
+<span class="nc" id="L86">            List&lt;ServicioFinanciero&gt; activos = serviciosDisponibles.stream()</span>
+<span class="nc" id="L87">                    .filter(ServicioFinanciero::isActivo).toList();</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">            if (activos.isEmpty()) return null;</span>
+<span class="nc" id="L89">            return activos.get(random.nextInt(activos.size()));</span>
+        }
+<span class="nc" id="L91">        return compatibles.get(random.nextInt(compatibles.size()));</span>
+    }
+
+    public void reiniciar() {
+<span class="nc" id="L95">        contadorSocios.set(0);</span>
+<span class="nc" id="L96">        contadorFichas.set(0);</span>
+<span class="nc" id="L97">    }</span>
+
+<span class="nc" id="L99">    public int getTotalGenerados() { return contadorSocios.get(); }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

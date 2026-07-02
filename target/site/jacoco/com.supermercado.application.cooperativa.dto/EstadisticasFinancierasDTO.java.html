@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EstadisticasFinancierasDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.application.cooperativa.dto</a> &gt; <span class="el_source">EstadisticasFinancierasDTO.java</span></div><h1>EstadisticasFinancierasDTO.java</h1><pre class="source lang-java linenums">package com.supermercado.application.cooperativa.dto;
+
+import java.util.Map;
+
+<span class="nc" id="L5">public class EstadisticasFinancierasDTO {</span>
+    private int totalSociosGenerados;
+    private int totalSociosAtendidos;
+    private int sociosRezagados;
+    private int sociosEnEspera;
+    private double montoTotalAtendido;
+    private double tiempoPromedioAtencion; // segundos
+    private double tiempoPromedioEspera;   // segundos
+    private Map&lt;String, Double&gt; montosPorServicio;
+    private Map&lt;String, Integer&gt; cantidadPorServicio;
+    private Map&lt;String, Double&gt; interesesPorServicio;
+    private boolean faseRezagadosActiva;
+
+    // Getters y setters
+<span class="nc" id="L19">    public int getTotalSociosGenerados() { return totalSociosGenerados; }</span>
+<span class="nc" id="L20">    public void setTotalSociosGenerados(int totalSociosGenerados) { this.totalSociosGenerados = totalSociosGenerados; }</span>
+
+<span class="nc" id="L22">    public int getTotalSociosAtendidos() { return totalSociosAtendidos; }</span>
+<span class="nc" id="L23">    public void setTotalSociosAtendidos(int totalSociosAtendidos) { this.totalSociosAtendidos = totalSociosAtendidos; }</span>
+
+<span class="nc" id="L25">    public int getSociosRezagados() { return sociosRezagados; }</span>
+<span class="nc" id="L26">    public void setSociosRezagados(int sociosRezagados) { this.sociosRezagados = sociosRezagados; }</span>
+
+<span class="nc" id="L28">    public int getSociosEnEspera() { return sociosEnEspera; }</span>
+<span class="nc" id="L29">    public void setSociosEnEspera(int sociosEnEspera) { this.sociosEnEspera = sociosEnEspera; }</span>
+
+<span class="nc" id="L31">    public double getMontoTotalAtendido() { return montoTotalAtendido; }</span>
+<span class="nc" id="L32">    public void setMontoTotalAtendido(double montoTotalAtendido) { this.montoTotalAtendido = montoTotalAtendido; }</span>
+
+<span class="nc" id="L34">    public double getTiempoPromedioAtencion() { return tiempoPromedioAtencion; }</span>
+<span class="nc" id="L35">    public void setTiempoPromedioAtencion(double tiempoPromedioAtencion) { this.tiempoPromedioAtencion = tiempoPromedioAtencion; }</span>
+
+<span class="nc" id="L37">    public double getTiempoPromedioEspera() { return tiempoPromedioEspera; }</span>
+<span class="nc" id="L38">    public void setTiempoPromedioEspera(double tiempoPromedioEspera) { this.tiempoPromedioEspera = tiempoPromedioEspera; }</span>
+
+<span class="nc" id="L40">    public Map&lt;String, Double&gt; getMontosPorServicio() { return montosPorServicio; }</span>
+<span class="nc" id="L41">    public void setMontosPorServicio(Map&lt;String, Double&gt; montosPorServicio) { this.montosPorServicio = montosPorServicio; }</span>
+
+<span class="nc" id="L43">    public Map&lt;String, Integer&gt; getCantidadPorServicio() { return cantidadPorServicio; }</span>
+<span class="nc" id="L44">    public void setCantidadPorServicio(Map&lt;String, Integer&gt; cantidadPorServicio) { this.cantidadPorServicio = cantidadPorServicio; }</span>
+
+<span class="nc" id="L46">    public Map&lt;String, Double&gt; getInteresesPorServicio() { return interesesPorServicio; }</span>
+<span class="nc" id="L47">    public void setInteresesPorServicio(Map&lt;String, Double&gt; interesesPorServicio) { this.interesesPorServicio = interesesPorServicio; }</span>
+
+<span class="nc" id="L49">    public boolean isFaseRezagadosActiva() { return faseRezagadosActiva; }</span>
+<span class="nc" id="L50">    public void setFaseRezagadosActiva(boolean faseRezagadosActiva) { this.faseRezagadosActiva = faseRezagadosActiva; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

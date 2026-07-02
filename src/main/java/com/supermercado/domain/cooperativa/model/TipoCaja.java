@@ -22,19 +22,30 @@ public class TipoCaja {
         this.activo = true;
     }
 
+    // Constructor sin argumentos (para compatibilidad)
+    public TipoCaja() {
+        this("GENERAL", "General", "GEN");
+    }
+
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
+
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
+
     public String getPrefijoFicha() { return prefijoFicha; }
     public void setPrefijoFicha(String prefijoFicha) { this.prefijoFicha = prefijoFicha; }
+
     public double getFactorVelocidad() { return factorVelocidad; }
     public void setFactorVelocidad(double factorVelocidad) { this.factorVelocidad = factorVelocidad; }
+
     public int getPrioridad() { return prioridad; }
     public void setPrioridad(int prioridad) { this.prioridad = prioridad; }
+
     public Set<String> getServiciosEspecializados() { return serviciosEspecializados; }
     public void setServiciosEspecializados(Set<String> serviciosEspecializados) { this.serviciosEspecializados = serviciosEspecializados; }
     public void addServicioEspecializado(String servicioId) { this.serviciosEspecializados.add(servicioId); }
+
     public boolean isActivo() { return activo; }
     public void setActivo(boolean activo) { this.activo = activo; }
 }

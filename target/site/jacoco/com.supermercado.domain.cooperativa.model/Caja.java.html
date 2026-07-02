@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Caja.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.domain.cooperativa.model</a> &gt; <span class="el_source">Caja.java</span></div><h1>Caja.java</h1><pre class="source lang-java linenums">package com.supermercado.domain.cooperativa.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Caja {
+    private String id;
+    private TipoCaja tipo;
+    private EstadoCaja estado;
+    private Socio socioActual;
+    private boolean activa;
+    private int totalAtendidos;
+    private double montoTotalAtendido;
+    private List&lt;Socio&gt; sociosAtendidos;
+
+<span class="nc" id="L16">    public Caja(String id, TipoCaja tipo) {</span>
+<span class="nc" id="L17">        this.id = id;</span>
+<span class="nc" id="L18">        this.tipo = tipo;</span>
+<span class="nc" id="L19">        this.estado = EstadoCaja.LIBRE;</span>
+<span class="nc" id="L20">        this.activa = true;</span>
+<span class="nc" id="L21">        this.totalAtendidos = 0;</span>
+<span class="nc" id="L22">        this.montoTotalAtendido = 0.0;</span>
+<span class="nc" id="L23">        this.sociosAtendidos = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L24">    }</span>
+
+    // Constructor sin argumentos (para compatibilidad)
+    public Caja() {
+<span class="nc" id="L28">        this(&quot;C-000&quot;, new TipoCaja(&quot;GENERAL&quot;, &quot;General&quot;, &quot;GEN&quot;));</span>
+<span class="nc" id="L29">    }</span>
+
+<span class="nc" id="L31">    public String getId() { return id; }</span>
+<span class="nc" id="L32">    public void setId(String id) { this.id = id; }</span>
+
+<span class="nc" id="L34">    public TipoCaja getTipo() { return tipo; }</span>
+<span class="nc" id="L35">    public void setTipo(TipoCaja tipo) { this.tipo = tipo; }</span>
+
+<span class="nc" id="L37">    public EstadoCaja getEstado() { return estado; }</span>
+<span class="nc" id="L38">    public void setEstado(EstadoCaja estado) { this.estado = estado; }</span>
+
+<span class="nc" id="L40">    public Socio getSocioActual() { return socioActual; }</span>
+<span class="nc" id="L41">    public void setSocioActual(Socio socioActual) { this.socioActual = socioActual; }</span>
+
+<span class="nc" id="L43">    public boolean isActiva() { return activa; }</span>
+<span class="nc" id="L44">    public void setActiva(boolean activa) { this.activa = activa; }</span>
+
+<span class="nc" id="L46">    public int getTotalAtendidos() { return totalAtendidos; }</span>
+<span class="nc" id="L47">    public void setTotalAtendidos(int totalAtendidos) { this.totalAtendidos = totalAtendidos; }</span>
+
+<span class="nc" id="L49">    public double getMontoTotalAtendido() { return montoTotalAtendido; }</span>
+<span class="nc" id="L50">    public void setMontoTotalAtendido(double montoTotalAtendido) { this.montoTotalAtendido = montoTotalAtendido; }</span>
+
+<span class="nc" id="L52">    public List&lt;Socio&gt; getSociosAtendidos() { return sociosAtendidos; }</span>
+
+    // Método original (sin tiempo) - se mantiene
+    public void asignarSocio(Socio socio) {
+<span class="nc" id="L56">        this.socioActual = socio;</span>
+<span class="nc" id="L57">        this.estado = EstadoCaja.OCUPADA;</span>
+<span class="nc" id="L58">        socio.setTiempoInicioAtencion(System.currentTimeMillis());</span>
+<span class="nc" id="L59">    }</span>
+
+    // NUEVO: con tiempo (para el motor)
+    public void asignarSocio(Socio socio, long tiempoActual) {
+<span class="nc" id="L63">        this.socioActual = socio;</span>
+<span class="nc" id="L64">        this.estado = EstadoCaja.OCUPADA;</span>
+<span class="nc" id="L65">        socio.setTiempoInicioAtencion(tiempoActual);</span>
+<span class="nc" id="L66">    }</span>
+
+    // Método original (sin tiempo)
+    public void finalizarAtencion() {
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        if (socioActual != null) {</span>
+<span class="nc" id="L71">            socioActual.setAtendida(true);</span>
+<span class="nc" id="L72">            socioActual.setTiempoSalida(System.currentTimeMillis());</span>
+<span class="nc" id="L73">            this.totalAtendidos++;</span>
+<span class="nc" id="L74">            this.montoTotalAtendido += socioActual.getMonto();</span>
+<span class="nc" id="L75">            this.sociosAtendidos.add(socioActual);</span>
+<span class="nc" id="L76">            this.socioActual = null;</span>
+        }
+<span class="nc" id="L78">        this.estado = EstadoCaja.LIBRE;</span>
+<span class="nc" id="L79">    }</span>
+
+    // NUEVO: con tiempo (para el motor)
+    public void finalizarAtencion(long tiempoActual) {
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        if (socioActual != null) {</span>
+<span class="nc" id="L84">            socioActual.setAtendida(true);</span>
+<span class="nc" id="L85">            socioActual.setTiempoSalida(tiempoActual);</span>
+<span class="nc" id="L86">            this.totalAtendidos++;</span>
+<span class="nc" id="L87">            this.montoTotalAtendido += socioActual.getMonto();</span>
+<span class="nc" id="L88">            this.sociosAtendidos.add(socioActual);</span>
+<span class="nc" id="L89">            this.socioActual = null;</span>
+        }
+<span class="nc" id="L91">        this.estado = EstadoCaja.LIBRE;</span>
+<span class="nc" id="L92">    }</span>
+
+    public void pausar() {
+<span class="nc bnc" id="L95" title="All 4 branches missed.">        if (estado == EstadoCaja.OCUPADA || estado == EstadoCaja.LIBRE) {</span>
+<span class="nc" id="L96">            this.estado = EstadoCaja.PAUSADA;</span>
+        }
+<span class="nc" id="L98">    }</span>
+
+    public void reanudar() {
+<span class="nc bnc" id="L101" title="All 2 branches missed.">        if (estado == EstadoCaja.PAUSADA) {</span>
+<span class="nc" id="L102">            this.estado = EstadoCaja.LIBRE;</span>
+        }
+<span class="nc" id="L104">    }</span>
+
+    public void detener() {
+<span class="nc" id="L107">        this.estado = EstadoCaja.DETENIDA;</span>
+<span class="nc" id="L108">        this.socioActual = null;</span>
+<span class="nc" id="L109">    }</span>
+
+    public void reiniciar() {
+<span class="nc" id="L112">        this.estado = EstadoCaja.LIBRE;</span>
+<span class="nc" id="L113">        this.socioActual = null;</span>
+<span class="nc" id="L114">        this.totalAtendidos = 0;</span>
+<span class="nc" id="L115">        this.montoTotalAtendido = 0.0;</span>
+<span class="nc" id="L116">        this.sociosAtendidos.clear();</span>
+<span class="nc" id="L117">        this.activa = true;</span>
+<span class="nc" id="L118">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

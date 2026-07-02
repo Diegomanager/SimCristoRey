@@ -7,39 +7,26 @@ class EstadoCajaTest {
 
     @Test
     void testValoresEnum() {
-        EstadoCaja[] estados = EstadoCaja.values();
-        assertEquals(4, estados.length);
-        assertEquals(EstadoCaja.LIBRE, estados[0]);
-        assertEquals(EstadoCaja.OCUPADA, estados[1]);
-        assertEquals(EstadoCaja.PAUSADA, estados[2]);
-        assertEquals(EstadoCaja.DETENIDA, estados[3]);
+        EstadoCaja[] valores = EstadoCaja.values();
+        assertEquals(4, valores.length, "El enum debe tener 4 valores: LIBRE, OCUPADA, PAUSADA, DETENIDA");
+        assertTrue(contains(valores, EstadoCaja.LIBRE));
+        assertTrue(contains(valores, EstadoCaja.OCUPADA));
+        assertTrue(contains(valores, EstadoCaja.PAUSADA));
+        assertTrue(contains(valores, EstadoCaja.DETENIDA));
     }
 
     @Test
-    void testEstadoLibre() {
-        assertEquals("LIBRE", EstadoCaja.LIBRE.name());
+    void testOrdinal() {
+        assertEquals(0, EstadoCaja.LIBRE.ordinal());
+        assertEquals(1, EstadoCaja.OCUPADA.ordinal());
+        assertEquals(2, EstadoCaja.PAUSADA.ordinal());
+        assertEquals(3, EstadoCaja.DETENIDA.ordinal());
     }
 
-    @Test
-    void testEstadoOcupada() {
-        assertEquals("OCUPADA", EstadoCaja.OCUPADA.name());
-    }
-
-    @Test
-    void testEstadoPausada() {
-        assertEquals("PAUSADA", EstadoCaja.PAUSADA.name());
-    }
-
-    @Test
-    void testEstadoDetenida() {
-        assertEquals("DETENIDA", EstadoCaja.DETENIDA.name());
-    }
-
-    @Test
-    void testValueOf() {
-        assertEquals(EstadoCaja.LIBRE, EstadoCaja.valueOf("LIBRE"));
-        assertEquals(EstadoCaja.OCUPADA, EstadoCaja.valueOf("OCUPADA"));
-        assertEquals(EstadoCaja.PAUSADA, EstadoCaja.valueOf("PAUSADA"));
-        assertEquals(EstadoCaja.DETENIDA, EstadoCaja.valueOf("DETENIDA"));
+    private boolean contains(EstadoCaja[] array, EstadoCaja value) {
+        for (EstadoCaja e : array) {
+            if (e == value) return true;
+        }
+        return false;
     }
 }

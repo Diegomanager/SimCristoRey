@@ -4,6 +4,5 @@ public enum EstadoCaja {
     LIBRE,
     OCUPADA,
     PAUSADA,
-    DETENIDA,
-    DESACTIVADA
+    DETENIDA
 }

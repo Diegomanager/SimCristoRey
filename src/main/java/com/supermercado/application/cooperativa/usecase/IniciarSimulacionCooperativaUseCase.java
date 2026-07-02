@@ -22,8 +22,8 @@ public class IniciarSimulacionCooperativaUseCase {
     }
 
     public void execute(ConfiguracionCooperativaDTO config) {
-        if (simulador.isEjecutando()) {
-            throw new IllegalStateException("La simulación ya está en ejecución");
+        if (simulador.isCorriendo()) {
+            throw new IllegalStateException("La simulacion ya esta en ejecucion");
         }
 
         // Convertir DTOs a entidades
@@ -31,54 +31,66 @@ public class IniciarSimulacionCooperativaUseCase {
         List<TipoCaja> tiposCaja = convertirTiposCaja(config.getTiposCaja());
         List<Caja> cajas = crearCajas(config.getNumCajas(), tiposCaja);
 
-        // Iniciar simulación
-        simulador.iniciarSimulacion(config.getDuracionPrincipal());
+        // Configurar el simulador
+        int duracionMinutos = config.getDuracionPrincipal();
+        long msPorMinuto = SimuladorCooperativaService.calcularEscala(duracionMinutos, 30); // 30 seg reales
+        int maxSocios = config.getCapacidadMaximaSocios();
+        double intervaloLlegada = 1.0;
+
+        simulador.configurar(duracionMinutos, msPorMinuto, maxSocios, intervaloLlegada, servicios, cajas);
+
+        // Iniciar
+        simulador.iniciar();
     }
 
     private List<ServicioFinanciero> convertirServicios(List<ServicioDTO> serviciosDTO) {
         List<ServicioFinanciero> servicios = new ArrayList<>();
         if (serviciosDTO == null) return servicios;
-        
+
         for (ServicioDTO dto : serviciosDTO) {
-            ServicioFinanciero servicio = new ServicioFinanciero(dto.getId(), dto.getNombre());
-            servicio.setDuracionMinima(dto.getDuracionMinima());
-            servicio.setDuracionMaxima(dto.getDuracionMaxima());
-            servicio.setMontoMinimo(dto.getMontoMinimo());
-            servicio.setMontoMaximo(dto.getMontoMaximo());
-            servicio.setTasaInteres(dto.getTasaInteres());
-            servicio.setProbabilidad(dto.getProbabilidad());
-            servicio.setTiposCajaPermitidos(dto.getTiposCajaPermitidos());
-            servicio.setActivo(dto.isActivo());
-            servicios.add(servicio);
+            ServicioFinanciero s = new ServicioFinanciero(dto.getId(), dto.getNombre());
+            s.setDuracionMinima(dto.getDuracionMinima());
+            s.setDuracionMaxima(dto.getDuracionMaxima());
+            s.setMontoMinimo(dto.getMontoMinimo());
+            s.setMontoMaximo(dto.getMontoMaximo());
+            s.setTasaInteres(dto.getTasaInteres());
+            s.setProbabilidad(dto.getProbabilidad());
+            s.setTiposCajaPermitidos(dto.getTiposCajaPermitidos());
+            s.setActivo(dto.isActivo());
+            // Asignar tipo requerido (primero de la lista de permitidos)
+            if (dto.getTiposCajaPermitidos() != null && !dto.getTiposCajaPermitidos().isEmpty()) {
+                s.setTipoCajaRequerido(dto.getTiposCajaPermitidos().iterator().next());
+            } else {
+                s.setTipoCajaRequerido("GENERAL");
+            }
+            servicios.add(s);
         }
         return servicios;
     }
 
     private List<TipoCaja> convertirTiposCaja(List<TipoCajaDTO> tiposCajaDTO) {
-        List<TipoCaja> tiposCaja = new ArrayList<>();
-        if (tiposCajaDTO == null) return tiposCaja;
-        
+        List<TipoCaja> tipos = new ArrayList<>();
+        if (tiposCajaDTO == null) return tipos;
+
         for (TipoCajaDTO dto : tiposCajaDTO) {
-            TipoCaja tipo = new TipoCaja(dto.getId(), dto.getNombre(), dto.getPrefijoFicha());
-            tipo.setFactorVelocidad(dto.getFactorVelocidad());
-            tipo.setPrioridad(dto.getPrioridad());
-            tipo.setServiciosEspecializados(dto.getServiciosEspecializados());
-            tipo.setActivo(dto.isActivo());
-            tiposCaja.add(tipo);
+            TipoCaja t = new TipoCaja(dto.getId(), dto.getNombre(), dto.getPrefijoFicha());
+            t.setFactorVelocidad(dto.getFactorVelocidad());
+            t.setPrioridad(dto.getPrioridad());
+            t.setServiciosEspecializados(dto.getServiciosEspecializados());
+            t.setActivo(dto.isActivo());
+            tipos.add(t);
         }
-        return tiposCaja;
+        return tipos;
     }
 
     private List<Caja> crearCajas(int numCajas, List<TipoCaja> tiposCaja) {
         List<Caja> cajas = new ArrayList<>();
         if (tiposCaja == null || tiposCaja.isEmpty()) {
-            // Si no hay tipos de caja, usar uno por defecto
-            TipoCaja defaultTipo = new TipoCaja("GEN", "General", "GEN");
+            TipoCaja defaultTipo = new TipoCaja("GENERAL", "General", "GEN");
             for (int i = 1; i <= numCajas; i++) {
                 cajas.add(new Caja("C-" + String.format("%03d", i), defaultTipo));
             }
         } else {
-            // Distribuir tipos de caja de forma equitativa (alternando)
             int tipoIndex = 0;
             for (int i = 1; i <= numCajas; i++) {
                 TipoCaja tipo = tiposCaja.get(tipoIndex % tiposCaja.size());

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ServicioFinanciero.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.domain.cooperativa.model</a> &gt; <span class="el_source">ServicioFinanciero.java</span></div><h1>ServicioFinanciero.java</h1><pre class="source lang-java linenums">package com.supermercado.domain.cooperativa.model;
+
+import java.util.HashSet;
+import java.util.Set;
+
+public class ServicioFinanciero {
+    private String id;
+    private String nombre;
+    private int duracionMinima;
+    private int duracionMaxima;
+    private double montoMinimo;
+    private double montoMaximo;
+    private double tasaInteres;
+    private double probabilidad;
+    private Set&lt;String&gt; tiposCajaPermitidos;
+    private boolean activo;
+    private String tipoCajaRequerido; // NUEVO
+
+<span class="nc" id="L19">    public ServicioFinanciero(String id, String nombre) {</span>
+<span class="nc" id="L20">        this.id = id;</span>
+<span class="nc" id="L21">        this.nombre = nombre;</span>
+<span class="nc" id="L22">        this.tiposCajaPermitidos = new HashSet&lt;&gt;();</span>
+<span class="nc" id="L23">        this.activo = true;</span>
+<span class="nc" id="L24">        this.probabilidad = 0.0;</span>
+<span class="nc" id="L25">        this.tipoCajaRequerido = &quot;GENERAL&quot;;</span>
+<span class="nc" id="L26">    }</span>
+
+    // Constructor sin argumentos (para compatibilidad)
+    public ServicioFinanciero() {
+<span class="nc" id="L30">        this(&quot;SVC-DEF&quot;, &quot;Servicio por defecto&quot;);</span>
+<span class="nc" id="L31">    }</span>
+
+<span class="nc" id="L33">    public String getId() { return id; }</span>
+<span class="nc" id="L34">    public void setId(String id) { this.id = id; }</span>
+
+<span class="nc" id="L36">    public String getNombre() { return nombre; }</span>
+<span class="nc" id="L37">    public void setNombre(String nombre) { this.nombre = nombre; }</span>
+
+<span class="nc" id="L39">    public int getDuracionMinima() { return duracionMinima; }</span>
+<span class="nc" id="L40">    public void setDuracionMinima(int duracionMinima) { this.duracionMinima = duracionMinima; }</span>
+
+<span class="nc" id="L42">    public int getDuracionMaxima() { return duracionMaxima; }</span>
+<span class="nc" id="L43">    public void setDuracionMaxima(int duracionMaxima) { this.duracionMaxima = duracionMaxima; }</span>
+
+<span class="nc" id="L45">    public double getMontoMinimo() { return montoMinimo; }</span>
+<span class="nc" id="L46">    public void setMontoMinimo(double montoMinimo) { this.montoMinimo = montoMinimo; }</span>
+
+<span class="nc" id="L48">    public double getMontoMaximo() { return montoMaximo; }</span>
+<span class="nc" id="L49">    public void setMontoMaximo(double montoMaximo) { this.montoMaximo = montoMaximo; }</span>
+
+<span class="nc" id="L51">    public double getTasaInteres() { return tasaInteres; }</span>
+<span class="nc" id="L52">    public void setTasaInteres(double tasaInteres) { this.tasaInteres = tasaInteres; }</span>
+
+<span class="nc" id="L54">    public double getProbabilidad() { return probabilidad; }</span>
+<span class="nc" id="L55">    public void setProbabilidad(double probabilidad) { this.probabilidad = probabilidad; }</span>
+
+<span class="nc" id="L57">    public Set&lt;String&gt; getTiposCajaPermitidos() { return tiposCajaPermitidos; }</span>
+<span class="nc" id="L58">    public void setTiposCajaPermitidos(Set&lt;String&gt; tiposCajaPermitidos) { this.tiposCajaPermitidos = tiposCajaPermitidos; }</span>
+<span class="nc" id="L59">    public void addTipoCajaPermitido(String tipoCajaId) { this.tiposCajaPermitidos.add(tipoCajaId); }</span>
+
+<span class="nc" id="L61">    public boolean isActivo() { return activo; }</span>
+<span class="nc" id="L62">    public void setActivo(boolean activo) { this.activo = activo; }</span>
+
+    // NUEVO: tipoCajaRequerido
+<span class="nc" id="L65">    public String getTipoCajaRequerido() { return tipoCajaRequerido; }</span>
+<span class="nc" id="L66">    public void setTipoCajaRequerido(String tipoCajaRequerido) { this.tipoCajaRequerido = tipoCajaRequerido; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

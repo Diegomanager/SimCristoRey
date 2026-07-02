@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EstadoSimulacionDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.application.cooperativa.dto</a> &gt; <span class="el_source">EstadoSimulacionDTO.java</span></div><h1>EstadoSimulacionDTO.java</h1><pre class="source lang-java linenums">package com.supermercado.application.cooperativa.dto;
+
+import java.util.List;
+
+<span class="nc" id="L5">public class EstadoSimulacionDTO {</span>
+    private boolean ejecutando;
+    private boolean pausado;
+    private boolean detenido;
+    private boolean faseRezagados;
+    private int sociosGenerados;
+    private int sociosAtendidos;
+    private int sociosRezagados;
+    private int sociosEnEspera;
+    private List&lt;CajaDTO&gt; cajas;
+    private List&lt;SocioDTO&gt; sociosEnEsperaList;
+
+<span class="nc" id="L17">    public boolean isEjecutando() { return ejecutando; }</span>
+<span class="nc" id="L18">    public void setEjecutando(boolean ejecutando) { this.ejecutando = ejecutando; }</span>
+<span class="nc" id="L19">    public boolean isPausado() { return pausado; }</span>
+<span class="nc" id="L20">    public void setPausado(boolean pausado) { this.pausado = pausado; }</span>
+<span class="nc" id="L21">    public boolean isDetenido() { return detenido; }</span>
+<span class="nc" id="L22">    public void setDetenido(boolean detenido) { this.detenido = detenido; }</span>
+<span class="nc" id="L23">    public boolean isFaseRezagados() { return faseRezagados; }</span>
+<span class="nc" id="L24">    public void setFaseRezagados(boolean faseRezagados) { this.faseRezagados = faseRezagados; }</span>
+<span class="nc" id="L25">    public int getSociosGenerados() { return sociosGenerados; }</span>
+<span class="nc" id="L26">    public void setSociosGenerados(int sociosGenerados) { this.sociosGenerados = sociosGenerados; }</span>
+<span class="nc" id="L27">    public int getSociosAtendidos() { return sociosAtendidos; }</span>
+<span class="nc" id="L28">    public void setSociosAtendidos(int sociosAtendidos) { this.sociosAtendidos = sociosAtendidos; }</span>
+<span class="nc" id="L29">    public int getSociosRezagados() { return sociosRezagados; }</span>
+<span class="nc" id="L30">    public void setSociosRezagados(int sociosRezagados) { this.sociosRezagados = sociosRezagados; }</span>
+<span class="nc" id="L31">    public int getSociosEnEspera() { return sociosEnEspera; }</span>
+<span class="nc" id="L32">    public void setSociosEnEspera(int sociosEnEspera) { this.sociosEnEspera = sociosEnEspera; }</span>
+<span class="nc" id="L33">    public List&lt;CajaDTO&gt; getCajas() { return cajas; }</span>
+<span class="nc" id="L34">    public void setCajas(List&lt;CajaDTO&gt; cajas) { this.cajas = cajas; }</span>
+<span class="nc" id="L35">    public List&lt;SocioDTO&gt; getSociosEnEsperaList() { return sociosEnEsperaList; }</span>
+<span class="nc" id="L36">    public void setSociosEnEsperaList(List&lt;SocioDTO&gt; sociosEnEsperaList) { this.sociosEnEsperaList = sociosEnEsperaList; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

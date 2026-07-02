@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EventoSimulacion.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.domain.cooperativa.event</a> &gt; <span class="el_source">EventoSimulacion.java</span></div><h1>EventoSimulacion.java</h1><pre class="source lang-java linenums">package com.supermercado.domain.cooperativa.event;
+
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+
+public class EventoSimulacion {
+    private final TipoEvento tipo;
+    private final String     mensaje;
+    private final String     hora;
+
+<span class="nc" id="L11">    public EventoSimulacion(TipoEvento tipo, String mensaje) {</span>
+<span class="nc" id="L12">        this.tipo    = tipo;</span>
+<span class="nc" id="L13">        this.mensaje = mensaje;</span>
+<span class="nc" id="L14">        this.hora    = LocalTime.now().format(DateTimeFormatter.ofPattern(&quot;HH:mm:ss&quot;));</span>
+<span class="nc" id="L15">    }</span>
+
+<span class="nc" id="L17">    public TipoEvento getTipo()    { return tipo; }</span>
+<span class="nc" id="L18">    public String     getMensaje() { return mensaje; }</span>
+<span class="nc" id="L19">    public String     getHora()    { return hora; }</span>
+
+    @Override
+    public String toString() {
+<span class="nc" id="L23">        return &quot;[&quot; + hora + &quot;] &quot; + tipo.name() + &quot;: &quot; + mensaje;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

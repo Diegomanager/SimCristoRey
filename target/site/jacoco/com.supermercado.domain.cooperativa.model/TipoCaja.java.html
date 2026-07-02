@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TipoCaja.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.domain.cooperativa.model</a> &gt; <span class="el_source">TipoCaja.java</span></div><h1>TipoCaja.java</h1><pre class="source lang-java linenums">package com.supermercado.domain.cooperativa.model;
+
+import java.util.HashSet;
+import java.util.Set;
+
+public class TipoCaja {
+    private String id;
+    private String nombre;
+    private String prefijoFicha;
+    private double factorVelocidad;
+    private int prioridad;
+    private Set&lt;String&gt; serviciosEspecializados;
+    private boolean activo;
+
+<span class="nc" id="L15">    public TipoCaja(String id, String nombre, String prefijoFicha) {</span>
+<span class="nc" id="L16">        this.id = id;</span>
+<span class="nc" id="L17">        this.nombre = nombre;</span>
+<span class="nc" id="L18">        this.prefijoFicha = prefijoFicha;</span>
+<span class="nc" id="L19">        this.factorVelocidad = 1.0;</span>
+<span class="nc" id="L20">        this.prioridad = 2;</span>
+<span class="nc" id="L21">        this.serviciosEspecializados = new HashSet&lt;&gt;();</span>
+<span class="nc" id="L22">        this.activo = true;</span>
+<span class="nc" id="L23">    }</span>
+
+    // Constructor sin argumentos (para compatibilidad)
+    public TipoCaja() {
+<span class="nc" id="L27">        this(&quot;GENERAL&quot;, &quot;General&quot;, &quot;GEN&quot;);</span>
+<span class="nc" id="L28">    }</span>
+
+<span class="nc" id="L30">    public String getId() { return id; }</span>
+<span class="nc" id="L31">    public void setId(String id) { this.id = id; }</span>
+
+<span class="nc" id="L33">    public String getNombre() { return nombre; }</span>
+<span class="nc" id="L34">    public void setNombre(String nombre) { this.nombre = nombre; }</span>
+
+<span class="nc" id="L36">    public String getPrefijoFicha() { return prefijoFicha; }</span>
+<span class="nc" id="L37">    public void setPrefijoFicha(String prefijoFicha) { this.prefijoFicha = prefijoFicha; }</span>
+
+<span class="nc" id="L39">    public double getFactorVelocidad() { return factorVelocidad; }</span>
+<span class="nc" id="L40">    public void setFactorVelocidad(double factorVelocidad) { this.factorVelocidad = factorVelocidad; }</span>
+
+<span class="nc" id="L42">    public int getPrioridad() { return prioridad; }</span>
+<span class="nc" id="L43">    public void setPrioridad(int prioridad) { this.prioridad = prioridad; }</span>
+
+<span class="nc" id="L45">    public Set&lt;String&gt; getServiciosEspecializados() { return serviciosEspecializados; }</span>
+<span class="nc" id="L46">    public void setServiciosEspecializados(Set&lt;String&gt; serviciosEspecializados) { this.serviciosEspecializados = serviciosEspecializados; }</span>
+<span class="nc" id="L47">    public void addServicioEspecializado(String servicioId) { this.serviciosEspecializados.add(servicioId); }</span>
+
+<span class="nc" id="L49">    public boolean isActivo() { return activo; }</span>
+<span class="nc" id="L50">    public void setActivo(boolean activo) { this.activo = activo; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

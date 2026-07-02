@@ -1,94 +1,106 @@
 package com.supermercado.domain.cooperativa.service;
 
 import com.supermercado.domain.cooperativa.model.Caja;
-import com.supermercado.domain.cooperativa.model.ServicioFinanciero;
 import com.supermercado.domain.cooperativa.model.Socio;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class EstadisticasFinancierasService {
 
-    public Map<String, Double> calcularMontosPorServicio(List<Caja> cajas) {
-        Map<String, Double> montosPorServicio = new HashMap<>();
-        
-        for (Caja caja : cajas) {
-            for (Socio socio : caja.getSociosAtendidos()) {
-                String servicioId = socio.getServicio().getId();
-                montosPorServicio.merge(servicioId, socio.getMonto(), Double::sum);
-            }
+    private final AtomicInteger totalAtendidos        = new AtomicInteger(0);
+    private final AtomicLong    sumaEspera            = new AtomicLong(0);
+    private final AtomicLong    sumaAtencion          = new AtomicLong(0);
+    private final AtomicLong    montoTotal            = new AtomicLong(0);
+
+    private final Map<String, Integer> atendidosPorCaja    = new ConcurrentHashMap<>();
+    private final Map<String, Long>    tiempoOcupadoPorCaja = new ConcurrentHashMap<>();
+    private final Map<String, Double>  montoPorCaja         = new ConcurrentHashMap<>();
+
+    private final Map<String, Integer> atendidosPorServicio = new ConcurrentHashMap<>();
+    private final Map<String, Long>    tiempoPorServicio    = new ConcurrentHashMap<>();
+
+    public void registrarAtencion(Socio socio, Caja caja) {
+        if (socio == null || caja == null) return;
+
+        totalAtendidos.incrementAndGet();
+
+        long espera   = socio.getTiempoInicioAtencion() - socio.getTiempoLlegada();
+        long atencion = socio.getTiempoSalida() - socio.getTiempoInicioAtencion();
+        sumaEspera.addAndGet(Math.max(0, espera));
+        sumaAtencion.addAndGet(Math.max(0, atencion));
+        montoTotal.addAndGet((long)(socio.getMonto() * 100));
+
+        String cajaId = caja.getId();
+        atendidosPorCaja.merge(cajaId, 1, Integer::sum);
+        tiempoOcupadoPorCaja.merge(cajaId, Math.max(0, atencion), Long::sum);
+        montoPorCaja.merge(cajaId, socio.getMonto(), Double::sum);
+
+        if (socio.getServicio() != null) {
+            String svc = socio.getServicio().getNombre();
+            atendidosPorServicio.merge(svc, 1, Integer::sum);
+            tiempoPorServicio.merge(svc, Math.max(0, atencion), Long::sum);
         }
-        return montosPorServicio;
     }
 
-    public Map<String, Integer> calcularCantidadPorServicio(List<Caja> cajas) {
-        Map<String, Integer> cantidadPorServicio = new HashMap<>();
-        
-        for (Caja caja : cajas) {
-            for (Socio socio : caja.getSociosAtendidos()) {
-                String servicioId = socio.getServicio().getId();
-                cantidadPorServicio.merge(servicioId, 1, Integer::sum);
-            }
-        }
-        return cantidadPorServicio;
+    public int    getTotalAtendidos()    { return totalAtendidos.get(); }
+    public double getMontoTotal()        { return montoTotal.get() / 100.0; }
+
+    public double getPromedioEspera() {
+        int t = totalAtendidos.get();
+        return t == 0 ? 0.0 : (double) sumaEspera.get() / t;
     }
 
-    public double calcularTotalMontos(List<Caja> cajas) {
-        return cajas.stream()
-                .mapToDouble(Caja::getMontoTotalAtendido)
-                .sum();
+    public double getPromedioAtencion() {
+        int t = totalAtendidos.get();
+        return t == 0 ? 0.0 : (double) sumaAtencion.get() / t;
     }
 
-    public int calcularTotalAtendidos(List<Caja> cajas) {
-        return cajas.stream()
-                .mapToInt(Caja::getTotalAtendidos)
-                .sum();
+    public String getCajeroEstrella() {
+        if (atendidosPorCaja.isEmpty()) return "N/A";
+        return atendidosPorCaja.entrySet().stream()
+                .max(Comparator.comparingDouble(e -> calcularEficiencia(e.getKey())))
+                .map(Map.Entry::getKey)
+                .orElse("N/A");
     }
 
-    public double calcularTiempoPromedioAtencion(List<Caja> cajas) {
-        List<Socio> todosAtendidos = cajas.stream()
-                .flatMap(c -> c.getSociosAtendidos().stream())
-                .toList();
-        
-        if (todosAtendidos.isEmpty()) {
-            return 0.0;
-        }
-        
-        long totalTiempo = todosAtendidos.stream()
-                .mapToLong(s -> s.getTiempoSalida() - s.getTiempoInicioAtencion())
-                .sum();
-        
-        return (double) totalTiempo / todosAtendidos.size() / 1000.0; // en segundos
+    public double getEficienciaCajero(String cajaId) {
+        return calcularEficiencia(cajaId);
     }
 
-    public double calcularTiempoPromedioEspera(List<Caja> cajas) {
-        List<Socio> todosAtendidos = cajas.stream()
-                .flatMap(c -> c.getSociosAtendidos().stream())
-                .toList();
-        
-        if (todosAtendidos.isEmpty()) {
-            return 0.0;
-        }
-        
-        long totalEspera = todosAtendidos.stream()
-                .mapToLong(s -> s.getTiempoInicioAtencion() - s.getTiempoLlegada())
-                .sum();
-        
-        return (double) totalEspera / todosAtendidos.size() / 1000.0; // en segundos
+    private double calcularEficiencia(String cajaId) {
+        int    atendidos = atendidosPorCaja.getOrDefault(cajaId, 0);
+        long   tiempo    = tiempoOcupadoPorCaja.getOrDefault(cajaId, 1L);
+        double monto     = montoPorCaja.getOrDefault(cajaId, 0.0);
+        if (tiempo == 0) return 0;
+        return ((double) atendidos / tiempo) * 1000.0 + monto / 10000.0;
     }
 
-    public Map<String, Double> calcularInteresesGenerados(List<Caja> cajas) {
-        Map<String, Double> interesesPorServicio = new HashMap<>();
-        
-        for (Caja caja : cajas) {
-            for (Socio socio : caja.getSociosAtendidos()) {
-                String servicioId = socio.getServicio().getId();
-                double tasa = socio.getServicio().getTasaInteres() / 100.0;
-                double interes = socio.getMonto() * tasa;
-                interesesPorServicio.merge(servicioId, interes, Double::sum);
-            }
-        }
-        return interesesPorServicio;
+    public Map<String, Integer> getAtendidosPorServicio() {
+        return Collections.unmodifiableMap(atendidosPorServicio);
+    }
+
+    public Map<String, Double> getMontoPorCaja() {
+        return Collections.unmodifiableMap(montoPorCaja);
+    }
+
+    public double getTiempoPromedioServicio(String nombreServicio) {
+        int    cnt = atendidosPorServicio.getOrDefault(nombreServicio, 0);
+        long   t   = tiempoPorServicio.getOrDefault(nombreServicio, 0L);
+        return cnt == 0 ? 0.0 : (double) t / cnt;
+    }
+
+    public void reiniciar() {
+        totalAtendidos.set(0);
+        sumaEspera.set(0);
+        sumaAtencion.set(0);
+        montoTotal.set(0);
+        atendidosPorCaja.clear();
+        tiempoOcupadoPorCaja.clear();
+        montoPorCaja.clear();
+        atendidosPorServicio.clear();
+        tiempoPorServicio.clear();
     }
 }

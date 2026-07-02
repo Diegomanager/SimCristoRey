@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DiagnosticoService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.domain.supermercado.service</a> &gt; <span class="el_source">DiagnosticoService.java</span></div><h1>DiagnosticoService.java</h1><pre class="source lang-java linenums">package com.supermercado.domain.supermercado.service;
+
+import com.supermercado.domain.supermercado.model.Caja;
+import com.supermercado.domain.supermercado.model.Recomendacion;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Servicio de dominio: Diagnostico del estado de las cajas.
+ *
+ * Responsabilidad unica: analizar el estado actual de las cajas
+ * y generar diagnosticos con niveles de alerta y sugerencias.
+ *
+ * No depende de infraestructura ni de la capa de presentacion.
+ */
+<span class="fc" id="L16">public class DiagnosticoService {</span>
+
+    // ============================================================
+    // Enumeracion de niveles de alerta
+    // ============================================================
+
+<span class="fc" id="L22">    public enum NivelAlerta {</span>
+<span class="fc" id="L23">        NORMAL  (&quot;&quot;, &quot;Funcionando correctamente&quot;),</span>
+<span class="fc" id="L24">        ATENCION(&quot;&quot;, &quot;Monitorear&quot;),</span>
+<span class="fc" id="L25">        ALERTA  (&quot;&quot;, &quot;Requiere atencion&quot;),</span>
+<span class="fc" id="L26">        CRITICO (&quot;&quot;, &quot;URGENTE!&quot;);</span>
+
+        public final String icono;
+        public final String descripcion;
+
+<span class="fc" id="L31">        NivelAlerta(String icono, String descripcion) {</span>
+<span class="fc" id="L32">            this.icono       = icono;</span>
+<span class="fc" id="L33">            this.descripcion = descripcion;</span>
+<span class="fc" id="L34">        }</span>
+    }
+
+    // ============================================================
+    // Clase Diagnostico - campos privados con getters
+    // ============================================================
+
+    public static class Diagnostico {
+
+        private final String      cajaId;
+        private final NivelAlerta nivel;
+        private final String      mensaje;
+        private final String      sugerencia;
+        private final int         colaActual;
+        private final int         colaMaxima;
+        private final int         clientesAtendidos;
+        private final boolean     esRapida;
+
+        public Diagnostico(
+                String cajaId, NivelAlerta nivel,
+                String mensaje, String sugerencia,
+                int colaActual, int colaMaxima,
+<span class="fc" id="L56">                int clientesAtendidos, boolean esRapida) {</span>
+<span class="fc" id="L57">            this.cajaId            = cajaId;</span>
+<span class="fc" id="L58">            this.nivel             = nivel;</span>
+<span class="fc" id="L59">            this.mensaje           = mensaje;</span>
+<span class="fc" id="L60">            this.sugerencia        = sugerencia;</span>
+<span class="fc" id="L61">            this.colaActual        = colaActual;</span>
+<span class="fc" id="L62">            this.colaMaxima        = colaMaxima;</span>
+<span class="fc" id="L63">            this.clientesAtendidos = clientesAtendidos;</span>
+<span class="fc" id="L64">            this.esRapida          = esRapida;</span>
+<span class="fc" id="L65">        }</span>
+
+<span class="fc" id="L67">        public String      getCajaId()            { return cajaId; }</span>
+<span class="fc" id="L68">        public NivelAlerta getNivel()              { return nivel; }</span>
+<span class="fc" id="L69">        public String      getMensaje()            { return mensaje; }</span>
+<span class="fc" id="L70">        public String      getSugerencia()         { return sugerencia; }</span>
+<span class="fc" id="L71">        public int         getColaActual()         { return colaActual; }</span>
+<span class="fc" id="L72">        public int         getColaMaxima()         { return colaMaxima; }</span>
+<span class="nc" id="L73">        public int         getClientesAtendidos()  { return clientesAtendidos; }</span>
+<span class="nc" id="L74">        public boolean     isEsRapida()            { return esRapida; }</span>
+
+        @Override
+        public String toString() {
+<span class="nc" id="L78">            return String.format(&quot;%s %s: %s (Cola: %d/%d)&quot;,</span>
+<span class="nc" id="L79">                nivel.icono, cajaId, mensaje, colaActual, colaMaxima);</span>
+        }
+    }
+
+    // ============================================================
+    // Umbrales de alerta (constantes con nombre descriptivo)
+    // ============================================================
+
+    private static final int UMBRAL_CRITICO         = 40;
+    private static final int UMBRAL_ALERTA           = 25;
+    private static final int UMBRAL_SUBUTILIZACION   = 3;
+    private static final int MIN_ATENDIDOS_PARA_EVAL = 50;
+
+    // ============================================================
+    // Diagnosticar
+    // ============================================================
+
+    public List&lt;Diagnostico&gt; diagnosticar(List&lt;Caja&gt; cajas) {
+<span class="fc" id="L97">        List&lt;Diagnostico&gt; diagnosticos = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        for (Caja caja : cajas) {</span>
+<span class="fc" id="L99">            diagnosticos.add(diagnosticarCaja(caja));</span>
+<span class="fc" id="L100">        }</span>
+<span class="fc" id="L101">        return diagnosticos;</span>
+    }
+
+    private Diagnostico diagnosticarCaja(Caja caja) {
+<span class="fc" id="L105">        int     colaActual  = caja.getClientesEnCola();</span>
+<span class="fc" id="L106">        int     colaMaxima  = caja.getColaMaxima();</span>
+<span class="fc" id="L107">        int     atendidos   = caja.getTotalAtendidos();</span>
+<span class="fc" id="L108">        boolean esRapida    = caja.esRapida();</span>
+
+        NivelAlerta nivel;
+        String      mensaje;
+        String      sugerencia;
+
+<span class="fc bfc" id="L114" title="All 2 branches covered.">        if (colaActual &gt; UMBRAL_CRITICO) {</span>
+<span class="fc" id="L115">            nivel      = NivelAlerta.CRITICO;</span>
+<span class="fc" id="L116">            mensaje    = &quot;COLA EXCESIVA: &quot; + colaActual + &quot; clientes esperando&quot;;</span>
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">            sugerencia = esRapida</span>
+<span class="nc" id="L118">                ? &quot;Convertir a NORMAL o abrir otra caja RAPIDA&quot;</span>
+<span class="fc" id="L119">                : &quot;Aumentar numero de cajas NORMALES o reducir tiempo de atencion&quot;;</span>
+
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        } else if (colaActual &gt; UMBRAL_ALERTA) {</span>
+<span class="fc" id="L122">            nivel      = NivelAlerta.ALERTA;</span>
+<span class="fc" id="L123">            mensaje    = &quot;Cola alta: &quot; + colaActual + &quot; clientes&quot;;</span>
+<span class="fc" id="L124">            sugerencia = &quot;Considerar abrir otra caja o revisar tiempos&quot;;</span>
+
+<span class="pc bpc" id="L126" title="1 of 4 branches missed.">        } else if (colaActual &lt; UMBRAL_SUBUTILIZACION &amp;&amp; atendidos &gt; MIN_ATENDIDOS_PARA_EVAL) {</span>
+<span class="nc" id="L127">            nivel      = NivelAlerta.ATENCION;</span>
+<span class="nc" id="L128">            mensaje    = &quot;Caja subutilizada: solo &quot; + colaActual + &quot; clientes en cola&quot;;</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">            sugerencia = esRapida</span>
+<span class="nc" id="L130">                ? &quot;Redirigir mas clientes a esta caja RAPIDA&quot;</span>
+<span class="nc" id="L131">                : &quot;Considerar convertir a RAPIDA&quot;;</span>
+
+        } else {
+<span class="fc" id="L134">            nivel      = NivelAlerta.NORMAL;</span>
+<span class="fc" id="L135">            mensaje    = &quot;Funcionando correctamente&quot;;</span>
+<span class="fc" id="L136">            sugerencia = &quot;Mantener configuracion actual&quot;;</span>
+        }
+
+<span class="fc" id="L139">        return new Diagnostico(</span>
+<span class="fc" id="L140">            caja.getId(), nivel, mensaje, sugerencia,</span>
+            colaActual, colaMaxima, atendidos, esRapida
+        );
+    }
+
+    // ============================================================
+    // Recomendacion general
+    // ============================================================
+
+    public Recomendacion generarRecomendacionGeneral(List&lt;Diagnostico&gt; diagnosticos) {
+<span class="fc" id="L150">        long criticos = contarPorNivel(diagnosticos, NivelAlerta.CRITICO);</span>
+<span class="fc" id="L151">        long alertas  = contarPorNivel(diagnosticos, NivelAlerta.ALERTA);</span>
+<span class="fc" id="L152">        long atencion = contarPorNivel(diagnosticos, NivelAlerta.ATENCION);</span>
+
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">        if (criticos &gt; 0) return recomendacionCritica(criticos);</span>
+<span class="pc bpc" id="L155" title="1 of 2 branches missed.">        if (alertas  &gt; 0) return recomendacionAlerta(alertas);</span>
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">        if (atencion &gt; 0) return recomendacionAtencion(atencion);</span>
+<span class="fc" id="L157">        return recomendacionNormal();</span>
+    }
+
+    private long contarPorNivel(List&lt;Diagnostico&gt; diagnosticos, NivelAlerta nivel) {
+<span class="fc" id="L161">        return diagnosticos.stream()</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">            .filter(d -&gt; d.getNivel() == nivel)</span>
+<span class="fc" id="L163">            .count();</span>
+    }
+
+    private Recomendacion recomendacionCritica(long criticos) {
+<span class="nc" id="L167">        return new Recomendacion(</span>
+            &quot;URGENTE: &quot; + criticos + &quot; cajas con cola critica.\n&quot; +
+            &quot;  Aumentar el numero de cajas\n&quot; +
+            &quot;  Reducir tiempos de atencion\n&quot; +
+            &quot;  Revisar distribucion de clientes&quot;,
+            &quot;CRITICO&quot;,
+            &quot;Aumentar cajas en &quot; + criticos + &quot; unidades&quot;,
+            25.0, false
+        );
+    }
+
+    private Recomendacion recomendacionAlerta(long alertas) {
+<span class="nc" id="L179">        return new Recomendacion(</span>
+            &quot;ATENCION: &quot; + alertas + &quot; cajas con cola alta.\n&quot; +
+            &quot;  Considerar abrir mas cajas en horas pico\n&quot; +
+            &quot;  Optimizar tiempos de atencion&quot;,
+            &quot;ALTO&quot;,
+            &quot;Ajustar tiempos o agregar cajas temporales&quot;,
+            15.0, false
+        );
+    }
+
+    private Recomendacion recomendacionAtencion(long atencion) {
+<span class="nc" id="L190">        return new Recomendacion(</span>
+            &quot;INFO: &quot; + atencion + &quot; cajas subutilizadas.\n&quot; +
+            &quot;  Redistribuir clientes a estas cajas\n&quot; +
+            &quot;  Considerar convertir cajas normales a rapidas&quot;,
+            &quot;MEDIO&quot;,
+            &quot;Redistribuir carga entre cajas&quot;,
+            10.0, false
+        );
+    }
+
+    private Recomendacion recomendacionNormal() {
+<span class="fc" id="L201">        return new Recomendacion(</span>
+            &quot;CONFIGURACION OPTIMA!\n&quot; +
+            &quot;  Todas las cajas funcionan correctamente\n&quot; +
+            &quot;  Mantener la configuracion actual&quot;,
+            &quot;NORMAL&quot;,
+            &quot;Mantener configuracion actual&quot;,
+            0.0, false
+        );
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

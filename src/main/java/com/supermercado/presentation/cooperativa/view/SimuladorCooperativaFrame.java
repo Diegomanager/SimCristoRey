@@ -1,9 +1,10 @@
 package com.supermercado.presentation.cooperativa.view;
 
+import com.supermercado.domain.cooperativa.config.ConfiguracionCooperativa;
 import com.supermercado.domain.cooperativa.event.EventoSimulacion;
 import com.supermercado.domain.cooperativa.event.TipoEvento;
 import com.supermercado.domain.cooperativa.model.*;
-import com.supermercado.domain.cooperativa.service.SimuladorCooperativaService;
+import com.supermercado.domain.cooperativa.service.*;
 import com.supermercado.presentation.cooperativa.panel.PanelSalaEspera;
 import com.supermercado.presentation.cooperativa.panel.PanelVentanillas;
 
@@ -16,28 +17,48 @@ import java.util.List;
 
 public class SimuladorCooperativaFrame extends JFrame {
 
-    private final SimuladorCooperativaService simulador = new SimuladorCooperativaService();
+    private final SimuladorCooperativaService motor   = new SimuladorCooperativaService();
+    private final SimuladorMensualService     mensual = new SimuladorMensualService(motor);
+    private ConfiguracionCooperativa          config  = new ConfiguracionCooperativa();
 
-    private final PanelSalaEspera              panelSala       = new PanelSalaEspera();
-    private final PanelVentanillas             panelVentanillas= new PanelVentanillas();
-    private final PanelEstadisticasFinancieras panelStats      = new PanelEstadisticasFinancieras();
-    private final PanelLog                     panelLog        = new PanelLog();
+    private final PanelSalaEspera              panelSala        = new PanelSalaEspera();
+    private final PanelVentanillas             panelVentanillas = new PanelVentanillas();
+    private final PanelEstadisticasFinancieras panelStats       = new PanelEstadisticasFinancieras();
+    private final PanelLog                     panelLog         = new PanelLog();
+    private final PanelEvolucionDiaria         panelEvol        = new PanelEvolucionDiaria();
 
-    private final JButton btnIniciar    = new JButton("Iniciar");
-    private final JButton btnPausar     = new JButton("Pausar");
-    private final JButton btnReanudar   = new JButton("Reanudar");
-    private final JButton btnDetener    = new JButton("Detener");
-    private final JButton btnReiniciar  = new JButton("Reiniciar");
-    private final JButton btnConfig     = new JButton("Config");
-    private final JLabel  lblEstado     = new JLabel("Estado: En espera", SwingConstants.CENTER);
-    private final JLabel  lblTiempo     = new JLabel("Tiempo: 0 min", SwingConstants.CENTER);
+    private final JButton      btnIniciar   = new JButton("Iniciar");
+    private final JButton      btnPausar    = new JButton("Pausar");
+    private final JButton      btnDetener   = new JButton("Detener");
+    private final JButton      btnReiniciar = new JButton("Reiniciar");
+    private final JButton      btnConfig    = new JButton("Config");
+    private final JLabel       lblEstado    = new JLabel("En espera");
+    private final JLabel       lblInfo      = new JLabel("D\u00eda 1, Hora: 08:30 am, Tiempo real: 0s, --");
+    private final JProgressBar progDia      = new JProgressBar(0, 1);
 
-    private final Timer timerUI = new Timer(500, e -> refrescarUI());
+    private List<ServicioFinanciero> serviciosActuales = new ArrayList<>();
+    private List<Caja>               cajasActuales     = new ArrayList<>();
+    private List<JornadaLaboral>     jornadasActuales  = new ArrayList<>();
+
+    private long    tiempoInicioReal    = 0;
+    private boolean finalizado          = false;
+    private long    minutosSimTotales   = 0;
+
+    private int totalDiasLaborables     = 0;
+    private int contadorDiaLaboral      = 0;
+    private String fechaActual          = "";
+
+    private final Timer timerUI = new Timer(400, e -> refrescarUI());
 
     public SimuladorCooperativaFrame() {
-        super("SimCristoRey – Cooperativa de Ahorro y Prestamo");
+        super("SimCristoRey - Cooperativa de Ahorro y Pr\u00e9stamo");
+        serviciosActuales = crearServiciosFijos();
+        cajasActuales     = crearCajasDesdeConfig();
+        jornadasActuales  = config.generarJornadas();
         initUI();
-        conectarSimulador();
+        mensual.addListener(this::manejarEvento);
+        mensual.setPreguntaRezagados(this::preguntarRezagados);
+        mensual.setPreguntarRezagadosHabilitado(true);
         configurarVentana();
         timerUI.start();
     }
@@ -45,294 +66,346 @@ public class SimuladorCooperativaFrame extends JFrame {
     private void initUI() {
         setLayout(new BorderLayout(4, 4));
 
-        JPanel barraControl = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
-        barraControl.add(btnConfig);
-        barraControl.add(new JSeparator(SwingConstants.VERTICAL));
-        barraControl.add(btnIniciar);
-        barraControl.add(btnPausar);
-        barraControl.add(btnReanudar);
-        barraControl.add(btnDetener);
-        barraControl.add(btnReiniciar);
-        barraControl.add(new JSeparator(SwingConstants.VERTICAL));
-        barraControl.add(lblEstado);
-        barraControl.add(lblTiempo);
-        add(barraControl, BorderLayout.NORTH);
+        progDia.setStringPainted(true);
+        progDia.setString("-");
+        progDia.setPreferredSize(new Dimension(120, 22));
+        progDia.setFont(new Font("SansSerif", Font.BOLD, 12));
+
+        JPanel barra = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 4));
+        barra.add(btnIniciar); barra.add(btnPausar);
+        barra.add(btnDetener); barra.add(btnReiniciar);
+        barra.add(new JSeparator(SwingConstants.VERTICAL));
+        barra.add(btnConfig);
+        barra.add(new JSeparator(SwingConstants.VERTICAL));
+        lblEstado.setFont(new Font("SansSerif", Font.BOLD, 12));
+        barra.add(lblEstado);
+        barra.add(Box.createHorizontalStrut(6));
+        lblInfo.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        barra.add(lblInfo);
+        barra.add(Box.createHorizontalStrut(8));
+        barra.add(progDia);
+        add(barra, BorderLayout.NORTH);
 
         JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("Sala de Espera",   panelSala);
-        tabs.addTab("Ventanillas",       panelVentanillas);
-        tabs.addTab("Estadisticas",      panelStats);
-        tabs.addTab("Log de Eventos",    panelLog);
+        tabs.addTab("Sala",         panelSala);
+        tabs.addTab("Ventanillas",  panelVentanillas);
+        tabs.addTab("Estad\u00edsticas", panelStats);
+        tabs.addTab("Evoluci\u00f3n",    panelEvol);
+        tabs.addTab("Log",          panelLog);
         add(tabs, BorderLayout.CENTER);
 
+        // Forzar reconstrucción de Evolución al seleccionar la pestaña
+        tabs.addChangeListener(e -> {
+            if (tabs.getSelectedIndex() == 3) {
+                panelEvol.reconstruirTabla();
+            }
+        });
+
         btnPausar.setEnabled(false);
-        btnReanudar.setEnabled(false);
         btnDetener.setEnabled(false);
         btnReiniciar.setEnabled(false);
 
         btnConfig.addActionListener(e -> abrirConfiguracion());
         btnIniciar.addActionListener(e -> iniciarSimulacion());
-        btnPausar.addActionListener(e -> simulador.pausar());
-        btnReanudar.addActionListener(e -> simulador.reanudar());
-        btnDetener.addActionListener(e -> simulador.detener());
-        btnReiniciar.addActionListener(e -> {
-            simulador.reiniciar();
-            panelSala.limpiar();
-            panelVentanillas.limpiar();
-            panelLog.limpiar();
-            btnIniciar.setEnabled(true);
-            btnPausar.setEnabled(false);
-            btnReanudar.setEnabled(false);
-            btnDetener.setEnabled(false);
-            lblEstado.setText("Estado: En espera");
+        btnPausar.addActionListener(e -> {
+            if (motor.isPausado()) { mensual.reanudar(); btnPausar.setText("Pausar"); }
+            else                   { mensual.pausar();   btnPausar.setText("Reanudar"); }
         });
+        btnDetener.addActionListener(e -> {
+            mensual.detener();
+            panelStats.mostrarResumenFinal(motor, minutosSimTotales);
+        });
+        btnReiniciar.addActionListener(e -> reiniciarTodo());
     }
 
-    private void conectarSimulador() {
-        simulador.addListener(this::manejarEvento);
-
-        simulador.configurar(480, SimuladorCooperativaService.calcularEscala(480, 30),
-                400, 1.0, serviciosPorDefecto(), cajasPorDefecto());
-        panelVentanillas.setCajas(simulador.getCajas());
-    }
-
-    private void manejarEvento(EventoSimulacion evento) {
-        panelLog.addEvento(evento);
-
+    private void manejarEvento(EventoSimulacion ev) {
+        panelLog.addEvento(ev);
         SwingUtilities.invokeLater(() -> {
-            switch (evento.getTipo()) {
-                case SIMULACION_INICIADA -> {
-                    lblEstado.setText("Estado: Corriendo");
-                    lblEstado.setForeground(new Color(0, 120, 0));
-                    btnIniciar.setEnabled(false);
-                    btnPausar.setEnabled(true);
-                    btnReanudar.setEnabled(false);
-                    btnDetener.setEnabled(true);
-                    btnReiniciar.setEnabled(false);
-                }
-                case SIMULACION_PAUSADA -> {
-                    lblEstado.setText("Estado: Pausado");
-                    lblEstado.setForeground(Color.ORANGE);
-                    btnPausar.setEnabled(false);
-                    btnReanudar.setEnabled(true);
-                }
-                case SIMULACION_REANUDADA -> {
-                    lblEstado.setText("Estado: Corriendo");
-                    lblEstado.setForeground(new Color(0, 120, 0));
-                    btnPausar.setEnabled(true);
-                    btnReanudar.setEnabled(false);
-                }
-                case FASE_PRINCIPAL_FINALIZADA -> {
-                    lblEstado.setText("Estado: Fase principal finalizada");
-                    lblEstado.setForeground(new Color(0, 0, 180));
-                    btnPausar.setEnabled(false);
-                    btnReanudar.setEnabled(false);
-                    btnDetener.setEnabled(false);
+            switch (ev.getTipo()) {
 
-                    // Preguntar si iniciar fase de rezagados
-                    int sociosEnSala = simulador.getSalaEspera().getTotalEsperando();
-                    if (sociosEnSala > 0) {
-                        int respuesta = JOptionPane.showConfirmDialog(
-                                this,
-                                "Hay " + sociosEnSala + " socios en la sala de espera.\n" +
-                                "¿Desea iniciar la fase de rezagados para atenderlos?",
-                                "Fase de Rezagados",
-                                JOptionPane.YES_NO_OPTION,
-                                JOptionPane.QUESTION_MESSAGE
-                        );
-                        if (respuesta == JOptionPane.YES_OPTION) {
-                            simulador.iniciarFaseRezagados();
-                            lblEstado.setText("Estado: Rezagados en progreso...");
-                            lblEstado.setForeground(new Color(180, 100, 0));
-                        } else {
-                            // Finalizar simulación sin atender rezagados
-                            simulador.detener();
-                            // Mostrar estadísticas finales con rezagados
-                            mostrarEstadisticasFinales();
-                        }
-                    } else {
-                        // No hay socios en sala, finalizar automáticamente
-                        JOptionPane.showMessageDialog(this,
-                                "No hay socios en sala. La simulación ha finalizado.",
-                                "Simulación finalizada",
-                                JOptionPane.INFORMATION_MESSAGE);
-                        simulador.detener();
-                    }
+                case SIMULACION_INICIADA -> {
+                    lblEstado.setText("Corriendo");
+                    lblEstado.setForeground(new Color(0, 130, 0));
+                    btnIniciar.setEnabled(false); btnPausar.setEnabled(true);
+                    btnDetener.setEnabled(true);  btnReiniciar.setEnabled(false);
                 }
+
+                case SIMULACION_PAUSADA -> {
+                    lblEstado.setText("Pausado");
+                    lblEstado.setForeground(Color.ORANGE);
+                    btnPausar.setText("Reanudar");
+                }
+
+                case SIMULACION_REANUDADA -> {
+                    lblEstado.setText("Corriendo");
+                    lblEstado.setForeground(new Color(0, 130, 0));
+                    btnPausar.setText("Pausar");
+                }
+
+                case FASE_PRINCIPAL_FINALIZADA -> {
+                    minutosSimTotales += motor.getTiempoMotor();
+                    lblEstado.setText("Fin jornada");
+                    lblEstado.setForeground(new Color(0, 0, 200));
+                }
+
                 case FASE_REZAGADOS_INICIADA -> {
-                    lblEstado.setText("Estado: Rezagados en progreso...");
+                    lblEstado.setText("Rezagados");
                     lblEstado.setForeground(new Color(180, 100, 0));
                 }
-                case SIMULACION_FINALIZADA -> {
-                    lblEstado.setText("Estado: Finalizado");
+
+                case DIA_INICIADO -> {
+                    int diaDelMes = mensual.getDiaEnCurso();
+                    boolean esLaborable = jornadasActuales.stream()
+                            .anyMatch(j -> j.getDia() == diaDelMes && j.isLaborable());
+                    if (esLaborable) {
+                        contadorDiaLaboral++;
+                        for (JornadaLaboral j : jornadasActuales) {
+                            if (j.getDia() == diaDelMes && j.isLaborable()) {
+                                String nombreCompleto = j.getNombreCompleto();
+                                if (nombreCompleto.contains("(") && nombreCompleto.contains(")")) {
+                                    fechaActual = nombreCompleto.substring(nombreCompleto.indexOf("(") + 1,
+                                            nombreCompleto.indexOf(")"));
+                                } else {
+                                    fechaActual = nombreCompleto;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    progDia.setMaximum(Math.max(1, totalDiasLaborables));
+                    progDia.setValue(contadorDiaLaboral);
+                    progDia.setString(contadorDiaLaboral + "/" + totalDiasLaborables);
+
+                    lblEstado.setText("D\u00eda " + contadorDiaLaboral);
+                    lblEstado.setForeground(new Color(0, 130, 0));
+                    panelStats.limpiarResumen();
+                }
+
+                case DIA_FINALIZADO -> {
+                    ResumenDiario r = motor.construirResumenDia();
+                    panelEvol.addResumenDia(r);
+                    panelStats.actualizar(motor.getEstadisticas(),
+                            motor.getGenerador().getTotalGenerados());
+                }
+
+                case SIMULACION_MENSUAL_FINALIZADA -> {
+                    finalizado = true;
+                    lblEstado.setText("Finalizado");
                     lblEstado.setForeground(new Color(0, 0, 180));
-                    btnIniciar.setEnabled(false);
-                    btnPausar.setEnabled(false);
-                    btnReanudar.setEnabled(false);
-                    btnDetener.setEnabled(false);
-                    btnReiniciar.setEnabled(true);
-                    mostrarEstadisticasFinales();
+                    btnIniciar.setEnabled(false); btnPausar.setEnabled(false);
+                    btnDetener.setEnabled(false); btnReiniciar.setEnabled(true);
+                    progDia.setValue(totalDiasLaborables);
+                    progDia.setString(totalDiasLaborables + "/" + totalDiasLaborables);
+                    panelEvol.mostrarTotalesYRefrescar();
+                    panelStats.mostrarResumenFinal(motor, minutosSimTotales);
                 }
+
                 case SIMULACION_DETENIDA -> {
-                    lblEstado.setText("Estado: Detenido");
+                    lblEstado.setText("Detenido");
                     lblEstado.setForeground(Color.DARK_GRAY);
-                    btnIniciar.setEnabled(true);
-                    btnPausar.setEnabled(false);
-                    btnReanudar.setEnabled(false);
-                    btnDetener.setEnabled(false);
+                    if (!finalizado && motor.getGenerador().getTotalGenerados() > 0)
+                        panelStats.mostrarResumenFinal(motor, minutosSimTotales);
+                    btnIniciar.setEnabled(true); btnPausar.setEnabled(false);
+                    btnPausar.setText("Pausar"); btnDetener.setEnabled(false);
                     btnReiniciar.setEnabled(true);
                 }
+
                 case SIMULACION_REINICIADA -> {
-                    lblEstado.setText("Estado: Reiniciado");
+                    lblEstado.setText("Reiniciado");
                     lblEstado.setForeground(Color.DARK_GRAY);
-                    btnIniciar.setEnabled(true);
-                    btnPausar.setEnabled(false);
-                    btnReanudar.setEnabled(false);
-                    btnDetener.setEnabled(false);
+                    btnIniciar.setEnabled(true); btnPausar.setEnabled(false);
+                    btnPausar.setText("Pausar"); btnDetener.setEnabled(false);
                     btnReiniciar.setEnabled(false);
                 }
+
                 default -> {}
             }
         });
     }
 
-    private void mostrarEstadisticasFinales() {
-        // Implementar diálogo con estadísticas finales (puede ser un panel emergente)
-        // Por ahora mostramos un mensaje simple
-        int atendidos = simulador.getEstadisticas().getTotalAtendidos();
-        int generados = simulador.getGenerador().getTotalGenerados();
-        int rezagados = generados - atendidos;
-        double monto = simulador.getEstadisticas().getMontoTotal();
-        String estrella = simulador.getEstadisticas().getCajeroEstrella();
-
-        JOptionPane.showMessageDialog(this,
-            "=== ESTADISTICAS FINALES ===\n" +
-            "Socios generados: " + generados + "\n" +
-            "Socios atendidos: " + atendidos + "\n" +
-            "Socios rezagados: " + rezagados + "\n" +
-            "Monto total: Bs " + String.format("%.2f", monto) + "\n" +
-            "Cajero Estrella: " + estrella,
-            "Estadisticas Finales",
-            JOptionPane.INFORMATION_MESSAGE);
-    }
-
     private void refrescarUI() {
-        if (!simulador.isCorriendo() && !simulador.isFaseRezagados() && !simulador.isFasePrincipalFinalizada()) {
-            // Si no está corriendo ni en rezagados, no actualizar
-            return;
+        if (finalizado) return;
+        boolean activo = motor.isCorriendo() || motor.isFasePrincipalFinalizada() || mensual.isCorriendo();
+        if (!activo) return;
+
+        String hora = motor.horaSimulada().replace("D\u00eda " + motor.getDiaActual() + " – ", "");
+        String horaFormateada = hora;
+        try {
+            String[] partes = hora.split(":");
+            int h = Integer.parseInt(partes[0]);
+            int m = Integer.parseInt(partes[1]);
+            String ampm = (h >= 12) ? "pm" : "am";
+            int h12 = (h % 12 == 0) ? 12 : h % 12;
+            horaFormateada = String.format("%d:%02d %s", h12, m, ampm);
+        } catch (Exception e) {}
+
+        long s = (System.currentTimeMillis() - tiempoInicioReal) / 1000;
+        String real = s < 60 ? "Tiempo real: " + s + "s"
+                : String.format("Tiempo real: %dm%ds", s / 60, s % 60);
+
+        String fecha = fechaActual.isEmpty() ? "--" : fechaActual;
+
+        lblInfo.setText("D\u00eda " + contadorDiaLaboral + ", Hora: " + horaFormateada + ", " + real + ", " + fecha);
+
+        if (motor.isCorriendo() || motor.isFasePrincipalFinalizada()) {
+            progDia.setValue(contadorDiaLaboral);
+            progDia.setString(contadorDiaLaboral + "/" + totalDiasLaborables);
         }
 
-        lblTiempo.setText("Tiempo: " + simulador.getTiempoSimulado() + " min sim");
-
-        if (simulador.getSalaEspera() != null)
-            panelSala.actualizar(simulador.getSalaEspera());
-
-        if (simulador.getCajas() != null)
-            panelVentanillas.actualizar(simulador.getCajas());
-
-        panelStats.actualizar(
-                simulador.getEstadisticas(),
-                simulador.getGenerador().getTotalGenerados());
-    }
-
-    private void abrirConfiguracion() {
-        if (simulador.isCorriendo() || simulador.isFasePrincipalFinalizada()) {
-            JOptionPane.showMessageDialog(this,
-                    "Deten la simulacion antes de cambiar la configuracion.",
-                    "Aviso", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        DialogoConfiguracionCooperativa dlg = new DialogoConfiguracionCooperativa(this);
-        dlg.setVisible(true);
-        if (dlg.isConfirmado()) {
-            simulador.configurar(
-                    dlg.getDuracionSimulada(), dlg.getMsPorMinuto(),
-                    dlg.getMaxSocios(), dlg.getIntervaloLlegada(),
-                    serviciosPorDefecto(), cajasPorDefecto());
-            panelVentanillas.setCajas(simulador.getCajas());
-            panelLog.limpiar();
-        }
+        if (motor.getSalaEspera() != null) panelSala.actualizar(motor.getSalaEspera());
+        if (motor.getCajas() != null)      panelVentanillas.actualizar(motor.getCajas(), motor.getTiempoReloj());
+        panelStats.actualizar(motor.getEstadisticas(), motor.getGenerador().getTotalGenerados());
     }
 
     private void iniciarSimulacion() {
-        panelSala.limpiar();
-        panelLog.limpiar();
-        simulador.iniciar();
+        finalizado = false;
+        minutosSimTotales = 0;
+        contadorDiaLaboral = 0;
+        fechaActual = "";
+        tiempoInicioReal = System.currentTimeMillis();
+
+        panelSala.limpiar(); panelLog.limpiar();
+        panelStats.limpiarResumen(); panelEvol.reiniciar();
+        motor.getEstadisticas().reiniciarCompleto();
+
+        cajasActuales    = crearCajasDesdeConfig();
+        jornadasActuales = config.generarJornadas();
+        panelVentanillas.setCajas(cajasActuales);
+
+        totalDiasLaborables = (int) jornadasActuales.stream()
+                .filter(JornadaLaboral::isLaborable).count();
+        progDia.setMaximum(Math.max(1, totalDiasLaborables));
+        progDia.setValue(0);
+        progDia.setString("0/" + totalDiasLaborables);
+
+        mensual.setPreguntarRezagadosHabilitado(totalDiasLaborables <= 1);
+
+        motor.configurar(config.getMsPorMinuto(), config.getMaxSociosDia(),
+                config.getIntervaloMinutos(), serviciosActuales, cajasActuales,
+                new ConfiguracionMultiServicio(), config);
+
+        mensual.configurar(config, jornadasActuales, cajasActuales,
+                serviciosActuales, new ConfiguracionMultiServicio());
+        mensual.iniciar();
+    }
+
+    private boolean preguntarRezagados() {
+        int enSala = motor.getSalaEspera() != null
+                ? motor.getSalaEspera().getTotalEsperando() : 0;
+        if (enSala == 0) return false;
+        int[] resp = {JOptionPane.NO_OPTION};
+        try {
+            SwingUtilities.invokeAndWait(() ->
+                resp[0] = JOptionPane.showConfirmDialog(this,
+                        "Quedan " + enSala + " socios en sala.\n"
+                        + "Iniciar fase de rezagados?",
+                        "Rezagados - D\u00eda " + motor.getDiaActual(),
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE));
+        } catch (Exception ex) { return false; }
+        return resp[0] == JOptionPane.YES_OPTION;
+    }
+
+    private void reiniciarTodo() {
+        mensual.detener();
+        panelSala.limpiar(); panelVentanillas.limpiar();
+        panelLog.limpiar(); panelStats.limpiarResumen(); panelEvol.reiniciar();
+        finalizado = false; minutosSimTotales = 0;
+        contadorDiaLaboral = 0; totalDiasLaborables = 0;
+        fechaActual = "";
+        btnIniciar.setEnabled(true); btnPausar.setEnabled(false);
+        btnPausar.setText("Pausar"); btnDetener.setEnabled(false);
+        btnReiniciar.setEnabled(false);
+        lblEstado.setText("En espera"); lblEstado.setForeground(Color.DARK_GRAY);
+        lblInfo.setText("D\u00eda 1, Hora: 08:30 am, Tiempo real: 0s, --");
+        progDia.setValue(0); progDia.setString("-");
+        panelStats.actualizar(motor.getEstadisticas(), 0);
+    }
+
+    private void abrirConfiguracion() {
+        if (mensual.isCorriendo() || motor.isCorriendo()) {
+            JOptionPane.showMessageDialog(this,
+                    "Det\u00e9n la simulaci\u00f3n antes de configurar.",
+                    "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        DialogoConfiguracionCooperativa dlg =
+                new DialogoConfiguracionCooperativa(this, serviciosActuales, config);
+        dlg.setVisible(true);
+        if (dlg.isConfirmado()) {
+            config            = dlg.getConfig();
+            serviciosActuales = dlg.getServicios();
+            jornadasActuales  = dlg.getJornadas();
+            cajasActuales     = crearCajasDesdeConfig();
+            panelVentanillas.setCajas(cajasActuales);
+            panelLog.limpiar(); panelSala.limpiar();
+            panelStats.limpiarResumen(); panelEvol.reiniciar();
+            long labs = jornadasActuales.stream().filter(JornadaLaboral::isLaborable).count();
+            lblEstado.setText("Configurado - " + labs + " d\u00edas laborables");
+        }
     }
 
     // ── Datos por defecto ─────────────────────────────────────────────────────
-    private List<ServicioFinanciero> serviciosPorDefecto() {
-        List<ServicioFinanciero> lista = new ArrayList<>();
-
-        lista.add(crearServicio("SVC-GEN1", "Consulta de Saldo",     "GENERAL",  2, 5,   0,    500,  0.0,   0.25));
-        lista.add(crearServicio("SVC-GEN2", "Pago de Servicios",     "GENERAL",  3, 8,  20,    500,  0.0,   0.20));
-        lista.add(crearServicio("SVC-GEN3", "Transferencia General", "GENERAL",  4, 10, 100,  5000,  0.0,   0.20));
-        lista.add(crearServicio("SVC-CRE1", "Prestamo Personal",     "CREDITOS", 10,25,1000,50000, 12.0,   0.20));
-        lista.add(crearServicio("SVC-REC1", "Reclamo / Queja",       "RECLAMO",  8, 20,   0,    0,   0.0,   0.05));
-        lista.add(crearServicio("SVC-AHO1", "Deposito de Ahorro",    "AHORRO",   3, 8,  50,  5000,  3.5,   0.05));
-        lista.add(crearServicio("SVC-MM1",  "Pago Movil",            "MM",       2, 5,   5,   500,  0.0,   0.05));
-
-        return lista;
+    private List<ServicioFinanciero> crearServiciosFijos() {
+        List<ServicioFinanciero> l = new ArrayList<>();
+        l.add(svc("SVC-C1",  "Socios Ahorro/Cr\u00e9dito",           "C",  3,15,500,200000,0.0));
+        l.add(svc("SVC-A1",  "Socios Semapa (Agua)",            "A",  2,12,30,200,0.0));
+        l.add(svc("SVC-S1",  "Socios Elfec-Comteco-Semapa",     "S",  2,15,20,300,0.0));
+        l.add(svc("SVC-F1",  "Socios Fraccionamiento",          "F",  4,30,200,5000,0.0));
+        l.add(svc("SVC-P1",  "Socios Plataforma",               "P",  1,10,50,500,0.0));
+        l.add(svc("SVC-R1",  "Renta Dignidad",                  "R",  2,15,250,250,0.0));
+        l.add(svc("SVC-PC1", "Preferente Ahorro-Cr\u00e9dito",       "PC", 1,8,500,200000,0.0));
+        l.add(svc("SVC-PS1", "Preferente Elfec-Comteco-Semapa", "PS", 1,8,20,300,0.0));
+        l.add(svc("SVC-PA1", "Preferente Semapa",               "PA", 1,8,30,200,0.0));
+        l.add(svc("SVC-PP1", "Preferente Plataforma",           "PP", 1,8,50,500,0.0));
+        l.forEach(s -> s.setActivo(true));
+        return l;
     }
 
-    private ServicioFinanciero crearServicio(String id, String nombre, String tipoCaja,
-            int durMin, int durMax, double monMin, double monMax,
-            double tasa, double prob) {
-        ServicioFinanciero s = new ServicioFinanciero(id, nombre);
-        s.setTipoCajaRequerido(tipoCaja);
-        s.setDuracionMinima(durMin);
-        s.setDuracionMaxima(durMax);
-        s.setMontoMinimo(monMin);
-        s.setMontoMaximo(monMax);
-        s.setTasaInteres(tasa);
-        s.setProbabilidad(prob);
-        s.setActivo(true);
-        return s;
+    private ServicioFinanciero svc(String id, String n, String t,
+                                    int dm, int dx, double mm, double mx, double ta) {
+        return new ServicioFinanciero(id, n, t, dm, dx, mm, mx, ta, 0.1);
     }
 
-    private List<Caja> cajasPorDefecto() {
+    private List<Caja> crearCajasDesdeConfig() {
         List<Caja> cajas = new ArrayList<>();
-        cajas.add(crearCaja("C-001", "GENERAL",  "Ventanilla General 1"));
-        cajas.add(crearCaja("C-002", "GENERAL",  "Ventanilla General 2"));
-        cajas.add(crearCaja("C-003", "GENERAL",  "Ventanilla General 3"));
-        cajas.add(crearCaja("C-004", "CREDITOS", "Asesor Creditos 1"));
-        cajas.add(crearCaja("C-005", "RECLAMO",  "Punto de Reclamo"));
-        cajas.add(crearCaja("C-006", "AHORRO",   "Punto de Ahorro"));
-        cajas.add(crearCaja("C-007", "MM",       "Modulo Movil"));
+        int c = 1;
+        for (int i = 0; i < config.getCajasGenerales();  i++)
+            cajas.add(caja("G-"  + fmt(c++), "GENERAL",    "General "    + (i+1)));
+        for (int i = 0; i < config.getCajasPlataforma(); i++)
+            cajas.add(caja("P-"  + fmt(c++), "PLATAFORMA", "Plataforma " + (i+1)));
+        for (int i = 0; i < config.getCajasMM();         i++)
+            cajas.add(caja("MM-" + fmt(c++), "MM",         "Montos Mayores " + (i+1)));
         return cajas;
     }
 
-    private Caja crearCaja(String id, String tipoId, String nombre) {
-        TipoCaja tipo = new TipoCaja(tipoId, nombre, tipoId.substring(0, Math.min(3, tipoId.length())));
+    private Caja caja(String id, String tipoId, String nombre) {
+        TipoCaja tipo = new TipoCaja(tipoId, nombre, tipoId);
         tipo.setFactorVelocidad(1.0);
         tipo.setPrioridad(tipoId.equals("GENERAL") ? 3 : 1);
         tipo.setActivo(true);
-        Caja caja = new Caja(id, tipo);
-        caja.setActiva(true);
-        caja.setEstado(EstadoCaja.LIBRE);
-        return caja;
+        return new Caja(id, tipo);
     }
+
+    private static String fmt(int n) { return String.format("%02d", n); }
 
     private void configurarVentana() {
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override public void windowClosing(WindowEvent e) {
-                if (simulador.isCorriendo() || simulador.isFasePrincipalFinalizada()) {
-                    int confirm = JOptionPane.showConfirmDialog(
+                if (mensual.isCorriendo() || motor.isCorriendo()) {
+                    int r = JOptionPane.showConfirmDialog(
                             SimuladorCooperativaFrame.this,
-                            "La simulación está en progreso. ¿Desea detenerla y salir?",
-                            "Salir",
-                            JOptionPane.YES_NO_OPTION
-                    );
-                    if (confirm != JOptionPane.YES_OPTION) return;
-                    simulador.detener();
+                            "Simulaci\u00f3n en progreso. \u00bfSalir?", "Salir",
+                            JOptionPane.YES_NO_OPTION);
+                    if (r != JOptionPane.YES_OPTION) return;
+                    mensual.detener();
                 }
-                timerUI.stop();
-                dispose();
+                timerUI.stop(); dispose();
             }
         });
-        setSize(1100, 750);
-        setMinimumSize(new Dimension(900, 600));
+        setSize(1200, 820);
+        setMinimumSize(new Dimension(1000, 680));
         setLocationRelativeTo(null);
     }
 }

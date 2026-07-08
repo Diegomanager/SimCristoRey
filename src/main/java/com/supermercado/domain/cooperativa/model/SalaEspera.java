@@ -1,53 +1,46 @@
 package com.supermercado.domain.cooperativa.model;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
 public class SalaEspera {
-    private Queue<Socio> colaUnica;
-    private int totalSociosAtendidos;
+    private final Queue<Socio> colaPreferentes = new LinkedList<>();
+    private final Queue<Socio> colaNormales    = new LinkedList<>();
+    private int totalAtendidos = 0;
 
-    public SalaEspera() {
-        this.colaUnica = new LinkedList<>();
-        this.totalSociosAtendidos = 0;
+    public void agregarSocio(Socio s) {
+        if (s == null) return;
+        if (s.isEsPreferente()) colaPreferentes.offer(s);
+        else                    colaNormales.offer(s);
     }
 
-    public void agregarSocio(Socio socio) {
-        colaUnica.offer(socio);
+    public Socio verSiguiente() {
+        if (!colaPreferentes.isEmpty()) return colaPreferentes.peek();
+        return colaNormales.peek();
     }
 
     public Socio siguienteSocio() {
-        return colaUnica.poll();
+        if (!colaPreferentes.isEmpty()) return colaPreferentes.poll();
+        return colaNormales.poll();
     }
 
-    // NUEVO: verSiguiente (peek)
-    public Socio verSiguiente() {
-        return colaUnica.peek();
-    }
+    public boolean isEmpty() { return colaPreferentes.isEmpty() && colaNormales.isEmpty(); }
+    public int getTotalEsperando() { return colaPreferentes.size() + colaNormales.size(); }
+    public int getTotalPreferentesEsperando() { return colaPreferentes.size(); }
+    public int getTotalNormalesEsperando()     { return colaNormales.size(); }
 
-    public boolean isEmpty() {
-        return colaUnica.isEmpty();
-    }
-
-    public int getTotalEsperando() {
-        return colaUnica.size();
-    }
-
-    public int getTotalAtendidos() {
-        return totalSociosAtendidos;
-    }
-
-    public void incrementarAtendidos() {
-        totalSociosAtendidos++;
-    }
+    public void incrementarAtendidos() { totalAtendidos++; }
+    public int  getTotalAtendidos()    { return totalAtendidos; }
 
     public void reiniciar() {
-        colaUnica.clear();
-        totalSociosAtendidos = 0;
+        colaPreferentes.clear(); colaNormales.clear(); totalAtendidos = 0;
     }
 
-    public List<Socio> getSociosEnEspera() {
-        return new LinkedList<>(colaUnica);
+    public List<Socio> getSocios() {
+        List<Socio> lista = new ArrayList<>(colaPreferentes);
+        lista.addAll(colaNormales);
+        return lista;
     }
 }

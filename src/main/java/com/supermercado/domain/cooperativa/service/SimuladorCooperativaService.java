@@ -1,7 +1,9 @@
 package com.supermercado.domain.cooperativa.service;
 
+import com.supermercado.domain.cooperativa.config.ConfiguracionCooperativa;
+import com.supermercado.domain.cooperativa.event.EventoSimulacion;
+import com.supermercado.domain.cooperativa.event.TipoEvento;
 import com.supermercado.domain.cooperativa.model.*;
-import com.supermercado.domain.cooperativa.event.*;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -9,195 +11,141 @@ import java.util.function.Consumer;
 
 public class SimuladorCooperativaService {
 
-    // ── Configuracion ─────────────────────────────────────────────────────────
-    private int    duracionSimuladaMinutos = 480;
-    private long   msPorMinutoSimulado     = 62L;
-    private int    maxSocios               = 400;
-    private double intervaloLlegadaMinutos = 1.0;
+    private long   msPorMinuto      = 62L;
+    private int    maxSociosDia     = 200;
+    private double intervaloMinutos = 1.0;
+    private int    diaActual        = 1;
 
-    // ── Estado ────────────────────────────────────────────────────────────────
-    private volatile boolean corriendo          = false;
-    private volatile boolean pausado            = false;
-    private volatile boolean faseRezagados      = false;
+    private volatile boolean corriendo               = false;
+    private volatile boolean pausado                 = false;
+    private volatile boolean faseRezagados           = false;
     private volatile boolean fasePrincipalFinalizada = false;
-    private long tiempoSimuladoActual           = 0;
 
-    // ── Entidades ─────────────────────────────────────────────────────────────
-    private SalaEspera              salaEspera;
-    private List<Caja>              cajas;
+    private volatile long tiempoReloj = 510;
+    private volatile long tiempoMotor = 0;
+
+    private SalaEspera               salaEspera;
+    private List<Caja>               cajas;
     private List<ServicioFinanciero> servicios;
+    private JornadaLaboral           jornadaActual;
 
-    // ── Servicios ──────────────────────────────────────────────────────────────
-    private final GeneradorSociosService    generador    = new GeneradorSociosService();
-    private final AsignadorCajasService     asignador    = new AsignadorCajasService();
+    private final GeneradorSociosService         generador    = new GeneradorSociosService();
+    private final AsignadorCajasService          asignador    = new AsignadorCajasService();
     private final EstadisticasFinancierasService estadisticas = new EstadisticasFinancierasService();
 
-    // ── Listeners ─────────────────────────────────────────────────────────────
     private final List<Consumer<EventoSimulacion>> listeners = new CopyOnWriteArrayList<>();
-
-    // ── Hilo ──────────────────────────────────────────────────────────────────
     private Thread hiloMotor;
 
-    // =========================================================================
-    // Configuracion
-    // =========================================================================
-    public void configurar(int duracionMinutos, long msPorMinuto, int maxSocios,
-                           double intervaloLlegada, List<ServicioFinanciero> servicios,
-                           List<Caja> cajas) {
-        this.duracionSimuladaMinutos  = duracionMinutos;
-        this.msPorMinutoSimulado      = Math.max(1L, msPorMinuto);
-        this.maxSocios                = maxSocios;
-        this.intervaloLlegadaMinutos  = intervaloLlegada;
-        this.servicios                = servicios != null ? servicios : new ArrayList<>();
-        this.cajas                    = cajas     != null ? cajas     : new ArrayList<>();
-        this.salaEspera               = new SalaEspera();
+    public void configurar(long msPorMin, int maxSoc, double intv,
+                           List<ServicioFinanciero> svcs, List<Caja> cajasLista,
+                           ConfiguracionMultiServicio multi,
+                           ConfiguracionCooperativa  cfg) {
+        this.msPorMinuto      = Math.max(1L, msPorMin);
+        this.maxSociosDia     = maxSoc;
+        this.intervaloMinutos = intv;
+        this.servicios        = svcs       != null ? svcs       : new ArrayList<>();
+        this.cajas            = cajasLista != null ? cajasLista : new ArrayList<>();
+        this.salaEspera       = new SalaEspera();
         generador.setServicios(this.servicios);
+        generador.setConfiguracionMultiServicio(multi != null ? multi : new ConfiguracionMultiServicio());
+        if (cfg != null) generador.setConfiguracion(cfg);
     }
 
-    public static long calcularEscala(int duracionSimuladaMinutos, int duracionRealSeg) {
-        if (duracionSimuladaMinutos <= 0 || duracionRealSeg <= 0) return 62L;
-        return Math.max(1L, (long) duracionRealSeg * 1000L / duracionSimuladaMinutos);
+    public static long calcularEscala(double horasSimuladas, int durRealSeg) {
+        int min = (int)(horasSimuladas * 60);
+        if (min <= 0 || durRealSeg <= 0) return 62L;
+        return Math.max(1L, (long) durRealSeg * 1000L / min);
     }
 
-    // =========================================================================
-    // Control
-    // =========================================================================
-    public void iniciar() {
+    public void iniciar(JornadaLaboral jornada, int dia) {
         if (corriendo) return;
-        corriendo     = true;
-        pausado       = false;
-        faseRezagados = false;
-        fasePrincipalFinalizada = false;
-        tiempoSimuladoActual = 0;
+        this.jornadaActual = jornada;
+        this.diaActual     = dia;
+        corriendo = true; pausado = false;
+        faseRezagados = false; fasePrincipalFinalizada = false;
+        tiempoReloj = jornada != null ? jornada.getMinutoInicio() : 510;
+        tiempoMotor = 0;
         generador.reiniciar();
         estadisticas.reiniciar();
 
-        hiloMotor = new Thread(this::bucleMotor, "Motor-Cooperativa");
+        hiloMotor = new Thread(this::bucleMotor, "Motor-Dia-" + dia);
         hiloMotor.setDaemon(true);
         hiloMotor.start();
-        publicar(new EventoSimulacion(TipoEvento.SIMULACION_INICIADA, "Simulacion iniciada", tiempoSimuladoActual));
+        publicar(TipoEvento.SIMULACION_INICIADA, "=== Día " + dia + " iniciado – " + horaSimulada() + " ===");
     }
 
-    // NUEVO: iniciar fase de rezagados (llamado desde UI)
-    public void iniciarFaseRezagados() {
-        if (!fasePrincipalFinalizada || faseRezagados) return;
-        faseRezagados = true;
-        publicar(new EventoSimulacion(TipoEvento.FASE_REZAGADOS_INICIADA,
-                "Fase de rezagados iniciada. Socios en sala: " + salaEspera.getTotalEsperando(),
-                tiempoSimuladoActual));
-    }
+    public void pausar() { if (!corriendo || pausado) return; pausado = true; publicar(TipoEvento.SIMULACION_PAUSADA, "Pausado"); }
+    public void reanudar() { if (!corriendo || !pausado) return; pausado = false; synchronized (this) { notifyAll(); } publicar(TipoEvento.SIMULACION_REANUDADA, "Reanudado"); }
+    public void detener() { corriendo = false; pausado = false; if (hiloMotor != null) { synchronized (this) { notifyAll(); } hiloMotor.interrupt(); } publicar(TipoEvento.SIMULACION_DETENIDA, "Detenido"); }
+    public void reiniciarDia() { detener(); if (salaEspera != null) salaEspera.reiniciar(); if (cajas != null) cajas.forEach(Caja::reiniciar); generador.reiniciar(); estadisticas.reiniciar(); tiempoReloj = jornadaActual != null ? jornadaActual.getMinutoInicio() : 510; tiempoMotor = 0; fasePrincipalFinalizada = false; faseRezagados = false; publicar(TipoEvento.SIMULACION_REINICIADA, "Reiniciado"); }
+    public void iniciarFaseRezagados() { if (!fasePrincipalFinalizada || faseRezagados) return; faseRezagados = true; corriendo = true; estadisticas.setFaseRezagados(true); hiloMotor = new Thread(this::bucleRezagados, "Motor-Rez-" + diaActual); hiloMotor.setDaemon(true); hiloMotor.start(); publicar(TipoEvento.FASE_REZAGADOS_INICIADA, "Drenando sala: " + salaEspera.getTotalEsperando() + " socios"); }
 
-    public void pausar() {
-        if (!corriendo || pausado) return;
-        pausado = true;
-        publicar(new EventoSimulacion(TipoEvento.SIMULACION_PAUSADA, "Simulacion pausada", tiempoSimuladoActual));
-    }
-
-    public void reanudar() {
-        if (!corriendo || !pausado) return;
-        pausado = false;
-        synchronized (this) { notifyAll(); }
-        publicar(new EventoSimulacion(TipoEvento.SIMULACION_REANUDADA, "Simulacion reanudada", tiempoSimuladoActual));
-    }
-
-    public void detener() {
-        corriendo = false;
-        pausado   = false;
-        if (hiloMotor != null) {
-            synchronized (this) { notifyAll(); }
-            hiloMotor.interrupt();
-        }
-        publicar(new EventoSimulacion(TipoEvento.SIMULACION_DETENIDA,
-                "Simulacion detenida manualmente", tiempoSimuladoActual));
-    }
-
-    public void reiniciar() {
-        detener();
-        if (salaEspera != null) salaEspera.reiniciar();
-        if (cajas != null) cajas.forEach(Caja::reiniciar);
-        generador.reiniciar();
-        estadisticas.reiniciar();
-        tiempoSimuladoActual = 0;
-        fasePrincipalFinalizada = false;
-        faseRezagados = false;
-        publicar(new EventoSimulacion(TipoEvento.SIMULACION_REINICIADA, "Simulacion reiniciada", 0));
-    }
-
-    // =========================================================================
-    // Motor
-    // =========================================================================
     private void bucleMotor() {
-        double acumuladorLlegada = 0.0;
+        double acum = 0.0;
+        List<BloqueHorario> bloques = jornadaActual.getBloques();
+        if (bloques.isEmpty()) { fasePrincipalFinalizada = true; corriendo = false; publicar(TipoEvento.FASE_PRINCIPAL_FINALIZADA, "Sin bloques horarios"); return; }
 
-        while (corriendo) {
-            if (pausado) {
-                synchronized (this) {
-                    while (pausado && corriendo) {
-                        try { wait(200); } catch (InterruptedException e) { Thread.currentThread().interrupt(); return; }
-                    }
-                }
-                continue;
-            }
+        for (BloqueHorario bloque : bloques) {
+            if (!corriendo) break;
+            int inicio = bloque.getInicio();
+            int fin    = bloque.getFin();
+            tiempoReloj = inicio;
+            for (int minuto = inicio; minuto < fin; minuto++) {
+                if (!corriendo || fasePrincipalFinalizada) break;
+                if (pausado) { synchronized (this) { while (pausado && corriendo) { try { wait(100); } catch (InterruptedException e) { Thread.currentThread().interrupt(); return; } } } if (!corriendo) break; }
 
-            tiempoSimuladoActual++;
+                tiempoMotor++;
+                tiempoReloj = minuto;
 
-            if (!faseRezagados && !fasePrincipalFinalizada) {
-                // FASE PRINCIPAL: generar socios
-                acumuladorLlegada += 1.0;
-                while (acumuladorLlegada >= intervaloLlegadaMinutos
-                        && generador.getTotalGenerados() < maxSocios) {
-                    acumuladorLlegada -= intervaloLlegadaMinutos;
-                    Socio s = generador.generarSocio(tiempoSimuladoActual);
+                acum += 1.0;
+                while (acum >= intervaloMinutos && generador.getTotalGenerados() < maxSociosDia) {
+                    acum -= intervaloMinutos;
+                    Socio s = generador.generarSocio(tiempoMotor);
                     salaEspera.agregarSocio(s);
-                    publicar(new EventoSimulacion(TipoEvento.SOCIO_GENERADO,
-                            "Socio " + s.getFicha() + " llego – " +
-                            (s.getServicio() != null ? s.getServicio().getNombre() : "General"),
-                            tiempoSimuladoActual));
+                    estadisticas.setTotalGenerados(generador.getTotalGenerados());
+                    publicar(TipoEvento.SOCIO_GENERADO, s.getFicha() + " llegó – " + s.getDescripcionServicios());
                 }
 
-                // Asignar socios a cajas libres (si hay)
-                procesarAsignaciones();
-
-                // Procesar atenciones
-                procesarAtenciones();
-
-                // Verificar fin de fase principal
-                boolean tiempoCumplido = tiempoSimuladoActual >= duracionSimuladaMinutos;
-                boolean limiteAlcanzado = generador.getTotalGenerados() >= maxSocios;
-
-                if (tiempoCumplido || limiteAlcanzado) {
-                    fasePrincipalFinalizada = true;
-                    String motivo = limiteAlcanzado
-                            ? "Limite de socios alcanzado (" + maxSocios + ")"
-                            : "Tiempo de jornada cumplido (" + duracionSimuladaMinutos + " min)";
-                    publicar(new EventoSimulacion(TipoEvento.FASE_PRINCIPAL_FINALIZADA,
-                            motivo + ". Socios en sala: " + salaEspera.getTotalEsperando(),
-                            tiempoSimuladoActual));
-                    // No detenemos la simulación, esperamos que la UI decida si iniciar rezagados
-                }
-
-            } else if (faseRezagados) {
-                // FASE DE REZAGADOS: solo atender socios pendientes
                 procesarAsignaciones();
                 procesarAtenciones();
-
-                if (salaEspera.isEmpty() && cajas.stream().noneMatch(c -> c.getEstado() == EstadoCaja.OCUPADA)) {
-                    corriendo = false;
-                    publicar(new EventoSimulacion(TipoEvento.SIMULACION_FINALIZADA,
-                            "Simulacion finalizada. Total atendidos: " + estadisticas.getTotalAtendidos() +
-                            ". Rezagados: " + (generador.getTotalGenerados() - estadisticas.getTotalAtendidos()),
-                            tiempoSimuladoActual));
-                    break;
-                }
+                sleep();
             }
+        }
 
-            // Esperar tick
-            try {
-                Thread.sleep(msPorMinutoSimulado);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+        fasePrincipalFinalizada = true;
+        corriendo = false;
+        int enSala = salaEspera.getTotalEsperando();
+        int cajasOcupadas = (int) cajas.stream().filter(c -> c.getEstado() == EstadoCaja.OCUPADA).count();
+        publicar(TipoEvento.FASE_PRINCIPAL_FINALIZADA, "Fase principal terminada | En sala: " + enSala + " | En cajas: " + cajasOcupadas + " | Atendidos: " + estadisticas.getPrincipal().getTotalAtendidos());
+    }
+
+    private void bucleRezagados() {
+        int extraSeguridad = 0;
+        while (corriendo) {
+            if (pausado) { synchronized (this) { while (pausado && corriendo) { try { wait(100); } catch (InterruptedException e) { Thread.currentThread().interrupt(); return; } } } if (!corriendo) break; }
+
+            tiempoMotor++;
+            tiempoReloj++;
+            if (tiempoReloj >= 24 * 60) tiempoReloj -= 24 * 60;
+
+            procesarAtenciones();
+            procesarAsignaciones();
+
+            boolean salaVacia   = salaEspera.isEmpty();
+            boolean cajasLibres = cajas.stream().noneMatch(c -> c.getEstado() == EstadoCaja.OCUPADA);
+
+            if (salaVacia && cajasLibres) {
+                corriendo = false;
+                publicar(TipoEvento.SIMULACION_FINALIZADA, "✅ Día " + diaActual + " completo | Total atendidos: " + estadisticas.getTotalAtendidos() + " | Monto: Bs " + String.format("%.2f", estadisticas.getMontoTotal()));
                 break;
             }
+            extraSeguridad++;
+            if (extraSeguridad > maxSociosDia * 60) {
+                corriendo = false;
+                publicar(TipoEvento.SIMULACION_FINALIZADA, "⚠ Día " + diaActual + " – tiempo de drenaje agotado | Atendidos: " + estadisticas.getTotalAtendidos());
+                break;
+            }
+            sleep();
         }
     }
 
@@ -205,61 +153,65 @@ public class SimuladorCooperativaService {
         while (!salaEspera.isEmpty()) {
             Socio siguiente = salaEspera.verSiguiente();
             if (siguiente == null) break;
-            Optional<Caja> cajaOpt = asignador.asignar(siguiente, cajas);
-            if (cajaOpt.isEmpty()) break;
-            Socio socio = salaEspera.siguienteSocio();
-            Caja  caja  = cajaOpt.get();
-            asignador.confirmarAsignacion(socio, caja, tiempoSimuladoActual);
-            publicar(new EventoSimulacion(TipoEvento.SOCIO_ASIGNADO,
-                    "Socio " + socio.getFicha() + " asignado a " + caja.getId()
-                    + " (" + caja.getTipo().getNombre() + ")",
-                    tiempoSimuladoActual));
+            Optional<Caja> opt = asignador.asignar(siguiente, cajas);
+            if (opt.isEmpty()) break;
+            Socio s = salaEspera.siguienteSocio();
+            Caja  c = opt.get();
+            asignador.confirmarAsignacion(s, c, tiempoMotor);
+            publicar(TipoEvento.SOCIO_ASIGNADO, s.getFicha() + " → " + c.getId() + (s.isMultiServicio() ? " [x"+s.getTotalServicios()+"]" : ""));
         }
     }
 
     private void procesarAtenciones() {
         for (Caja caja : cajas) {
             if (caja.getEstado() != EstadoCaja.OCUPADA) continue;
-            Socio socio = caja.getSocioActual();
-            if (socio == null) continue;
-
-            long tiempoEnCaja = tiempoSimuladoActual - socio.getTiempoInicioAtencion();
-            if (tiempoEnCaja >= socio.getDuracionEstimada()) {
-                socio.setTiempoSalida(tiempoSimuladoActual);
-                socio.setAtendida(true);
-                estadisticas.registrarAtencion(socio, caja);
-                caja.finalizarAtencion(tiempoSimuladoActual);
-                publicar(new EventoSimulacion(TipoEvento.SOCIO_ATENDIDO,
-                        "Socio " + socio.getFicha() + " atendido en " + caja.getId()
-                        + " | Monto: Bs " + String.format("%.2f", socio.getMonto())
-                        + " | Espera: " + (socio.getTiempoInicioAtencion() - socio.getTiempoLlegada()) + " min",
-                        tiempoSimuladoActual));
+            Socio s = caja.getSocioActual();
+            if (s == null) continue;
+            long enCaja = tiempoMotor - s.getTiempoInicioAtencion();
+            if (enCaja >= s.getDuracionEstimada()) {
+                s.setTiempoSalida(tiempoMotor);
+                s.setAtendida(true);
+                estadisticas.registrarAtencion(s, caja);
+                caja.finalizarAtencion(tiempoMotor);
+                long espera = s.getTiempoInicioAtencion() - s.getTiempoLlegada();
+                publicar(TipoEvento.SOCIO_ATENDIDO, s.getFicha() + " ✓ " + caja.getId() + " | Espera: " + Math.max(0,espera) + " min | Aten: " + s.getDuracionEstimada() + " min | Bs " + String.format("%.0f", s.getMonto()));
             }
         }
     }
 
-    // =========================================================================
-    // Eventos
-    // =========================================================================
-    public void addListener(Consumer<EventoSimulacion> listener) { listeners.add(listener); }
-    public void removeListener(Consumer<EventoSimulacion> listener) { listeners.remove(listener); }
+    private void sleep() { try { Thread.sleep(msPorMinuto); } catch (InterruptedException e) { Thread.currentThread().interrupt(); } }
 
-    private void publicar(EventoSimulacion evento) {
-        for (Consumer<EventoSimulacion> l : listeners) {
-            try { l.accept(evento); } catch (Exception ignored) {}
-        }
+    public String horaSimulada() { int m = (int)(tiempoReloj % (24*60)); return String.format("Día %d – %02d:%02d", diaActual, m/60, m%60); }
+
+    public ResumenDiario construirResumenDia() {
+        ResumenDiario r = new ResumenDiario(diaActual, true);
+        r.setGenerados(generador.getTotalGenerados());
+        r.setAtendidosPrincipal(estadisticas.getPrincipal().getTotalAtendidos());
+        r.setAtendidosRezagados(estadisticas.getRezagados().getTotalAtendidos());
+        r.setNoAtendidos(Math.max(0, r.getGenerados()-r.getTotalAtendidos()));
+        r.setMontoTotal(estadisticas.getMontoTotal());
+        r.setPromedioEspera(estadisticas.getPromedioEspera());
+        r.setPromedioAtencion(estadisticas.getPromedioAtencion());
+        r.setCajeroEstrella(estadisticas.getCajeroEstrellaGlobal());
+        int min = jornadaActual!=null ? jornadaActual.getTotalMinutosLaborables() : 480;
+        r.setEficienciaGlobal(min>0 ? (double)r.getTotalAtendidos()/min : 0);
+        return r;
     }
 
-    // =========================================================================
-    // Getters
-    // =========================================================================
-    public boolean isCorriendo()     { return corriendo; }
-    public boolean isPausado()       { return pausado; }
-    public boolean isFaseRezagados() { return faseRezagados; }
-    public boolean isFasePrincipalFinalizada() { return fasePrincipalFinalizada; }
-    public long getTiempoSimulado()  { return tiempoSimuladoActual; }
-    public SalaEspera getSalaEspera(){ return salaEspera; }
-    public List<Caja> getCajas()     { return cajas; }
+    public void addListener(Consumer<EventoSimulacion> l)    { listeners.add(l); }
+    public void removeListener(Consumer<EventoSimulacion> l) { listeners.remove(l); }
+    private void publicar(TipoEvento t, String msg) { EventoSimulacion ev = new EventoSimulacion(t, msg, horaSimulada()); for (var l : listeners) { try { l.accept(ev); } catch (Exception ignored) {} } }
+
+    public boolean  isCorriendo()               { return corriendo; }
+    public boolean  isPausado()                 { return pausado; }
+    public boolean  isFaseRezagados()           { return faseRezagados; }
+    public boolean  isFasePrincipalFinalizada() { return fasePrincipalFinalizada; }
+    public long     getTiempoReloj()            { return tiempoReloj; }
+    public long     getTiempoMotor()            { return tiempoMotor; }
+    public int      getDiaActual()              { return diaActual; }
+    public SalaEspera getSalaEspera()           { return salaEspera; }
+    public List<Caja> getCajas()                { return cajas; }
     public EstadisticasFinancierasService getEstadisticas() { return estadisticas; }
-    public GeneradorSociosService getGenerador() { return generador; }
+    public GeneradorSociosService         getGenerador()    { return generador; }
+    public JornadaLaboral                 getJornadaActual(){ return jornadaActual; }
 }

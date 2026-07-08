@@ -1,119 +1,78 @@
 package com.supermercado.domain.cooperativa.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class Caja {
-    private String id;
-    private TipoCaja tipo;
-    private EstadoCaja estado;
-    private Socio socioActual;
-    private boolean activa;
-    private int totalAtendidos;
-    private double montoTotalAtendido;
-    private List<Socio> sociosAtendidos;
+    private String     id;
+    private TipoCaja   tipo;
+    private EstadoCaja estado = EstadoCaja.LIBRE;
+    private Socio      socioActual;
+    private boolean    activa = true;
+    private int        totalAtendidos = 0;
+    private double     montoTotalAtendido = 0.0;
+    private long       tiempoTotalOcupado = 0L;
+    private long       tiempoInicioAtencion = 0L;
+    private final Map<String,Long>    tiempoPorServicio = new LinkedHashMap<>();
+    private final Map<String,Integer> atendidosPorServicio = new LinkedHashMap<>();
 
-    public Caja(String id, TipoCaja tipo) {
-        this.id = id;
-        this.tipo = tipo;
-        this.estado = EstadoCaja.LIBRE;
-        this.activa = true;
-        this.totalAtendidos = 0;
-        this.montoTotalAtendido = 0.0;
-        this.sociosAtendidos = new ArrayList<>();
+    public Caja() {}
+    public Caja(String id, TipoCaja tipo) { this.id = id; this.tipo = tipo; }
+
+    public void asignarSocio(Socio s, long tiempoActual) {
+        this.socioActual = s; this.estado = EstadoCaja.OCUPADA;
+        this.tiempoInicioAtencion = tiempoActual;
     }
-
-    // Constructor sin argumentos (para compatibilidad)
-    public Caja() {
-        this("C-000", new TipoCaja("GENERAL", "General", "GEN"));
-    }
-
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-
-    public TipoCaja getTipo() { return tipo; }
-    public void setTipo(TipoCaja tipo) { this.tipo = tipo; }
-
-    public EstadoCaja getEstado() { return estado; }
-    public void setEstado(EstadoCaja estado) { this.estado = estado; }
-
-    public Socio getSocioActual() { return socioActual; }
-    public void setSocioActual(Socio socioActual) { this.socioActual = socioActual; }
-
-    public boolean isActiva() { return activa; }
-    public void setActiva(boolean activa) { this.activa = activa; }
-
-    public int getTotalAtendidos() { return totalAtendidos; }
-    public void setTotalAtendidos(int totalAtendidos) { this.totalAtendidos = totalAtendidos; }
-
-    public double getMontoTotalAtendido() { return montoTotalAtendido; }
-    public void setMontoTotalAtendido(double montoTotalAtendido) { this.montoTotalAtendido = montoTotalAtendido; }
-
-    public List<Socio> getSociosAtendidos() { return sociosAtendidos; }
-
-    // Método original (sin tiempo) - se mantiene
-    public void asignarSocio(Socio socio) {
-        this.socioActual = socio;
-        this.estado = EstadoCaja.OCUPADA;
-        socio.setTiempoInicioAtencion(System.currentTimeMillis());
-    }
-
-    // NUEVO: con tiempo (para el motor)
-    public void asignarSocio(Socio socio, long tiempoActual) {
-        this.socioActual = socio;
-        this.estado = EstadoCaja.OCUPADA;
-        socio.setTiempoInicioAtencion(tiempoActual);
-    }
-
-    // Método original (sin tiempo)
-    public void finalizarAtencion() {
-        if (socioActual != null) {
-            socioActual.setAtendida(true);
-            socioActual.setTiempoSalida(System.currentTimeMillis());
-            this.totalAtendidos++;
-            this.montoTotalAtendido += socioActual.getMonto();
-            this.sociosAtendidos.add(socioActual);
-            this.socioActual = null;
-        }
-        this.estado = EstadoCaja.LIBRE;
-    }
-
-    // NUEVO: con tiempo (para el motor)
     public void finalizarAtencion(long tiempoActual) {
         if (socioActual != null) {
-            socioActual.setAtendida(true);
-            socioActual.setTiempoSalida(tiempoActual);
-            this.totalAtendidos++;
-            this.montoTotalAtendido += socioActual.getMonto();
-            this.sociosAtendidos.add(socioActual);
-            this.socioActual = null;
+            long dur = Math.max(0, tiempoActual - tiempoInicioAtencion);
+            tiempoTotalOcupado += dur;
+            montoTotalAtendido += socioActual.getMonto();
+            totalAtendidos++;
+            for (ServicioFinanciero s : socioActual.getTodosLosServicios()) {
+                if (s == null) continue;
+                tiempoPorServicio.merge(s.getNombre(), dur, Long::sum);
+                atendidosPorServicio.merge(s.getNombre(), 1, Integer::sum);
+            }
         }
-        this.estado = EstadoCaja.LIBRE;
+        socioActual = null; estado = EstadoCaja.LIBRE;
     }
-
-    public void pausar() {
-        if (estado == EstadoCaja.OCUPADA || estado == EstadoCaja.LIBRE) {
-            this.estado = EstadoCaja.PAUSADA;
-        }
-    }
-
-    public void reanudar() {
-        if (estado == EstadoCaja.PAUSADA) {
-            this.estado = EstadoCaja.LIBRE;
-        }
-    }
-
-    public void detener() {
-        this.estado = EstadoCaja.DETENIDA;
-        this.socioActual = null;
-    }
-
+    public void pausar()    { if (estado == EstadoCaja.OCUPADA || estado == EstadoCaja.LIBRE) estado = EstadoCaja.PAUSADA; }
+    public void reanudar()  { if (estado == EstadoCaja.PAUSADA) estado = EstadoCaja.LIBRE; }
+    public void desactivar(){ activa = false; estado = EstadoCaja.DESACTIVADA; }
+    public void activar()   { activa = true;  estado = EstadoCaja.LIBRE; }
     public void reiniciar() {
-        this.estado = EstadoCaja.LIBRE;
-        this.socioActual = null;
-        this.totalAtendidos = 0;
-        this.montoTotalAtendido = 0.0;
-        this.sociosAtendidos.clear();
-        this.activa = true;
+        socioActual = null; estado = EstadoCaja.LIBRE;
+        totalAtendidos = 0; montoTotalAtendido = 0.0;
+        tiempoTotalOcupado = 0L; tiempoInicioAtencion = 0L;
+        tiempoPorServicio.clear(); atendidosPorServicio.clear();
     }
+    public long getMinutosEnAtencionActual(long tiempoActual) {
+        if (estado != EstadoCaja.OCUPADA || socioActual == null) return 0;
+        return Math.max(0, tiempoActual - tiempoInicioAtencion);
+    }
+    public String getResumenTiempoServicios() {
+        if (tiempoPorServicio.isEmpty()) return "Sin atenciones aun";
+        StringBuilder sb = new StringBuilder();
+        tiempoPorServicio.forEach((svc, mins) -> {
+            int cnt = atendidosPorServicio.getOrDefault(svc, 0);
+            sb.append(String.format("%-22s %3d vez  %4d min%n", svc, cnt, mins));
+        });
+        return sb.toString();
+    }
+    // Getters
+    public String     getId() { return id; }
+    public void       setId(String id) { this.id = id; }
+    public TipoCaja   getTipo() { return tipo; }
+    public void       setTipo(TipoCaja t) { this.tipo = t; }
+    public EstadoCaja getEstado() { return estado; }
+    public void       setEstado(EstadoCaja e) { this.estado = e; }
+    public Socio      getSocioActual() { return socioActual; }
+    public boolean    isActiva() { return activa; }
+    public void       setActiva(boolean v) { this.activa = v; }
+    public int        getTotalAtendidos() { return totalAtendidos; }
+    public double     getMontoTotalAtendido() { return montoTotalAtendido; }
+    public long       getTiempoTotalOcupado() { return tiempoTotalOcupado; }
+    public Map<String,Long>    getTiempoPorServicio() { return tiempoPorServicio; }
+    public Map<String,Integer> getAtendidosPorServicio() { return atendidosPorServicio; }
 }

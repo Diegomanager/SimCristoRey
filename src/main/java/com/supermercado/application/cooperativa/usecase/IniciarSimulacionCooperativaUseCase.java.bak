@@ -1,0 +1,24 @@
+package com.supermercado.application.cooperativa.usecase;
+
+import com.supermercado.domain.cooperativa.model.Caja;
+import com.supermercado.domain.cooperativa.model.ConfiguracionMultiServicio;
+import com.supermercado.domain.cooperativa.model.ServicioFinanciero;
+import com.supermercado.domain.cooperativa.service.SimuladorCooperativaService;
+
+import java.util.List;
+
+public class IniciarSimulacionCooperativaUseCase {
+    private final SimuladorCooperativaService simulador;
+
+    public IniciarSimulacionCooperativaUseCase(SimuladorCooperativaService simulador) {
+        this.simulador = simulador;
+    }
+
+    public void execute(int duracionMinutos, long msPorMinuto, int maxSocios,
+                        double intervaloLlegada, List<ServicioFinanciero> servicios,
+                        List<Caja> cajas, ConfiguracionMultiServicio configMulti) {
+        simulador.configurar(duracionMinutos, msPorMinuto, maxSocios,
+                             intervaloLlegada, servicios, cajas, configMulti);
+        simulador.iniciar();
+    }
+}

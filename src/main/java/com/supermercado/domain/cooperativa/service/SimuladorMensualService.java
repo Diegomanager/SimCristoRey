@@ -59,6 +59,8 @@ public class SimuladorMensualService {
     }
 
     private void bucle() {
+        int contadorLaborable = 0;
+
         for (JornadaLaboral jornada : jornadas) {
             if (!corriendo) break;
             diaEnCurso = jornada.getDia();
@@ -68,6 +70,9 @@ public class SimuladorMensualService {
                 resumenes.add(new ResumenDiario(diaEnCurso, false));
                 continue;
             }
+
+            contadorLaborable++;
+            motor.setDiaSimulado(contadorLaborable);  // <-- INYECTAR
 
             // Reiniciar cajas y configurar motor para este día
             cajas.forEach(Caja::reiniciar);
@@ -102,7 +107,7 @@ public class SimuladorMensualService {
                 }
             } else {
                 propagar(new EventoSimulacion(TipoEvento.SIMULACION_FINALIZADA,
-                        "✅ "+jornada.getNombreCompleto()+" finalizado (sin rezagados)",
+                        "✅ " + jornada.getNombreCompleto() + " finalizado (sin rezagados)",
                         motor.horaSimulada()));
             }
             if (!corriendo) break;

@@ -28,6 +28,7 @@ com\supermercado\application\supermercado\usecase\ExportarReporteUseCase.class
 com\supermercado\presentation\supermercado\view\PanelCajas.class
 com\supermercado\Main.class
 com\supermercado\presentation\supermercado\view\PanelRecomendaciones.class
+com\supermercado\presentation\cooperativa\view\PanelEvolucionDiaria$3.class
 com\supermercado\domain\supermercado\event\SimulacionIniciadaEvent.class
 com\supermercado\presentation\supermercado\view\DialogoConfiguracion.class
 com\supermercado\domain\cooperativa\event\SocioAtendidoEvent.class

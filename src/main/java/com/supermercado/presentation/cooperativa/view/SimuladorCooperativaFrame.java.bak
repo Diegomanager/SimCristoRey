@@ -94,7 +94,6 @@ public class SimuladorCooperativaFrame extends JFrame {
         tabs.addTab("Log",          panelLog);
         add(tabs, BorderLayout.CENTER);
 
-        // Forzar reconstrucciÃƒÂ³n de EvoluciÃƒÂ³n al seleccionar la pestaÃƒÂ±a
         tabs.addChangeListener(e -> {
             if (tabs.getSelectedIndex() == 3) {
                 panelEvol.reconstruirTabla();
@@ -119,7 +118,9 @@ public class SimuladorCooperativaFrame extends JFrame {
     }
 
     private void manejarEvento(EventoSimulacion ev) {
+        // Agregar todos los eventos al log (ya no se emiten no laborables desde el servicio)
         panelLog.addEvento(ev);
+
         SwingUtilities.invokeLater(() -> {
             switch (ev.getTipo()) {
 
@@ -228,7 +229,7 @@ public class SimuladorCooperativaFrame extends JFrame {
         boolean activo = motor.isCorriendo() || motor.isFasePrincipalFinalizada() || mensual.isCorriendo();
         if (!activo) return;
 
-        String hora = motor.horaSimulada().replace("D\u00eda " + motor.getDiaActual() + " Ã¢â‚¬â€œ ", "");
+        String hora = motor.horaSimulada().replace("D\u00eda " + motor.getDiaActual() + " – ", "");
         String horaFormateada = hora;
         try {
             String[] partes = hora.split(":");
@@ -299,7 +300,7 @@ public class SimuladorCooperativaFrame extends JFrame {
                 resp[0] = JOptionPane.showConfirmDialog(this,
                         "Quedan " + enSala + " socios en sala.\n"
                         + "Iniciar fase de rezagados?",
-                        "Rezagados - D\u00eda " + motor.getDiaActual(),
+                        "Rezagados - D\u00eda " + contadorDiaLaboral,
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE));
         } catch (Exception ex) { return false; }
@@ -345,7 +346,7 @@ public class SimuladorCooperativaFrame extends JFrame {
         }
     }
 
-    // Ã¢â€â‚¬Ã¢â€â‚¬ Datos por defecto Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    // ── Datos por defecto ─────────────────────────────────────────────────────
     private List<ServicioFinanciero> crearServiciosFijos() {
         List<ServicioFinanciero> l = new ArrayList<>();
         l.add(svc("SVC-C1",  "Socios Ahorro/Cr\u00e9dito",           "C",  3,15,500,200000,0.0));

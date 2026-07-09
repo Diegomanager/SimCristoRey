@@ -6,6 +6,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,13 +56,13 @@ public class PanelEvolucionDiaria extends JPanel {
                     JTable t, Object v, boolean sel, boolean foc, int row, int col) {
                 super.getTableCellRendererComponent(t, v, sel, foc, row, col);
                 Object lab = modelo.getValueAt(row, 1);
-                if ("No".equals(lab)) {
-                    setBackground(new Color(240, 240, 240));
-                    setForeground(Color.GRAY);
-                } else if ("TOTAL".equals(lab)) {
+                if ("TOTAL".equals(lab)) {
                     setBackground(new Color(200, 230, 255));
                     setForeground(new Color(0, 60, 120));
                     setFont(getFont().deriveFont(Font.BOLD));
+                } else if ("No".equals(lab)) {
+                    setBackground(new Color(240, 240, 240));
+                    setForeground(Color.GRAY);
                 } else if (sel) {
                     setBackground(new Color(173, 216, 230));
                     setForeground(Color.BLACK);
@@ -80,19 +82,27 @@ public class PanelEvolucionDiaria extends JPanel {
         scroll.getVerticalScrollBar().setUnitIncrement(20);
         scroll.getHorizontalScrollBar().setUnitIncrement(20);
         add(scroll, BorderLayout.CENTER);
+
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                if (!resumenes.isEmpty()) reconstruirTabla();
+            }
+        });
     }
 
     public void addResumenDia(ResumenDiario r) {
+        if (r == null || !r.isLaborable()) return;
         resumenes.add(r);
         SwingUtilities.invokeLater(() -> {
             agregarFilaModelo(r);
-            scroll.revalidate(); scroll.repaint();
+            repintarTodo();
         });
     }
 
     private void agregarFilaModelo(ResumenDiario r) {
         modelo.addRow(new Object[]{
-            r.getDia(),
+            r.getNumeroDia(),
             r.isLaborable() ? "Si" : "No",
             r.getGenerados(),
             r.getAtendidosPrincipal(),
@@ -128,28 +138,27 @@ public class PanelEvolucionDiaria extends JPanel {
             }
             if (cont > 0) {
                 modelo.addRow(new Object[]{
-                    "-", "TOTAL", gen, ppal, rez, tot, no,
+                    0,          // FIX: usar 0 en lugar de "-" para la columna Dia (Integer)
+                    "TOTAL",
+                    gen, ppal, rez, tot, no,
                     round2(monto),
                     round1(esp / cont),
                     round1(aten / cont),
-                    "-", "-"
+                    "-",
+                    round3(0.0)
                 });
             }
-            reconstruirTabla();
+            repintarTodo();
         });
     }
 
-    /**
-     * Reconstruye toda la tabla desde la lista local.
-     * Es público para poder ser llamado desde el ChangeListener del Frame.
-     */
     public void reconstruirTabla() {
         SwingUtilities.invokeLater(() -> {
             modelo.setRowCount(0);
             for (ResumenDiario r : resumenes) {
                 agregarFilaModelo(r);
             }
-            if (tieneTotales) {
+            if (tieneTotales && !resumenes.isEmpty()) {
                 int gen=0,ppal=0,rez=0,tot=0,no=0;
                 double monto=0,esp=0,aten=0; int cont=0;
                 for (ResumenDiario r : resumenes) {
@@ -163,26 +172,47 @@ public class PanelEvolucionDiaria extends JPanel {
                 }
                 if (cont > 0) {
                     modelo.addRow(new Object[]{
-                        "-","TOTAL",gen,ppal,rez,tot,no,
-                        round2(monto),round1(esp/cont),round1(aten/cont),"-","-"
+                        0, "TOTAL", gen, ppal, rez, tot, no,
+                        round2(monto), round1(esp/cont), round1(aten/cont), "-", round3(0.0)
                     });
                 }
             }
-            modelo.fireTableDataChanged();
-            tabla.revalidate(); tabla.repaint();
-            scroll.revalidate(); scroll.repaint();
-            revalidate(); repaint();
+            repintarTodo();
         });
     }
 
-    // Métodos compatibles
+    private void repintarTodo() {
+        try {
+            modelo.fireTableDataChanged();
+            tabla.revalidate();
+            tabla.repaint();
+            scroll.revalidate();
+            scroll.repaint();
+            if (isShowing()) {
+                tabla.paintImmediately(tabla.getBounds());
+                scroll.paintImmediately(scroll.getBounds());
+            }
+            tabla.updateUI();
+            scroll.updateUI();
+            revalidate();
+            repaint();
+        } catch (Exception ex) {
+            SwingUtilities.invokeLater(() -> {
+                modelo.fireTableDataChanged();
+                revalidate();
+                repaint();
+            });
+        }
+    }
+
     public void mostrarTotales() { mostrarTotalesYRefrescar(); }
+
     public void reiniciar() {
         resumenes.clear();
         tieneTotales = false;
         SwingUtilities.invokeLater(() -> {
             modelo.setRowCount(0);
-            tabla.revalidate(); tabla.repaint();
+            repintarTodo();
         });
     }
 

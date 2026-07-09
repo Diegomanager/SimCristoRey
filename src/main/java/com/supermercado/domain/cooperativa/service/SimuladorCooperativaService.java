@@ -15,6 +15,7 @@ public class SimuladorCooperativaService {
     private int    maxSociosDia     = 200;
     private double intervaloMinutos = 1.0;
     private int    diaActual        = 1;
+    private int    diaSimulado      = 0;  // <-- NUEVO
 
     private volatile boolean corriendo               = false;
     private volatile boolean pausado                 = false;
@@ -57,10 +58,15 @@ public class SimuladorCooperativaService {
         return Math.max(1L, (long) durRealSeg * 1000L / min);
     }
 
+    public void setDiaSimulado(int dia) { this.diaSimulado = dia; }
+    public int getDiaSimulado() { return diaSimulado; }
+
     public void iniciar(JornadaLaboral jornada, int dia) {
         if (corriendo) return;
         this.jornadaActual = jornada;
         this.diaActual     = dia;
+        // diaSimulado ya debe estar establecido por MensualService antes de llamar a iniciar()\n        // NO resetear a 0 aquí
+        // pero por si acaso, si es 0, lo dejamos como estÃ¡.
         corriendo = true; pausado = false;
         faseRezagados = false; fasePrincipalFinalizada = false;
         tiempoReloj = jornada != null ? jornada.getMinutoInicio() : 510;
@@ -71,7 +77,7 @@ public class SimuladorCooperativaService {
         hiloMotor = new Thread(this::bucleMotor, "Motor-Dia-" + dia);
         hiloMotor.setDaemon(true);
         hiloMotor.start();
-        publicar(TipoEvento.SIMULACION_INICIADA, "=== Día " + dia + " iniciado – " + horaSimulada() + " ===");
+        publicar(TipoEvento.SIMULACION_INICIADA, "=== Dia " + dia + " iniciado - " + horaSimulada() + " ===");
     }
 
     public void pausar() { if (!corriendo || pausado) return; pausado = true; publicar(TipoEvento.SIMULACION_PAUSADA, "Pausado"); }
@@ -103,7 +109,7 @@ public class SimuladorCooperativaService {
                     Socio s = generador.generarSocio(tiempoMotor);
                     salaEspera.agregarSocio(s);
                     estadisticas.setTotalGenerados(generador.getTotalGenerados());
-                    publicar(TipoEvento.SOCIO_GENERADO, s.getFicha() + " llegó – " + s.getDescripcionServicios());
+                    publicar(TipoEvento.SOCIO_GENERADO, s.getFicha() + " llego - " + s.getDescripcionServicios());
                 }
 
                 procesarAsignaciones();
@@ -136,13 +142,13 @@ public class SimuladorCooperativaService {
 
             if (salaVacia && cajasLibres) {
                 corriendo = false;
-                publicar(TipoEvento.SIMULACION_FINALIZADA, "✅ Día " + diaActual + " completo | Total atendidos: " + estadisticas.getTotalAtendidos() + " | Monto: Bs " + String.format("%.2f", estadisticas.getMontoTotal()));
+                publicar(TipoEvento.SIMULACION_FINALIZADA, "âœ… Dia " + diaActual + " completo | Total atendidos: " + estadisticas.getTotalAtendidos() + " | Monto: Bs " + String.format("%.2f", estadisticas.getMontoTotal()));
                 break;
             }
             extraSeguridad++;
             if (extraSeguridad > maxSociosDia * 60) {
                 corriendo = false;
-                publicar(TipoEvento.SIMULACION_FINALIZADA, "⚠ Día " + diaActual + " – tiempo de drenaje agotado | Atendidos: " + estadisticas.getTotalAtendidos());
+                publicar(TipoEvento.SIMULACION_FINALIZADA, "âš ï¸ Dia " + diaActual + " - tiempo de drenaje agotado | Atendidos: " + estadisticas.getTotalAtendidos());
                 break;
             }
             sleep();
@@ -158,7 +164,7 @@ public class SimuladorCooperativaService {
             Socio s = salaEspera.siguienteSocio();
             Caja  c = opt.get();
             asignador.confirmarAsignacion(s, c, tiempoMotor);
-            publicar(TipoEvento.SOCIO_ASIGNADO, s.getFicha() + " → " + c.getId() + (s.isMultiServicio() ? " [x"+s.getTotalServicios()+"]" : ""));
+            publicar(TipoEvento.SOCIO_ASIGNADO, s.getFicha() + " -> " + c.getId() + (s.isMultiServicio() ? " [x"+s.getTotalServicios()+"]" : ""));
         }
     }
 
@@ -174,17 +180,21 @@ public class SimuladorCooperativaService {
                 estadisticas.registrarAtencion(s, caja);
                 caja.finalizarAtencion(tiempoMotor);
                 long espera = s.getTiempoInicioAtencion() - s.getTiempoLlegada();
-                publicar(TipoEvento.SOCIO_ATENDIDO, s.getFicha() + " ✓ " + caja.getId() + " | Espera: " + Math.max(0,espera) + " min | Aten: " + s.getDuracionEstimada() + " min | Bs " + String.format("%.0f", s.getMonto()));
+                publicar(TipoEvento.SOCIO_ATENDIDO, s.getFicha() + " âœ“ " + caja.getId() + " | Espera: " + Math.max(0,espera) + " min | Aten: " + s.getDuracionEstimada() + " min | Bs " + String.format("%.0f", s.getMonto()));
             }
         }
     }
 
     private void sleep() { try { Thread.sleep(msPorMinuto); } catch (InterruptedException e) { Thread.currentThread().interrupt(); } }
 
-    public String horaSimulada() { int m = (int)(tiempoReloj % (24*60)); return String.format("Día %d – %02d:%02d", diaActual, m/60, m%60); }
+    public String horaSimulada() {
+        int m = (int)(tiempoReloj % (24*60));
+        return String.format("D\u00eda %d \u2013 %02d:%02d", diaSimulado, m/60, m%60);
+    }
 
     public ResumenDiario construirResumenDia() {
         ResumenDiario r = new ResumenDiario(diaActual, true);
+        r.setNumeroDia(diaSimulado);
         r.setGenerados(generador.getTotalGenerados());
         r.setAtendidosPrincipal(estadisticas.getPrincipal().getTotalAtendidos());
         r.setAtendidosRezagados(estadisticas.getRezagados().getTotalAtendidos());

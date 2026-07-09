@@ -1,7 +1,7 @@
 package com.supermercado.presentation.cooperativa.panel;
 
 import com.supermercado.domain.cooperativa.model.Caja;
-import com.supermercado.domain.cooperativa.model.EstadoCaja;
+// EstadoCaja import removed (unused)
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;

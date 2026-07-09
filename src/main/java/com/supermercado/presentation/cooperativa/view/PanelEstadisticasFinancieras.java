@@ -55,7 +55,8 @@ public class PanelEstadisticasFinancieras extends JPanel {
 
     private final JTextArea areaResumen;
     private final JScrollPane scResumen;
-    private final NumberFormat nf = NumberFormat.getNumberInstance(new Locale("es","BO"));
+    // Use forLanguageTag to avoid deprecated Locale(String, String) constructor
+    private final NumberFormat nf = NumberFormat.getNumberInstance(Locale.forLanguageTag("es-BO"));
 
     public PanelEstadisticasFinancieras() {
         setLayout(new BorderLayout(4, 4));

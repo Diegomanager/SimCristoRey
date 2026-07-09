@@ -40,7 +40,7 @@ public class JornadaLaboral {
     public String getNombreCompleto() {
         if (fechaReal != null) {
             String nombreDia = fechaReal.getDayOfWeek()
-                    .getDisplayName(TextStyle.FULL, new Locale("es", "BO"));
+                    .getDisplayName(TextStyle.FULL, Locale.forLanguageTag("es-BO"));
             nombreDia = Character.toUpperCase(nombreDia.charAt(0)) + nombreDia.substring(1);
             return "Día " + dia + " (" + nombreDia + ", " + fechaReal + ")";
         }

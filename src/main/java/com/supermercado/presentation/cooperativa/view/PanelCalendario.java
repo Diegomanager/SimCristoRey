@@ -3,7 +3,7 @@ package com.supermercado.presentation.cooperativa.view;
 import com.supermercado.domain.cooperativa.model.JornadaLaboral;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+// Removed unused import: javax.swing.border.EmptyBorder
 import java.awt.*;
 import java.time.*;
 import java.time.format.TextStyle;
@@ -168,7 +168,7 @@ public class PanelCalendario extends JPanel {
             btn.setFocusPainted(false);
             btn.setMargin(new Insets(3, 3, 3, 3));
 
-            String nombreDia = dow.getDisplayName(TextStyle.FULL, new Locale("es"));
+            String nombreDia = dow.getDisplayName(TextStyle.FULL, Locale.forLanguageTag("es"));
             btn.setToolTipText(nombreDia + " " + d + " – "
                     + (laborable ? "Laborable" : "No laborable") + " (clic para cambiar)");
 

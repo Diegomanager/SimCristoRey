@@ -19,6 +19,8 @@ public class EstadisticasFinancierasService {
     private int    acumAtendPpal   = 0;
     private int    acumAtendRez    = 0;
     private double acumMonto       = 0.0;
+    private double acumMontoPpal   = 0.0;   // NUEVO
+    private double acumMontoRez    = 0.0;   // NUEVO
     private double acumSumaEspera  = 0.0;
     private double acumSumaAtencion= 0.0;
     private int    diasAcumulados  = 0;
@@ -38,6 +40,8 @@ public class EstadisticasFinancierasService {
         acumAtendPpal  += r.getAtendidosPrincipal();
         acumAtendRez   += r.getAtendidosRezagados();
         acumMonto      += r.getMontoTotal();
+        acumMontoPpal  += principal.getMontoTotal();
+        acumMontoRez   += rezagados.getMontoTotal();
         int atend = r.getTotalAtendidos();
         if (atend > 0) {
             acumSumaEspera   += r.getPromedioEspera()   * atend;
@@ -57,7 +61,8 @@ public class EstadisticasFinancierasService {
         reiniciar();
         resumenesDiarios.clear();
         acumGenerados=0; acumAtendPpal=0; acumAtendRez=0;
-        acumMonto=0.0; acumSumaEspera=0.0; acumSumaAtencion=0.0; diasAcumulados=0;
+        acumMonto=0.0; acumMontoPpal=0.0; acumMontoRez=0.0;
+        acumSumaEspera=0.0; acumSumaAtencion=0.0; diasAcumulados=0;
     }
 
     public EstadisticasFase getPrincipal()   { return principal; }
@@ -90,6 +95,8 @@ public class EstadisticasFinancierasService {
     public int    getAcumTotalAtendidos()    { return acumAtendPpal + acumAtendRez; }
     public int    getAcumNoAtendidos()       { return Math.max(0, acumGenerados - getAcumTotalAtendidos()); }
     public double getAcumMonto()             { return acumMonto; }
+    public double getAcumMontoPpal()         { return acumMontoPpal; }
+    public double getAcumMontoRez()          { return acumMontoRez; }
     public int    getDiasAcumulados()        { return diasAcumulados; }
     public double getAcumPromedioEspera()    { int t = getAcumTotalAtendidos(); return t==0?0:acumSumaEspera/t; }
     public double getAcumPromedioAtencion()  { int t = getAcumTotalAtendidos(); return t==0?0:acumSumaAtencion/t; }

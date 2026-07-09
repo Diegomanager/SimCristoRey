@@ -16,7 +16,7 @@ public class PanelEvolucionDiaria extends JPanel {
     private static final String[] COLS = {
         "Dia", "Laborable", "Generados", "P.Principal", "Rezagados",
         "Total", "No Atend.", "Monto (Bs)", "Espera(min)",
-        "Aten.(min)", "Cajero", "Efic."
+        "Aten.(min)", "Cajero"
     };
 
     private final DefaultTableModel modelo;
@@ -34,7 +34,7 @@ public class PanelEvolucionDiaria extends JPanel {
             @Override public Class<?> getColumnClass(int c) {
                 return switch(c) {
                     case 0,2,3,4,5,6 -> Integer.class;
-                    case 7,8,9,11    -> Double.class;
+                    case 7,8,9       -> Double.class;
                     default          -> String.class;
                 };
             }
@@ -47,7 +47,7 @@ public class PanelEvolucionDiaria extends JPanel {
         tabla.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         tabla.setFillsViewportHeight(true);
 
-        int[] anchos = {40, 70, 72, 85, 75, 65, 72, 105, 85, 80, 80, 65};
+        int[] anchos = {40, 70, 72, 85, 75, 65, 72, 105, 85, 80, 90};
         for (int i = 0; i < anchos.length; i++)
             tabla.getColumnModel().getColumn(i).setPreferredWidth(anchos[i]);
 
@@ -56,13 +56,13 @@ public class PanelEvolucionDiaria extends JPanel {
                     JTable t, Object v, boolean sel, boolean foc, int row, int col) {
                 super.getTableCellRendererComponent(t, v, sel, foc, row, col);
                 Object lab = modelo.getValueAt(row, 1);
-                if ("TOTAL".equals(lab)) {
+                if ("No".equals(lab)) {
+                    setBackground(new Color(240, 240, 240));
+                    setForeground(Color.GRAY);
+                } else if ("TOTAL".equals(lab)) {
                     setBackground(new Color(200, 230, 255));
                     setForeground(new Color(0, 60, 120));
                     setFont(getFont().deriveFont(Font.BOLD));
-                } else if ("No".equals(lab)) {
-                    setBackground(new Color(240, 240, 240));
-                    setForeground(Color.GRAY);
                 } else if (sel) {
                     setBackground(new Color(173, 216, 230));
                     setForeground(Color.BLACK);
@@ -112,8 +112,7 @@ public class PanelEvolucionDiaria extends JPanel {
             round2(r.getMontoTotal()),
             round1(r.getPromedioEspera()),
             round1(r.getPromedioAtencion()),
-            r.getCajeroEstrella() != null ? r.getCajeroEstrella() : "-",
-            round3(r.getEficienciaGlobal())
+            r.getCajeroEstrella() != null ? r.getCajeroEstrella() : "-"
         });
     }
 
@@ -138,14 +137,11 @@ public class PanelEvolucionDiaria extends JPanel {
             }
             if (cont > 0) {
                 modelo.addRow(new Object[]{
-                    0,          // FIX: usar 0 en lugar de "-" para la columna Dia (Integer)
-                    "TOTAL",
-                    gen, ppal, rez, tot, no,
+                    "-", "TOTAL", gen, ppal, rez, tot, no,
                     round2(monto),
                     round1(esp / cont),
                     round1(aten / cont),
-                    "-",
-                    round3(0.0)
+                    "-"
                 });
             }
             repintarTodo();
@@ -172,8 +168,8 @@ public class PanelEvolucionDiaria extends JPanel {
                 }
                 if (cont > 0) {
                     modelo.addRow(new Object[]{
-                        0, "TOTAL", gen, ppal, rez, tot, no,
-                        round2(monto), round1(esp/cont), round1(aten/cont), "-", round3(0.0)
+                        "-","TOTAL",gen,ppal,rez,tot,no,
+                        round2(monto),round1(esp/cont),round1(aten/cont),"-"
                     });
                 }
             }
@@ -188,10 +184,12 @@ public class PanelEvolucionDiaria extends JPanel {
             tabla.repaint();
             scroll.revalidate();
             scroll.repaint();
+
             if (isShowing()) {
                 tabla.paintImmediately(tabla.getBounds());
                 scroll.paintImmediately(scroll.getBounds());
             }
+
             tabla.updateUI();
             scroll.updateUI();
             revalidate();
@@ -218,5 +216,4 @@ public class PanelEvolucionDiaria extends JPanel {
 
     private static double round1(double v) { return Math.round(v * 10.0) / 10.0; }
     private static double round2(double v) { return Math.round(v * 100.0) / 100.0; }
-    private static double round3(double v) { return Math.round(v * 1000.0) / 1000.0; }
 }

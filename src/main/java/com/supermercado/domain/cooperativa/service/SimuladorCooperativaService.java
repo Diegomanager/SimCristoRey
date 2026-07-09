@@ -65,8 +65,8 @@ public class SimuladorCooperativaService {
         if (corriendo) return;
         this.jornadaActual = jornada;
         this.diaActual     = dia;
-        // diaSimulado ya debe estar establecido por MensualService antes de llamar a iniciar()\n        // NO resetear a 0 aquí
-        // pero por si acaso, si es 0, lo dejamos como estÃ¡.
+        // diaSimulado ya debe estar establecido por MensualService antes de llamar a iniciar()\n        // NO resetear a 0 aquÃ­
+        // pero por si acaso, si es 0, lo dejamos como estÃƒÂ¡.
         corriendo = true; pausado = false;
         faseRezagados = false; fasePrincipalFinalizada = false;
         tiempoReloj = jornada != null ? jornada.getMinutoInicio() : 510;
@@ -142,13 +142,13 @@ public class SimuladorCooperativaService {
 
             if (salaVacia && cajasLibres) {
                 corriendo = false;
-                publicar(TipoEvento.SIMULACION_FINALIZADA, "âœ… Dia " + diaActual + " completo | Total atendidos: " + estadisticas.getTotalAtendidos() + " | Monto: Bs " + String.format("%.2f", estadisticas.getMontoTotal()));
+                publicar(TipoEvento.SIMULACION_FINALIZADA, "Ã¢Å“â€¦ Dia " + diaActual + " completo | Total atendidos: " + estadisticas.getTotalAtendidos() + " | Monto: Bs " + String.format("%.2f", estadisticas.getMontoTotal()));
                 break;
             }
             extraSeguridad++;
             if (extraSeguridad > maxSociosDia * 60) {
                 corriendo = false;
-                publicar(TipoEvento.SIMULACION_FINALIZADA, "âš ï¸ Dia " + diaActual + " - tiempo de drenaje agotado | Atendidos: " + estadisticas.getTotalAtendidos());
+                publicar(TipoEvento.SIMULACION_FINALIZADA, "Ã¢Å¡Â Ã¯Â¸Â Dia " + diaActual + " - tiempo de drenaje agotado | Atendidos: " + estadisticas.getTotalAtendidos());
                 break;
             }
             sleep();
@@ -180,7 +180,7 @@ public class SimuladorCooperativaService {
                 estadisticas.registrarAtencion(s, caja);
                 caja.finalizarAtencion(tiempoMotor);
                 long espera = s.getTiempoInicioAtencion() - s.getTiempoLlegada();
-                publicar(TipoEvento.SOCIO_ATENDIDO, s.getFicha() + " âœ“ " + caja.getId() + " | Espera: " + Math.max(0,espera) + " min | Aten: " + s.getDuracionEstimada() + " min | Bs " + String.format("%.0f", s.getMonto()));
+                publicar(TipoEvento.SOCIO_ATENDIDO, s.getFicha() + " Ã¢Å“â€œ " + caja.getId() + " | Espera: " + Math.max(0,espera) + " min | Aten: " + s.getDuracionEstimada() + " min | Bs " + String.format("%.0f", s.getMonto()));
             }
         }
     }

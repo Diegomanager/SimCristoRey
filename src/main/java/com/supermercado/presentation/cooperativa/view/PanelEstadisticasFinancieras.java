@@ -11,43 +11,30 @@ import java.awt.*;
 import java.text.NumberFormat;
 import java.util.*;
 
-/**
- * Panel de estadisticas con 3 secciones compactas y proporcionales.
- * Fila superior: Dia actual (izq) | Acumulado global (der)
- * Dentro de cada columna: Principal | Rezagados | Total
- * Fila inferior (ocultable): resumen final de texto
- */
 public class PanelEstadisticasFinancieras extends JPanel {
 
-    // Fuentes compactas
     private static final Font F_LBL = new Font("SansSerif", Font.PLAIN, 10);
     private static final Font F_VAL = new Font("SansSerif", Font.BOLD,  10);
     private static final Font F_HDR = new Font("SansSerif", Font.BOLD,  11);
     private static final Color C_VAL = new Color(0, 70, 150);
 
-    // ── DIA ACTUAL ────────────────────────────────────────────────────────────
-    // Principal dia
+    // Dia Actual
     private final JLabel dP_atend = v(); private final JLabel dP_monto = v();
     private final JLabel dP_esp   = v(); private final JLabel dP_aten  = v();
     private final JLabel dP_cajero= v();
-    // Rezagados dia
     private final JLabel dR_atend = v(); private final JLabel dR_monto = v();
     private final JLabel dR_esp   = v(); private final JLabel dR_aten  = v();
     private final JLabel dR_cajero= v();
-    // Total dia
     private final JLabel dT_gen   = v(); private final JLabel dT_atend = v();
     private final JLabel dT_noat  = v(); private final JLabel dT_monto = v();
     private final JLabel dT_esp   = v(); private final JLabel dT_aten  = v();
 
-    // ── ACUMULADO GLOBAL ──────────────────────────────────────────────────────
-    // Principal acum
+    // Acumulado
     private final JLabel aP_atend = v(); private final JLabel aP_monto = v();
     private final JLabel aP_esp   = v(); private final JLabel aP_aten  = v();
     private final JLabel aP_cajero= v();
-    // Rezagados acum
     private final JLabel aR_atend = v(); private final JLabel aR_monto = v();
     private final JLabel aR_esp   = v(); private final JLabel aR_aten  = v();
-    // Total acum
     private final JLabel aT_dias  = v(); private final JLabel aT_gen   = v();
     private final JLabel aT_atend = v(); private final JLabel aT_noat  = v();
     private final JLabel aT_monto = v(); private final JLabel aT_esp   = v();
@@ -55,8 +42,7 @@ public class PanelEstadisticasFinancieras extends JPanel {
 
     private final JTextArea areaResumen;
     private final JScrollPane scResumen;
-    // Use forLanguageTag to avoid deprecated Locale(String, String) constructor
-    private final NumberFormat nf = NumberFormat.getNumberInstance(Locale.forLanguageTag("es-BO"));
+    private final NumberFormat nf = NumberFormat.getNumberInstance(new Locale("es","BO"));
 
     public PanelEstadisticasFinancieras() {
         setLayout(new BorderLayout(4, 4));
@@ -65,7 +51,6 @@ public class PanelEstadisticasFinancieras extends JPanel {
                 TitledBorder.LEFT, TitledBorder.TOP, F_HDR));
         nf.setMaximumFractionDigits(2); nf.setMinimumFractionDigits(2);
 
-        // Panel central: dia | acumulado
         JPanel centro = new JPanel(new GridLayout(1, 2, 6, 0));
         centro.add(columna("Dia Actual",       bloquesPpal(dP_atend,dP_monto,dP_esp,dP_aten,dP_cajero),
                                                 bloquesRez(dR_atend,dR_monto,dR_esp,dR_aten,dR_cajero),
@@ -74,7 +59,6 @@ public class PanelEstadisticasFinancieras extends JPanel {
                                                 bloquesRez(aR_atend,aR_monto,aR_esp,aR_aten,null),
                                                 bloquesTotalAcum()));
 
-        // Resumen final (texto, oculto hasta el final)
         areaResumen = new JTextArea();
         areaResumen.setEditable(false);
         areaResumen.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 10));
@@ -91,10 +75,7 @@ public class PanelEstadisticasFinancieras extends JPanel {
         add(split, BorderLayout.CENTER);
     }
 
-    // ── Constructores de bloques ──────────────────────────────────────────────
-
-    private JPanel bloquesPpal(JLabel atend, JLabel monto, JLabel esp,
-                                JLabel aten, JLabel cajero) {
+    private JPanel bloquesPpal(JLabel atend, JLabel monto, JLabel esp, JLabel aten, JLabel cajero) {
         JPanel p = seccion("Principal");
         fila(p, "Atendidos:", atend);
         fila(p, "Monto (Bs):", monto);
@@ -104,8 +85,7 @@ public class PanelEstadisticasFinancieras extends JPanel {
         return p;
     }
 
-    private JPanel bloquesRez(JLabel atend, JLabel monto, JLabel esp,
-                               JLabel aten, JLabel cajero) {
+    private JPanel bloquesRez(JLabel atend, JLabel monto, JLabel esp, JLabel aten, JLabel cajero) {
         JPanel p = seccion("Rezagados");
         fila(p, "Atendidos:", atend);
         fila(p, "Monto (Bs):", monto);
@@ -139,11 +119,6 @@ public class PanelEstadisticasFinancieras extends JPanel {
         return p;
     }
 
-    /**
-     * Columna con 3 secciones apiladas verticalmente:
-     * Principal (arriba) | Rezagados (medio) | Total (abajo).
-     * Todas tienen la misma altura relativa.
-     */
     private JPanel columna(String titulo, JPanel ppal, JPanel rez, JPanel tot) {
         JPanel col = new JPanel(new GridLayout(3, 1, 0, 4));
         col.setBorder(BorderFactory.createTitledBorder(
@@ -173,28 +148,24 @@ public class PanelEstadisticasFinancieras extends JPanel {
         JLabel l = new JLabel("0"); l.setFont(F_VAL); l.setForeground(C_VAL); return l;
     }
 
-    // ── Actualizar en tiempo real ─────────────────────────────────────────────
     public void actualizar(EstadisticasFinancierasService est, int totalGen) {
         if (est == null) return;
         SwingUtilities.invokeLater(() -> {
             EstadisticasFase p = est.getPrincipal();
             EstadisticasFase r = est.getRezagados();
 
-            // Dia principal
             dP_atend.setText(p.getTotalAtendidos()+"");
             dP_monto.setText(nf.format(p.getMontoTotal()));
             dP_esp.setText(fmt1(p.getPromedioEspera()));
             dP_aten.setText(fmt1(p.getPromedioAtencion()));
             dP_cajero.setText(p.getCajeroEstrella());
 
-            // Dia rezagados
             dR_atend.setText(r.getTotalAtendidos()+"");
             dR_monto.setText(nf.format(r.getMontoTotal()));
             dR_esp.setText(fmt1(r.getPromedioEspera()));
             dR_aten.setText(fmt1(r.getPromedioAtencion()));
             dR_cajero.setText(r.getCajeroEstrella());
 
-            // Dia total
             int tot = est.getTotalAtendidos();
             dT_gen.setText(totalGen+"");
             dT_atend.setText(tot+"");
@@ -203,32 +174,33 @@ public class PanelEstadisticasFinancieras extends JPanel {
             dT_esp.setText(fmt1(est.getPromedioEspera()));
             dT_aten.setText(fmt1(est.getPromedioAtencion()));
 
-            // Acumulado principal
-            aP_atend.setText(est.getAcumAtendPpal()+"");
-            aP_monto.setText(nf.format(est.getAcumMonto()));
-            aP_esp.setText(fmt1(est.getAcumPromedioEspera()));
-            aP_aten.setText(fmt1(est.getAcumPromedioAtencion()));
-            aP_cajero.setText(est.getCajeroEstrellaGlobal());
-
-            // Acumulado rezagados
-            aR_atend.setText(est.getAcumAtendRez()+"");
-            aR_monto.setText(nf.format(est.getAcumMonto()));
-            aR_esp.setText(fmt1(est.getAcumPromedioEspera()));
-            aR_aten.setText(fmt1(est.getAcumPromedioAtencion()));
-
-            // Acumulado total
-            aT_dias.setText(est.getDiasAcumulados()+"");
-            aT_gen.setText(est.getAcumGenerados()+"");
-            aT_atend.setText(est.getAcumTotalAtendidos()+"");
-            aT_noat.setText(est.getAcumNoAtendidos()+"");
-            aT_monto.setText(nf.format(est.getAcumMonto()));
-            aT_esp.setText(fmt1(est.getAcumPromedioEspera()));
-            aT_aten.setText(fmt1(est.getAcumPromedioAtencion()));
-            aT_cajero.setText(est.getCajeroEstrellaGlobal());
+            actualizarAcumulado(est);
         });
     }
 
-    public void acumularDia(ResumenDiario r) { /* gestionado por EstadisticasFinancierasService */ }
+    private void actualizarAcumulado(EstadisticasFinancierasService est) {
+        aP_atend.setText(est.getAcumAtendPpal()+"");
+        aP_monto.setText(nf.format(est.getAcumMontoPpal()));
+        aP_esp.setText(fmt1(est.getAcumPromedioEspera()));
+        aP_aten.setText(fmt1(est.getAcumPromedioAtencion()));
+        aP_cajero.setText(est.getCajeroEstrellaGlobal());
+
+        aR_atend.setText(est.getAcumAtendRez()+"");
+        aR_monto.setText(nf.format(est.getAcumMontoRez()));
+        aR_esp.setText(fmt1(est.getAcumPromedioEspera()));
+        aR_aten.setText(fmt1(est.getAcumPromedioAtencion()));
+
+        aT_dias.setText(est.getDiasAcumulados()+"");
+        aT_gen.setText(est.getAcumGenerados()+"");
+        aT_atend.setText(est.getAcumTotalAtendidos()+"");
+        aT_noat.setText(est.getAcumNoAtendidos()+"");
+        aT_monto.setText(nf.format(est.getAcumMonto()));
+        aT_esp.setText(fmt1(est.getAcumPromedioEspera()));
+        aT_aten.setText(fmt1(est.getAcumPromedioAtencion()));
+        aT_cajero.setText(est.getCajeroEstrellaGlobal());
+    }
+
+    public void acumularDia(ResumenDiario r) {}
 
     public void mostrarResumenFinal(SimuladorCooperativaService sim, long minSim) {
         SwingUtilities.invokeLater(() -> {
@@ -244,24 +216,24 @@ public class PanelEstadisticasFinancieras extends JPanel {
 
             StringBuilder sb = new StringBuilder();
             sb.append("===== RESUMEN FINAL =====\n\n");
-            sb.append("FASE PRINCIPAL\n");
-            sb.append("  Atendidos : ").append(p.getTotalAtendidos()).append("\n");
-            sb.append("  Monto     : Bs ").append(nf.format(p.getMontoTotal())).append("\n");
-            sb.append("  Espera    : ").append(fmt1(p.getPromedioEspera())).append(" min\n");
-            sb.append("  Atencion  : ").append(fmt1(p.getPromedioAtencion())).append(" min\n");
+            sb.append("FASE PRINCIPAL (acumulado)\n");
+            sb.append("  Atendidos : ").append(est.getAcumAtendPpal()).append("\n");
+            sb.append("  Monto     : Bs ").append(nf.format(est.getAcumMontoPpal())).append("\n");
+            sb.append("  Espera    : ").append(fmt1(est.getAcumPromedioEspera())).append(" min\n");
+            sb.append("  Atencion  : ").append(fmt1(est.getAcumPromedioAtencion())).append(" min\n");
             sb.append("  Cajero    : ").append(p.getCajeroEstrella()).append("\n");
             if (minSim > 0)
-                sb.append("  Eficiencia: ").append(String.format("%.3f", (double)p.getTotalAtendidos()/minSim)).append(" s/min\n");
+                sb.append("  Eficiencia: ").append(String.format("%.3f", (double)est.getAcumAtendPpal()/minSim)).append(" s/min\n");
             sb.append("\n");
 
-            sb.append("FASE REZAGADOS\n");
-            if (r.getTotalAtendidos() == 0) {
+            sb.append("FASE REZAGADOS (acumulado)\n");
+            if (est.getAcumAtendRez() == 0) {
                 sb.append("  Sin rezagados\n");
             } else {
-                sb.append("  Atendidos : ").append(r.getTotalAtendidos()).append("\n");
-                sb.append("  Monto     : Bs ").append(nf.format(r.getMontoTotal())).append("\n");
-                sb.append("  Espera    : ").append(fmt1(r.getPromedioEspera())).append(" min\n");
-                sb.append("  Atencion  : ").append(fmt1(r.getPromedioAtencion())).append(" min\n");
+                sb.append("  Atendidos : ").append(est.getAcumAtendRez()).append("\n");
+                sb.append("  Monto     : Bs ").append(nf.format(est.getAcumMontoRez())).append("\n");
+                sb.append("  Espera    : ").append(fmt1(est.getAcumPromedioEspera())).append(" min\n");
+                sb.append("  Atencion  : ").append(fmt1(est.getAcumPromedioAtencion())).append(" min\n");
             }
             sb.append("\n");
 

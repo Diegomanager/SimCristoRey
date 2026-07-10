@@ -72,17 +72,17 @@ public class SimuladorMensualService {
             }
 
             contadorLaborable++;
-            motor.setDiaSimulado(contadorLaborable);  // <-- INYECTAR
+            motor.setDiaSimulado(contadorLaborable);
 
             // Reiniciar cajas y configurar motor para este día
             cajas.forEach(Caja::reiniciar);
             motor.configurar(config.getMsPorMinuto(), config.getMaxSociosDia(),
                     config.getIntervaloMinutos(), servicios, cajas, configMulti, config);
 
-            // FIX: usar getNombreCompleto() en el log
+            // FIX: el bracket (detalle) usa el día SIMULADO, no el nombre del calendario
             propagar(new EventoSimulacion(TipoEvento.DIA_INICIADO,
                     "=== " + jornada.getNombreCompleto() + " ===",
-                    jornada.getNombreCompleto()));
+                    "Dia " + contadorLaborable));
 
             // Fase principal
             motor.iniciar(jornada, diaEnCurso);
@@ -117,12 +117,13 @@ public class SimuladorMensualService {
             resumenes.add(resumen);
             motor.getEstadisticas().registrarResumenDiario(resumen);
 
+            // FIX: el bracket (detalle) usa el día SIMULADO, no el nombre del calendario
             propagar(new EventoSimulacion(TipoEvento.DIA_FINALIZADO,
                     jornada.getNombreCompleto()
                     +" | Gen:"+resumen.getGenerados()
                     +" | Atend:"+resumen.getTotalAtendidos()
                     +" | Bs "+String.format("%.0f",resumen.getMontoTotal()),
-                    jornada.getNombreCompleto()));
+                    "Dia " + contadorLaborable));
 
             try { Thread.sleep(500); } catch (InterruptedException e) { break; }
         }

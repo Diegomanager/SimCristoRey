@@ -34,7 +34,7 @@ public class DialogoConfiguracionCooperativa extends JDialog {
     private final JSpinner  spnHFin    = spnMin(990);
     private final JLabel    lblHorario = new JLabel();
 
-    // Tab 3: Probabilidades dinÃ¡micas
+    // Tab 3: Probabilidades dinÃƒÆ’Ã‚Â¡micas
     private final Map<String, Object[]> slidersPorCodigo = new LinkedHashMap<>();
     private final JPanel panelProb = new JPanel(new GridBagLayout());
     private final JLabel lblSumaProb = new JLabel("Suma: 0%");

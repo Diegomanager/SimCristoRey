@@ -226,19 +226,21 @@ public class PanelCalendario extends JPanel {
         return Collections.unmodifiableMap(estadoDias);
     }
 
-    /** Restaura el estado desde persistencia. */
+    /**
+     * Restaura los ESTADOS de dias desde persistencia (laborable/no laborable),
+     * pero NO mueve la vista del calendario. La vista siempre se queda en el
+     * mes/anio actual (LocalDate.now()), inicializado en el constructor.
+     *
+     * FIX: antes, este metodo navegaba al mes del dia mas antiguo guardado en
+     * el .properties (ej. abril 2026, la primera vez que se configuro algo),
+     * por eso el calendario "siempre mostraba abril" al volver a abrir
+     * Configuracion. Ahora solo se restauran los colores/estados; si el
+     * usuario quiere ver esos meses guardados, navega manualmente con
+     * las flechas o el combo de mes/anio.
+     */
     public void setEstadoDias(Map<LocalDate, Boolean> dias) {
         if (dias != null && !dias.isEmpty()) {
             estadoDias.putAll(dias);
-            // Navegar al mes del primer día guardado
-            LocalDate primero = dias.keySet().stream()
-                    .min(LocalDate::compareTo).orElse(null);
-            if (primero != null) {
-                anioActual = primero.getYear();
-                mesActual  = primero.getMonthValue();
-                spnAnio.setValue(anioActual);
-                cmbMes.setSelectedIndex(mesActual - 1);
-            }
         }
         refrescarCalendario();
     }

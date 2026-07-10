@@ -66,7 +66,6 @@ public class SimuladorMensualService {
             diaEnCurso = jornada.getDia();
 
             if (!jornada.isLaborable()) {
-                // No publicar evento, solo agregar resumen
                 resumenes.add(new ResumenDiario(diaEnCurso, false));
                 continue;
             }
@@ -74,22 +73,19 @@ public class SimuladorMensualService {
             contadorLaborable++;
             motor.setDiaSimulado(contadorLaborable);
 
-            // Reiniciar cajas y configurar motor para este día
             cajas.forEach(Caja::reiniciar);
             motor.configurar(config.getMsPorMinuto(), config.getMaxSociosDia(),
                     config.getIntervaloMinutos(), servicios, cajas, configMulti, config);
 
-            // FIX: el bracket (detalle) usa el día SIMULADO, no el nombre del calendario
+            // Mensaje de inicio: solo "=== Dia X iniciado ==="
             propagar(new EventoSimulacion(TipoEvento.DIA_INICIADO,
-                    "=== " + jornada.getNombreCompleto() + " ===",
+                    "=== Dia " + contadorLaborable + " iniciado ===",
                     "Dia " + contadorLaborable));
 
-            // Fase principal
             motor.iniciar(jornada, diaEnCurso);
             esperarCondicion(() -> motor.isFasePrincipalFinalizada());
             if (!corriendo) break;
 
-            // Rezagados
             int enSala = motor.getSalaEspera()!=null ? motor.getSalaEspera().getTotalEsperando():0;
             int cajasOc= motor.getCajas()!=null
                     ? (int)motor.getCajas().stream().filter(c->c.getEstado()==EstadoCaja.OCUPADA).count():0;
@@ -103,26 +99,25 @@ public class SimuladorMensualService {
                     esperarCondicion(() -> !motor.isCorriendo());
                 } else {
                     propagar(new EventoSimulacion(TipoEvento.SIMULACION_FINALIZADA,
-                            "Rezagados omitidos: "+enSala+" socios",motor.horaSimulada()));
+                            "Rezagados omitidos: " + enSala + " socios",
+                            motor.horaSimulada()));
                 }
             } else {
                 propagar(new EventoSimulacion(TipoEvento.SIMULACION_FINALIZADA,
-                        "✅ " + jornada.getNombreCompleto() + " finalizado (sin rezagados)",
+                        "Dia " + contadorLaborable + " finalizado (sin rezagados)",
                         motor.horaSimulada()));
             }
             if (!corriendo) break;
 
-            // FIX: construir resumen y ACUMULAR estadísticas
             ResumenDiario resumen = motor.construirResumenDia();
             resumenes.add(resumen);
             motor.getEstadisticas().registrarResumenDiario(resumen);
 
-            // FIX: el bracket (detalle) usa el día SIMULADO, no el nombre del calendario
+            // Mensaje de finalización de día: sin emojis y sin duplicar la hora
             propagar(new EventoSimulacion(TipoEvento.DIA_FINALIZADO,
-                    jornada.getNombreCompleto()
-                    +" | Gen:"+resumen.getGenerados()
-                    +" | Atend:"+resumen.getTotalAtendidos()
-                    +" | Bs "+String.format("%.0f",resumen.getMontoTotal()),
+                    "Dia " + contadorLaborable + " completo | Gen:" + resumen.getGenerados()
+                    + " | Atend:" + resumen.getTotalAtendidos()
+                    + " | Bs " + String.format("%.0f",resumen.getMontoTotal()),
                     "Dia " + contadorLaborable));
 
             try { Thread.sleep(500); } catch (InterruptedException e) { break; }
@@ -133,7 +128,8 @@ public class SimuladorMensualService {
             long labs  = resumenes.stream().filter(ResumenDiario::isLaborable).count();
             int  atend = resumenes.stream().mapToInt(ResumenDiario::getTotalAtendidos).sum();
             propagar(new EventoSimulacion(TipoEvento.SIMULACION_MENSUAL_FINALIZADA,
-                    "✅ Finalizado | "+labs+" días laborables | Total: "+atend+" atendidos",""));
+                    "Finalizado | " + labs + " días laborables | Total: " + atend + " atendidos",
+                    ""));
         }
     }
 

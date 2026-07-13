@@ -27,6 +27,7 @@ com\supermercado\domain\cooperativa\service\SimuladorCooperativaService.class
 com\supermercado\application\supermercado\usecase\ExportarReporteUseCase.class
 com\supermercado\presentation\supermercado\view\PanelCajas.class
 com\supermercado\Main.class
+com\supermercado\application\cooperativa\usecase\ExportarReporteUseCase.class
 com\supermercado\presentation\supermercado\view\PanelRecomendaciones.class
 com\supermercado\presentation\cooperativa\view\PanelEvolucionDiaria$3.class
 com\supermercado\domain\supermercado\event\SimulacionIniciadaEvent.class
@@ -50,6 +51,7 @@ com\supermercado\application\supermercado\usecase\CompararConfiguracionesUseCase
 com\supermercado\domain\supermercado\event\SimulacionPausadaEvent.class
 com\supermercado\domain\supermercado\service\RelojSimulacionService.class
 com\supermercado\presentation\supermercado\view\PanelCajas$WrapLayout.class
+com\supermercado\application\cooperativa\port\IReporteExportador.class
 com\supermercado\application\supermercado\dto\EstadisticasDTO$Builder.class
 com\supermercado\application\supermercado\dto\ConfiguracionDTO$Builder.class
 com\supermercado\presentation\cooperativa\view\DialogoConfiguracionCooperativa$1.class
@@ -97,6 +99,7 @@ com\supermercado\domain\supermercado\model\EstadoCaja.class
 com\supermercado\presentation\supermercado\view\PanelDiagnostico$1.class
 com\supermercado\infrastructure\repository\ConfiguracionRepositorioImpl.class
 com\supermercado\domain\cooperativa\model\ServicioFinanciero.class
+com\supermercado\infrastructure\adapter\export\ExcelExportadorAdapter.class
 com\supermercado\application\supermercado\port\ILogService.class
 com\supermercado\domain\cooperativa\model\Socio.class
 com\supermercado\domain\cooperativa\service\EstadisticasFase.class
@@ -108,6 +111,7 @@ com\supermercado\application\supermercado\dto\DiagnosticoDTO$DiagnosticoItem.cla
 com\supermercado\application\supermercado\usecase\IniciarSimulacionUseCase.class
 com\supermercado\domain\supermercado\event\EstadisticasActualizadasEvent.class
 com\supermercado\application\supermercado\usecase\DetenerSimulacionUseCase.class
+com\supermercado\presentation\cooperativa\view\SimuladorCooperativaFrame$3.class
 com\supermercado\domain\cooperativa\model\ResumenDiario.class
 com\supermercado\domain\cooperativa\service\EstadisticasFinancierasService.class
 com\supermercado\application\supermercado\dto\EstadisticasDTO.class
@@ -126,6 +130,7 @@ com\supermercado\infrastructure\adapter\event\EventBusAdapter.class
 com\supermercado\domain\cooperativa\event\SimulacionCooperativaDetenidaEvent.class
 com\supermercado\presentation\cooperativa\view\SimuladorCooperativaFrame$2.class
 com\supermercado\presentation\supermercado\view\PanelDiagnostico.class
+com\supermercado\infrastructure\adapter\export\TxtExportadorAdapter.class
 com\supermercado\presentation\cooperativa\panel\PanelVentanillas.class
 com\supermercado\application\supermercado\dto\DiagnosticoDTO.class
 com\supermercado\domain\supermercado\service\DiagnosticoService$Diagnostico.class

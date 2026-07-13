@@ -30,8 +30,10 @@ C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domai
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\cooperativa\model\Socio.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\cooperativa\model\ServicioFinanciero.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\presentation\cooperativa\view\PanelLog.java
+C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\cooperativa\port\IReporteExportador.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\infrastructure\service\LogServiceImpl.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\cooperativa\service\EstadisticasFinancierasService.java
+C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\infrastructure\adapter\export\TxtExportadorAdapter.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\supermercado\usecase\OptimizarCajasUseCase.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\presentation\cooperativa\panel\PanelEstadisticasFinancieras.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\supermercado\usecase\IniciarSimulacionUseCase.java
@@ -50,9 +52,11 @@ C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\prese
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\supermercado\usecase\GenerarClienteUseCase.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\cooperativa\model\ResumenDiario.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\supermercado\service\EstadisticasService.java
+C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\cooperativa\usecase\ExportarReporteUseCase.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\Main.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\supermercado\usecase\ReanudarSimulacionUseCase.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\supermercado\model\Recomendacion.java
+C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\infrastructure\adapter\export\ExcelExportadorAdapter.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\supermercado\event\ClienteGeneradoEvent.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\supermercado\usecase\ObtenerColaMaximaUseCase.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\presentation\supermercado\view\DialogoConfiguracion.java

@@ -1,17 +1,22 @@
 package com.supermercado.presentation.cooperativa.view;
 
+import com.supermercado.application.cooperativa.usecase.ExportarReporteUseCase;
 import com.supermercado.domain.cooperativa.config.ConfiguracionCooperativa;
 import com.supermercado.domain.cooperativa.event.EventoSimulacion;
 import com.supermercado.domain.cooperativa.event.TipoEvento;
 import com.supermercado.domain.cooperativa.model.*;
 import com.supermercado.domain.cooperativa.service.*;
+import com.supermercado.infrastructure.adapter.export.ExcelExportadorAdapter;
+import com.supermercado.infrastructure.adapter.export.TxtExportadorAdapter;
 import com.supermercado.presentation.cooperativa.panel.PanelSalaEspera;
 import com.supermercado.presentation.cooperativa.panel.PanelVentanillas;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +37,8 @@ public class SimuladorCooperativaFrame extends JFrame {
     private final JButton      btnDetener   = new JButton("Detener");
     private final JButton      btnReiniciar = new JButton("Reiniciar");
     private final JButton      btnConfig    = new JButton("Config");
+    private final JButton      btnExportExcel = new JButton("Exportar Excel");
+    private final JButton      btnExportTxt   = new JButton("Exportar TXT");
     private final JLabel       lblEstado    = new JLabel("En espera");
     private final JLabel       lblInfo      = new JLabel("D\u00eda 1, Hora: 08:30 am, Tiempo real: 0s, --");
     private final JProgressBar progDia      = new JProgressBar(0, 1);
@@ -77,6 +84,8 @@ public class SimuladorCooperativaFrame extends JFrame {
         barra.add(new JSeparator(SwingConstants.VERTICAL));
         barra.add(btnConfig);
         barra.add(new JSeparator(SwingConstants.VERTICAL));
+        barra.add(btnExportExcel); barra.add(btnExportTxt);
+        barra.add(new JSeparator(SwingConstants.VERTICAL));
         lblEstado.setFont(new Font("SansSerif", Font.BOLD, 12));
         barra.add(lblEstado);
         barra.add(Box.createHorizontalStrut(6));
@@ -103,6 +112,8 @@ public class SimuladorCooperativaFrame extends JFrame {
         btnPausar.setEnabled(false);
         btnDetener.setEnabled(false);
         btnReiniciar.setEnabled(false);
+        btnExportExcel.setEnabled(false);
+        btnExportTxt.setEnabled(false);
 
         btnConfig.addActionListener(e -> abrirConfiguracion());
         btnIniciar.addActionListener(e -> iniciarSimulacion());
@@ -115,6 +126,8 @@ public class SimuladorCooperativaFrame extends JFrame {
             panelStats.mostrarResumenFinal(motor, minutosSimTotales);
         });
         btnReiniciar.addActionListener(e -> reiniciarTodo());
+        btnExportExcel.addActionListener(e -> exportar("excel"));
+        btnExportTxt.addActionListener(e -> exportar("txt"));
     }
 
     private void manejarEvento(EventoSimulacion ev) {
@@ -127,6 +140,7 @@ public class SimuladorCooperativaFrame extends JFrame {
                     lblEstado.setForeground(new Color(0, 130, 0));
                     btnIniciar.setEnabled(false); btnPausar.setEnabled(true);
                     btnDetener.setEnabled(true);  btnReiniciar.setEnabled(false);
+                    btnExportExcel.setEnabled(false); btnExportTxt.setEnabled(false);
                 }
 
                 case SIMULACION_PAUSADA -> {
@@ -193,6 +207,7 @@ public class SimuladorCooperativaFrame extends JFrame {
                     lblEstado.setForeground(new Color(0, 0, 180));
                     btnIniciar.setEnabled(false); btnPausar.setEnabled(false);
                     btnDetener.setEnabled(false); btnReiniciar.setEnabled(true);
+                    btnExportExcel.setEnabled(true); btnExportTxt.setEnabled(true);
                     progDia.setValue(totalDiasLaborables);
                     progDia.setString(totalDiasLaborables + "/" + totalDiasLaborables);
                     panelEvol.mostrarTotalesYRefrescar();
@@ -208,6 +223,8 @@ public class SimuladorCooperativaFrame extends JFrame {
                     btnIniciar.setEnabled(true); btnPausar.setEnabled(false);
                     btnPausar.setText("Pausar"); btnDetener.setEnabled(false);
                     btnReiniciar.setEnabled(true);
+                    boolean hayDatos = !motor.getEstadisticas().getResumenesDiarios().isEmpty();
+                    btnExportExcel.setEnabled(hayDatos); btnExportTxt.setEnabled(hayDatos);
                 }
 
                 case SIMULACION_REINICIADA -> {
@@ -216,6 +233,7 @@ public class SimuladorCooperativaFrame extends JFrame {
                     btnIniciar.setEnabled(true); btnPausar.setEnabled(false);
                     btnPausar.setText("Pausar"); btnDetener.setEnabled(false);
                     btnReiniciar.setEnabled(false);
+                    btnExportExcel.setEnabled(false); btnExportTxt.setEnabled(false);
                 }
 
                 default -> {}
@@ -228,22 +246,13 @@ public class SimuladorCooperativaFrame extends JFrame {
         boolean activo = motor.isCorriendo() || motor.isFasePrincipalFinalizada() || mensual.isCorriendo();
         if (!activo) return;
 
-        // Extraer la hora de motor.horaSimulada() quitando el prefijo "Día X – "
-        String horaRaw = motor.horaSimulada();
-        String hora = horaRaw;
-        int idxGuion = horaRaw.indexOf("–");
-        if (idxGuion >= 0) {
-            hora = horaRaw.substring(idxGuion + 1).trim();
-        }
-        String horaFormateada = hora;
-        try {
-            String[] partes = hora.split(":");
-            int h = Integer.parseInt(partes[0]);
-            int m = Integer.parseInt(partes[1]);
-            String ampm = (h >= 12) ? "pm" : "am";
-            int h12 = (h % 12 == 0) ? 12 : h % 12;
-            horaFormateada = String.format("%d:%02d %s", h12, m, ampm);
-        } catch (Exception e) {}
+        // Obtener hora directamente desde getTiempoReloj() (minutos desde 00:00)
+        long minutos = motor.getTiempoReloj();
+        int h = (int)(minutos / 60);
+        int m = (int)(minutos % 60);
+        String ampm = (h >= 12) ? "pm" : "am";
+        int h12 = (h % 12 == 0) ? 12 : h % 12;
+        String horaFormateada = String.format("%d:%02d %s", h12, m, ampm);
 
         long s = (System.currentTimeMillis() - tiempoInicioReal) / 1000;
         String real = s < 60 ? "Tiempo real: " + s + "s"
@@ -322,6 +331,7 @@ public class SimuladorCooperativaFrame extends JFrame {
         btnIniciar.setEnabled(true); btnPausar.setEnabled(false);
         btnPausar.setText("Pausar"); btnDetener.setEnabled(false);
         btnReiniciar.setEnabled(false);
+        btnExportExcel.setEnabled(false); btnExportTxt.setEnabled(false);
         lblEstado.setText("En espera"); lblEstado.setForeground(Color.DARK_GRAY);
         lblInfo.setText("D\u00eda 1, Hora: 08:30 am, Tiempo real: 0s, --");
         progDia.setValue(0); progDia.setString("-");
@@ -349,6 +359,60 @@ public class SimuladorCooperativaFrame extends JFrame {
             long labs = jornadasActuales.stream().filter(JornadaLaboral::isLaborable).count();
             lblEstado.setText("Configurado - " + labs + " d\u00edas laborables");
         }
+    }
+
+    private void exportar(String formato) {
+        boolean esExcel = "excel".equals(formato);
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle(esExcel ? "Guardar reporte Excel" : "Guardar reporte TXT");
+        chooser.setFileFilter(esExcel
+                ? new FileNameExtensionFilter("Excel (*.xlsx)", "xlsx")
+                : new FileNameExtensionFilter("Texto (*.txt)", "txt"));
+        int result = chooser.showSaveDialog(this);
+        if (result != JFileChooser.APPROVE_OPTION) return;
+
+        File file = chooser.getSelectedFile();
+        String path = file.getAbsolutePath();
+        String ext = esExcel ? ".xlsx" : ".txt";
+        if (!path.toLowerCase().endsWith(ext)) path += ext;
+        final String rutaFinal = path;
+
+        ExportarReporteUseCase useCase = new ExportarReporteUseCase(
+                esExcel ? new ExcelExportadorAdapter() : new TxtExportadorAdapter());
+
+        List<ResumenDiario> resumenes = motor.getEstadisticas().getResumenesDiarios();
+        EstadisticasFinancierasService est = motor.getEstadisticas();
+        long minSim = minutosSimTotales;
+
+        btnExportExcel.setEnabled(false);
+        btnExportTxt.setEnabled(false);
+
+        new SwingWorker<Void, Void>() {
+            Exception error;
+            @Override
+            protected Void doInBackground() {
+                try {
+                    useCase.ejecutar(rutaFinal, resumenes, est, minSim);
+                } catch (Exception ex) {
+                    error = ex;
+                }
+                return null;
+            }
+            @Override
+            protected void done() {
+                btnExportExcel.setEnabled(true);
+                btnExportTxt.setEnabled(true);
+                if (error != null) {
+                    JOptionPane.showMessageDialog(SimuladorCooperativaFrame.this,
+                            "Error al exportar: " + error.getMessage(),
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(SimuladorCooperativaFrame.this,
+                            "Exportaci\u00f3n completada:\n" + rutaFinal,
+                            "Exportaci\u00f3n exitosa", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        }.execute();
     }
 
     // Datos por defecto

@@ -1,17 +1,22 @@
 package com.supermercado.presentation.cooperativa.view;
 
+import com.supermercado.application.cooperativa.usecase.ExportarReporteUseCase;
 import com.supermercado.domain.cooperativa.config.ConfiguracionCooperativa;
 import com.supermercado.domain.cooperativa.event.EventoSimulacion;
 import com.supermercado.domain.cooperativa.event.TipoEvento;
 import com.supermercado.domain.cooperativa.model.*;
 import com.supermercado.domain.cooperativa.service.*;
+import com.supermercado.infrastructure.adapter.export.ExcelExportadorAdapter;
+import com.supermercado.infrastructure.adapter.export.TxtExportadorAdapter;
 import com.supermercado.presentation.cooperativa.panel.PanelSalaEspera;
 import com.supermercado.presentation.cooperativa.panel.PanelVentanillas;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +37,8 @@ public class SimuladorCooperativaFrame extends JFrame {
     private final JButton      btnDetener   = new JButton("Detener");
     private final JButton      btnReiniciar = new JButton("Reiniciar");
     private final JButton      btnConfig    = new JButton("Config");
+    private final JButton      btnExportExcel = new JButton("Exportar Excel");
+    private final JButton      btnExportTxt   = new JButton("Exportar TXT");
     private final JLabel       lblEstado    = new JLabel("En espera");
     private final JLabel       lblInfo      = new JLabel("D\u00eda 1, Hora: 08:30 am, Tiempo real: 0s, --");
     private final JProgressBar progDia      = new JProgressBar(0, 1);
@@ -77,6 +84,8 @@ public class SimuladorCooperativaFrame extends JFrame {
         barra.add(new JSeparator(SwingConstants.VERTICAL));
         barra.add(btnConfig);
         barra.add(new JSeparator(SwingConstants.VERTICAL));
+        barra.add(btnExportExcel); barra.add(btnExportTxt);
+        barra.add(new JSeparator(SwingConstants.VERTICAL));
         lblEstado.setFont(new Font("SansSerif", Font.BOLD, 12));
         barra.add(lblEstado);
         barra.add(Box.createHorizontalStrut(6));
@@ -94,7 +103,6 @@ public class SimuladorCooperativaFrame extends JFrame {
         tabs.addTab("Log",          panelLog);
         add(tabs, BorderLayout.CENTER);
 
-        // Forzar reconstrucciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de EvoluciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n al seleccionar la pestaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a
         tabs.addChangeListener(e -> {
             if (tabs.getSelectedIndex() == 3) {
                 panelEvol.reconstruirTabla();
@@ -104,6 +112,8 @@ public class SimuladorCooperativaFrame extends JFrame {
         btnPausar.setEnabled(false);
         btnDetener.setEnabled(false);
         btnReiniciar.setEnabled(false);
+        btnExportExcel.setEnabled(false);
+        btnExportTxt.setEnabled(false);
 
         btnConfig.addActionListener(e -> abrirConfiguracion());
         btnIniciar.addActionListener(e -> iniciarSimulacion());
@@ -116,6 +126,8 @@ public class SimuladorCooperativaFrame extends JFrame {
             panelStats.mostrarResumenFinal(motor, minutosSimTotales);
         });
         btnReiniciar.addActionListener(e -> reiniciarTodo());
+        btnExportExcel.addActionListener(e -> exportar("excel"));
+        btnExportTxt.addActionListener(e -> exportar("txt"));
     }
 
     private void manejarEvento(EventoSimulacion ev) {
@@ -128,6 +140,7 @@ public class SimuladorCooperativaFrame extends JFrame {
                     lblEstado.setForeground(new Color(0, 130, 0));
                     btnIniciar.setEnabled(false); btnPausar.setEnabled(true);
                     btnDetener.setEnabled(true);  btnReiniciar.setEnabled(false);
+                    btnExportExcel.setEnabled(false); btnExportTxt.setEnabled(false);
                 }
 
                 case SIMULACION_PAUSADA -> {
@@ -194,10 +207,12 @@ public class SimuladorCooperativaFrame extends JFrame {
                     lblEstado.setForeground(new Color(0, 0, 180));
                     btnIniciar.setEnabled(false); btnPausar.setEnabled(false);
                     btnDetener.setEnabled(false); btnReiniciar.setEnabled(true);
+                    btnExportExcel.setEnabled(true); btnExportTxt.setEnabled(true);
                     progDia.setValue(totalDiasLaborables);
                     progDia.setString(totalDiasLaborables + "/" + totalDiasLaborables);
                     panelEvol.mostrarTotalesYRefrescar();
                     panelStats.mostrarResumenFinal(motor, minutosSimTotales);
+                    javax.swing.SwingUtilities.invokeLater(() -> panelEvol.reconstruirTabla());
                 }
 
                 case SIMULACION_DETENIDA -> {
@@ -208,6 +223,8 @@ public class SimuladorCooperativaFrame extends JFrame {
                     btnIniciar.setEnabled(true); btnPausar.setEnabled(false);
                     btnPausar.setText("Pausar"); btnDetener.setEnabled(false);
                     btnReiniciar.setEnabled(true);
+                    boolean hayDatos = !motor.getEstadisticas().getResumenesDiarios().isEmpty();
+                    btnExportExcel.setEnabled(hayDatos); btnExportTxt.setEnabled(hayDatos);
                 }
 
                 case SIMULACION_REINICIADA -> {
@@ -216,6 +233,7 @@ public class SimuladorCooperativaFrame extends JFrame {
                     btnIniciar.setEnabled(true); btnPausar.setEnabled(false);
                     btnPausar.setText("Pausar"); btnDetener.setEnabled(false);
                     btnReiniciar.setEnabled(false);
+                    btnExportExcel.setEnabled(false); btnExportTxt.setEnabled(false);
                 }
 
                 default -> {}
@@ -228,7 +246,12 @@ public class SimuladorCooperativaFrame extends JFrame {
         boolean activo = motor.isCorriendo() || motor.isFasePrincipalFinalizada() || mensual.isCorriendo();
         if (!activo) return;
 
-        String hora = motor.horaSimulada().replace("D\u00eda " + motor.getDiaActual() + " ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ ", "");
+        String horaRaw = motor.horaSimulada();
+        String hora = horaRaw;
+        int idxGuion = horaRaw.indexOf("â€“");
+        if (idxGuion >= 0) {
+            hora = horaRaw.substring(idxGuion + 1).trim();
+        }
         String horaFormateada = hora;
         try {
             String[] partes = hora.split(":");
@@ -316,6 +339,7 @@ public class SimuladorCooperativaFrame extends JFrame {
         btnIniciar.setEnabled(true); btnPausar.setEnabled(false);
         btnPausar.setText("Pausar"); btnDetener.setEnabled(false);
         btnReiniciar.setEnabled(false);
+        btnExportExcel.setEnabled(false); btnExportTxt.setEnabled(false);
         lblEstado.setText("En espera"); lblEstado.setForeground(Color.DARK_GRAY);
         lblInfo.setText("D\u00eda 1, Hora: 08:30 am, Tiempo real: 0s, --");
         progDia.setValue(0); progDia.setString("-");
@@ -345,7 +369,68 @@ public class SimuladorCooperativaFrame extends JFrame {
         }
     }
 
-    // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ Datos por defecto ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
+    private void exportar(String formato) {
+        boolean esExcel = "excel".equals(formato);
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle(esExcel ? "Guardar reporte Excel" : "Guardar reporte TXT");
+        chooser.setFileFilter(esExcel
+                ? new FileNameExtensionFilter("Excel (*.xlsx)", "xlsx")
+                : new FileNameExtensionFilter("Texto (*.txt)", "txt"));
+        int result = chooser.showSaveDialog(this);
+        if (result != JFileChooser.APPROVE_OPTION) return;
+
+        File file = chooser.getSelectedFile();
+        String path = file.getAbsolutePath();
+        String ext = esExcel ? ".xlsx" : ".txt";
+        if (!path.toLowerCase().endsWith(ext)) path += ext;
+        final String rutaFinal = path;
+
+        ExportarReporteUseCase useCase = new ExportarReporteUseCase(
+                esExcel ? new ExcelExportadorAdapter() : new TxtExportadorAdapter());
+
+        List<ResumenDiario> resumenes = motor.getEstadisticas().getResumenesDiarios();
+        EstadisticasFinancierasService est = motor.getEstadisticas();
+        long minSim = minutosSimTotales;
+
+        btnExportExcel.setEnabled(false);
+        btnExportTxt.setEnabled(false);
+
+        new SwingWorker<Void, Void>() {
+            Throwable error;
+            @Override
+            protected Void doInBackground() {
+                try {
+                    useCase.ejecutar(rutaFinal, resumenes, est, minSim);
+                } catch (Throwable ex) {
+                    // FIX: capturar Throwable (no solo Exception) para atrapar
+                    // tambien NoClassDefFoundError si falta algun .jar en el classpath
+                    error = ex;
+                    ex.printStackTrace();
+                }
+                return null;
+            }
+            @Override
+            protected void done() {
+                btnExportExcel.setEnabled(true);
+                btnExportTxt.setEnabled(true);
+                if (error != null) {
+                    String detalle = error.getClass().getSimpleName()
+                            + (error.getMessage() != null ? ": " + error.getMessage() : "");
+                    JOptionPane.showMessageDialog(SimuladorCooperativaFrame.this,
+                            "Error al exportar:\n" + detalle
+                            + "\n\nSi el error menciona 'NoClassDefFoundError' o 'ClassNotFoundException',\n"
+                            + "corre la app con run.ps1 (incluye las dependencias en el classpath).",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(SimuladorCooperativaFrame.this,
+                            "Exportaci\u00f3n completada:\n" + rutaFinal,
+                            "Exportaci\u00f3n exitosa", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        }.execute();
+    }
+
+    // Datos por defecto
     private List<ServicioFinanciero> crearServiciosFijos() {
         List<ServicioFinanciero> l = new ArrayList<>();
         l.add(svc("SVC-C1",  "Socios Ahorro/Cr\u00e9dito",           "C",  3,15,500,200000,0.0));

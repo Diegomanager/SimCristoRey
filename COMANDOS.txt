@@ -1,0 +1,6 @@
+cd C:\Users\ASUS\Documents\DClass\SimCristoRey
+mvn clean compile
+java -cp target/classes com.supermercado.presentation.cooperativa.MainCooperativa
+.\run.ps1
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+java -cp "target/classes;target/dependency/*" com.supermercado.presentation.cooperativa.MainCooperativa

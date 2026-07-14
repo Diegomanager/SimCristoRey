@@ -94,6 +94,7 @@ C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domai
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\cooperativa\model\JornadaLaboral.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\supermercado\usecase\SimulacionConEscalaUseCase.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\supermercado\dto\OptimizacionDTO.java
+C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\infrastructure\adapter\export\PdfExportadorAdapter.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\supermercado\usecase\RecomendarMejoraUseCase.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\supermercado\port\IReporteExportador.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\cooperativa\dto\EstadisticasFinancierasDTO.java

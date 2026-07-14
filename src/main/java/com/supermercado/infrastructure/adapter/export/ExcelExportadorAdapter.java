@@ -10,11 +10,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Exporta el reporte de la simulacion a un libro Excel (.xlsx) con 3 hojas.
- * Version con logging en consola (System.out/err) para diagnosticar en que
- * paso exacto falla si algo vuelve a salir mal.
- */
 public class ExcelExportadorAdapter implements IReporteExportador {
 
     @Override
@@ -57,9 +52,6 @@ public class ExcelExportadorAdapter implements IReporteExportador {
         }
     }
 
-    // ---------------------------------------------------------------------
-    // Hoja 1: Evolucion Diaria
-    // ---------------------------------------------------------------------
     private void hojaEvolucion(XSSFWorkbook wb, List<ResumenDiario> resumenes,
                                 CellStyle header, CellStyle numero, CellStyle moneda) {
         Sheet sh = wb.createSheet("Evolucion Diaria");
@@ -95,9 +87,6 @@ public class ExcelExportadorAdapter implements IReporteExportador {
         sh.createFreezePane(0, 1);
     }
 
-    // ---------------------------------------------------------------------
-    // Hoja 2: Resumen Final
-    // ---------------------------------------------------------------------
     private void hojaResumenFinal(XSSFWorkbook wb, EstadisticasFinancierasService est,
                                    long minutosSimulados,
                                    CellStyle titulo, CellStyle label, CellStyle moneda) {
@@ -156,9 +145,6 @@ public class ExcelExportadorAdapter implements IReporteExportador {
         return fila;
     }
 
-    // ---------------------------------------------------------------------
-    // Hoja 3: Estadisticas Acumuladas
-    // ---------------------------------------------------------------------
     private void hojaEstadisticasAcumuladas(XSSFWorkbook wb, EstadisticasFinancierasService est,
                                              CellStyle titulo, CellStyle label, CellStyle moneda) {
         Sheet sh = wb.createSheet("Estadisticas Acumuladas");
@@ -187,9 +173,6 @@ public class ExcelExportadorAdapter implements IReporteExportador {
         sh.autoSizeColumn(1);
     }
 
-    // ---------------------------------------------------------------------
-    // Helpers
-    // ---------------------------------------------------------------------
     private int filaLabelValor(Sheet sh, int fila, String lbl, int valor, CellStyle label) {
         Row r = sh.createRow(fila);
         Cell c0 = r.createCell(0); c0.setCellValue(lbl); c0.setCellStyle(label);

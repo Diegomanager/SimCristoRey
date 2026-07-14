@@ -1,26 +1,16 @@
 # =============================================================================
-# run.ps1 - Compila, empaqueta el uber-jar y lo ejecuta
+# run.ps1 - Compila, copia dependencias a target/lib (SIN fusionar nada) y
+# ejecuta SimCristoRey con classpath comodin.
 # =============================================================================
 $PROJECT_ROOT = "C:\Users\ASUS\Documents\DClass\SimCristoRey"
 Set-Location $PROJECT_ROOT
 
-Write-Host "=== Limpiando target para evitar artefactos viejos ===" -ForegroundColor Cyan
-Remove-Item -Recurse -Force target -ErrorAction SilentlyContinue
-
-Write-Host "=== Compilando y empaquetando (uber-jar) ===" -ForegroundColor Cyan
-mvn clean compile assembly:single
+Write-Host "=== Compilando y copiando dependencias a target/lib ===" -ForegroundColor Cyan
+mvn clean package -DskipTests
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "[ERROR] La compilación/empaquetado falló." -ForegroundColor Red
-    Read-Host "Presiona Enter para salir"
+    Write-Host "[ERROR] La compilacion fallo." -ForegroundColor Red
     exit 1
 }
 
-$JAR = "target/bottleneck-buster-1.0.0-jar-with-dependencies.jar"
-if (-not (Test-Path $JAR)) {
-    Write-Host "[ERROR] No se encontró el jar: $JAR" -ForegroundColor Red
-    Read-Host "Presiona Enter para salir"
-    exit 1
-}
-
-Write-Host "=== Ejecutando SimCristoRey (uber-jar) ===" -ForegroundColor Cyan
-java -jar $JAR
+Write-Host "=== Ejecutando SimCristoRey ===" -ForegroundColor Cyan
+java -cp "target/classes;target/lib/*" com.supermercado.presentation.cooperativa.MainCooperativa

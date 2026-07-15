@@ -1,14 +1,20 @@
 package com.supermercado.presentation.cooperativa.view;
 
+import com.supermercado.application.cooperativa.dto.ResultadoCalibracion;
+import com.supermercado.application.cooperativa.usecase.CalibrarConfiguracionUseCase;
 import com.supermercado.domain.cooperativa.config.ConfiguracionCooperativa;
 import com.supermercado.domain.cooperativa.model.ConfiguracionMultiServicio;
 import com.supermercado.domain.cooperativa.model.JornadaLaboral;
 import com.supermercado.domain.cooperativa.model.ServicioFinanciero;
 import com.supermercado.domain.cooperativa.service.GeneradorSociosService;
+import com.supermercado.infrastructure.adapter.export.HistorialImportadorAdapter;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
@@ -34,7 +40,7 @@ public class DialogoConfiguracionCooperativa extends JDialog {
     private final JSpinner  spnHFin    = spnMin(990);
     private final JLabel    lblHorario = new JLabel();
 
-    // Tab 3: Probabilidades dinÃƒÆ’Ã‚Â¡micas
+    // Tab 3: Probabilidades dinamicas
     private final Map<String, Object[]> slidersPorCodigo = new LinkedHashMap<>();
     private final JPanel panelProb = new JPanel(new GridBagLayout());
     private final JLabel lblSumaProb = new JLabel("Suma: 0%");
@@ -271,6 +277,9 @@ public class DialogoConfiguracionCooperativa extends JDialog {
 
         JButton add=new JButton("+ Agregar");
         JButton del=new JButton("- Eliminar");
+        JButton importar = new JButton("\uD83D\uDCC5 Importar desde Excel (Historial)");
+        importar.setFont(new Font("SansSerif", Font.BOLD, 11));
+
         add.addActionListener(e -> {
             String nuevoCodigo = "NUEVO";
             modeloTabla.addRow(new Object[]{"SVC-"+(modeloTabla.getRowCount()+1), "Nuevo", nuevoCodigo, 2, 10, 0.0, 500.0, 0.0, true});
@@ -292,12 +301,91 @@ public class DialogoConfiguracionCooperativa extends JDialog {
                 }
             }
         });
+        importar.addActionListener(e -> importarHistorial());
+
         JPanel bar=new JPanel(new FlowLayout(FlowLayout.LEFT,6,4));
         bar.add(add); bar.add(del);
         bar.add(new JLabel("  El c\u00f3digo determina el ticket y la caja destino."));
+        JPanel barImport = new JPanel(new FlowLayout(FlowLayout.RIGHT,6,4));
+        barImport.add(importar);
+
+        JPanel sur = new JPanel(new BorderLayout());
+        sur.add(bar, BorderLayout.WEST);
+        sur.add(barImport, BorderLayout.EAST);
+
         p.add(scrollTabla,BorderLayout.CENTER);
-        p.add(bar,BorderLayout.SOUTH);
+        p.add(sur,BorderLayout.SOUTH);
         return p;
+    }
+
+    /**
+     * Fase 5.4: importa un historial real de atenciones (.xlsx), calcula la
+     * duracion/monto de cada tipo de servicio y la probabilidad relativa, y
+     * actualiza tanto la tabla de Servicios como los sliders de Probabilidades.
+     * No persiste automaticamente: el usuario debe pulsar "Aceptar" luego.
+     */
+    private void importarHistorial() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Importar historial de atenciones");
+        chooser.setFileFilter(new FileNameExtensionFilter("Excel (*.xlsx)", "xlsx"));
+        int result = chooser.showOpenDialog(this);
+        if (result != JFileChooser.APPROVE_OPTION) return;
+
+        File archivo = chooser.getSelectedFile();
+        System.out.println(">>> [UI] Archivo seleccionado: " + archivo.getAbsolutePath());
+
+        CalibrarConfiguracionUseCase useCase =
+                new CalibrarConfiguracionUseCase(new HistorialImportadorAdapter());
+
+        try {
+            ResultadoCalibracion res = useCase.ejecutar(archivo);
+            System.out.println(">>> [UI] Importación completada exitosamente.");
+
+            // Actualizar tabla de Servicios: reemplaza filas cuyo codigo coincide, agrega las que no existian.
+            for (ServicioFinanciero s : res.getServicios()) {
+                int filaExistente = -1;
+                for (int i = 0; i < modeloTabla.getRowCount(); i++) {
+                    if (s.getTipoCajaRequerido().equals(modeloTabla.getValueAt(i, 2))) {
+                        filaExistente = i;
+                        break;
+                    }
+                }
+                Object[] fila = {
+                        s.getId(), s.getNombre(), s.getTipoCajaRequerido(),
+                        s.getDuracionMinima(), s.getDuracionMaxima(),
+                        s.getMontoMinimo(), s.getMontoMaximo(), s.getTasaInteres(), s.isActivo()
+                };
+                if (filaExistente >= 0) {
+                    for (int col = 0; col < fila.length; col++) {
+                        modeloTabla.setValueAt(fila[col], filaExistente, col);
+                    }
+                } else {
+                    modeloTabla.addRow(fila);
+                }
+            }
+
+            // Actualizar probabilidades calculadas
+            for (Map.Entry<String, Double> e : res.getProbabilidadesPorCodigo().entrySet()) {
+                config.setProbCodigo(e.getKey(), e.getValue());
+            }
+            reconstruirSliders();
+
+            JOptionPane.showMessageDialog(this,
+                    "Calibraci\u00f3n completada.\n"
+                    + "Fichas procesadas: " + res.getTotalFichasProcesadas() + "\n"
+                    + "Filas ignoradas: " + res.getFilasIgnoradas() + "\n"
+                    + "Tipos de servicio calibrados: " + res.getServicios().size() + "\n\n"
+                    + "Revisa la tabla de Servicios y los sliders de Probabilidades.\n"
+                    + "Los cambios se guardan al pulsar Aceptar.",
+                    "Importaci\u00f3n completada", JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (Throwable ex) {
+            System.err.println(">>> [UI] ERROR CRITICO en importación:");
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Error al importar:\n" + ex.getMessage() + "\n\nRevisa la consola para más detalles.",
+                    "Error de importaci\u00f3n", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     // Carga

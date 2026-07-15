@@ -1,3 +1,4 @@
+C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\cooperativa\usecase\CalibrarConfiguracionUseCase.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\cooperativa\model\SalaEspera.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\supermercado\usecase\ReiniciarSimulacionUseCase.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\supermercado\usecase\TeoriaColasUseCase.java
@@ -23,6 +24,7 @@ C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\appli
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\supermercado\service\SimulacionEngine.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\cooperativa\service\AsignadorCajasService.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\cooperativa\model\ConfiguracionMultiServicio.java
+C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\cooperativa\port\IHistorialImportador.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\supermercado\model\EstadoCaja.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\presentation\supermercado\view\PanelEstadisticas.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\supermercado\usecase\ObtenerEstadisticasUseCase.java
@@ -41,6 +43,7 @@ C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domai
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\cooperativa\service\GeneradorSociosService.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\presentation\cooperativa\MainCooperativa.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\cooperativa\model\EstadoCaja.java
+C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\infrastructure\adapter\export\HistorialImportadorAdapter.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\supermercado\port\IConfiguracionRepositorio.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\supermercado\model\Configuracion.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\presentation\supermercado\view\SimuladorFrame.java
@@ -86,6 +89,7 @@ C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\prese
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\cooperativa\dto\ConfiguracionCooperativaDTO.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\cooperativa\dto\SocioDTO.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\supermercado\service\OptimizadorService.java
+C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\cooperativa\dto\ResultadoCalibracion.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\cooperativa\event\EventoSimulacion.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\supermercado\event\SimulacionDetenidaEvent.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\supermercado\dto\EstadisticasDTO.java

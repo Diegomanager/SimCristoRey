@@ -1,6 +1,6 @@
 # =============================================================================
 # run.ps1 - Compila, copia dependencias a target/lib (SIN fusionar nada) y
-# ejecuta SimCristoRey con classpath comodin.
+# ejecuta con java -jar (el manifest ya apunta a target/lib/ automaticamente).
 # =============================================================================
 $PROJECT_ROOT = "C:\Users\ASUS\Documents\DClass\SimCristoRey"
 Set-Location $PROJECT_ROOT
@@ -12,5 +12,5 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-Write-Host "=== Ejecutando SimCristoRey ===" -ForegroundColor Cyan
-java -cp "target/classes;target/lib/*" com.supermercado.presentation.cooperativa.MainCooperativa
+Write-Host "=== Ejecutando SimCristoRey (java -jar) ===" -ForegroundColor Cyan
+java -jar "target\bottleneck-buster-1.0.0.jar"

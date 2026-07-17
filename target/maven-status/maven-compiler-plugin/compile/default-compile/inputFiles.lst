@@ -7,6 +7,7 @@ C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\prese
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\supermercado\port\ILogService.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\cooperativa\event\SimulacionCooperativaIniciadaEvent.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\supermercado\usecase\ConfigurarSimulacionUseCase.java
+C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\infrastructure\adapter\preset\PresetManager.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\supermercado\usecase\CompararConfiguracionesUseCase.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\infrastructure\repository\ConfiguracionRepositorioImpl.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\cooperativa\event\SimulacionCooperativaReanudadaEvent.java
@@ -64,6 +65,7 @@ C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domai
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\supermercado\usecase\ObtenerColaMaximaUseCase.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\presentation\supermercado\view\DialogoConfiguracion.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\presentation\cooperativa\view\PanelEvolucionDiaria.java
+C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\cooperativa\dto\CalibracionMensual.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\presentation\cooperativa\view\MainCooperativa.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\supermercado\usecase\AsignarClienteUseCase.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\supermercado\service\DiagnosticoService.java
@@ -84,6 +86,7 @@ C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\prese
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\cooperativa\service\SimuladorCooperativaService.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\cooperativa\event\SimulacionCooperativaFinalizadaEvent.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\cooperativa\model\BloqueHorario.java
+C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\cooperativa\dto\RegistroAtencion.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\domain\cooperativa\event\TipoEvento.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\presentation\supermercado\view\PanelTeoriaColas.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\main\java\com\supermercado\application\cooperativa\dto\ConfiguracionCooperativaDTO.java

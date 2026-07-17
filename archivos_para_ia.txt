@@ -1,0 +1,864 @@
+﻿=================================================
+ARCHIVOS SOLICITADOS POR LA IA PARA EL MODO REPLAY REAL
+=================================================
+
+
+╔══════════════════════════════════════════════════════════════╗
+║  src/main/java/com/supermercado/domain/cooperativa/model/Socio.java
+╚══════════════════════════════════════════════════════════════╝
+
+package com.supermercado.domain.cooperativa.model;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class Socio {
+    private String  id, ficha, tipoCajaDestino;
+    private ServicioFinanciero servicio;
+    private List<ServicioFinanciero> serviciosAdicionales = new ArrayList<>();
+    private double  monto;
+    private int     duracionEstimada;
+    private long    tiempoLlegada, tiempoInicioAtencion, tiempoSalida;
+    private boolean esPreferente;
+    private int     prioridad = 3;
+    private boolean atendida  = false;
+
+    public boolean isMultiServicio() {
+        return serviciosAdicionales != null && !serviciosAdicionales.isEmpty();
+    }
+    public int getTotalServicios() {
+        return 1 + (serviciosAdicionales != null ? serviciosAdicionales.size() : 0);
+    }
+    public List<ServicioFinanciero> getTodosLosServicios() {
+        List<ServicioFinanciero> todos = new ArrayList<>();
+        if (servicio != null) todos.add(servicio);
+        if (serviciosAdicionales != null) todos.addAll(serviciosAdicionales);
+        return Collections.unmodifiableList(todos);
+    }
+    public void agregarServicioAdicional(ServicioFinanciero s) {
+        if (s != null) serviciosAdicionales.add(s);
+    }
+    public String getDescripcionServicios() {
+        if (!isMultiServicio()) return servicio != null ? servicio.getNombre() : "General";
+        StringBuilder sb = new StringBuilder();
+        for (ServicioFinanciero s : getTodosLosServicios()) {
+            if (sb.length() > 0) sb.append(" + ");
+            sb.append(s.getNombre());
+        }
+        return sb.toString();
+    }
+    // Getters/Setters
+    public String  getId() { return id; }
+    public void    setId(String id) { this.id = id; }
+    public String  getFicha() { return ficha; }
+    public void    setFicha(String f) { this.ficha = f; }
+    public String  getTipoCajaDestino() { return tipoCajaDestino; }
+    public void    setTipoCajaDestino(String t) { this.tipoCajaDestino = t; }
+    public ServicioFinanciero getServicio() { return servicio; }
+    public void setServicio(ServicioFinanciero s) { this.servicio = s; }
+    public List<ServicioFinanciero> getServiciosAdicionales() { return serviciosAdicionales; }
+    public void setServiciosAdicionales(List<ServicioFinanciero> lista) { this.serviciosAdicionales = lista; }
+    public double  getMonto() { return monto; }
+    public void    setMonto(double m) { this.monto = m; }
+    public int     getDuracionEstimada() { return duracionEstimada; }
+    public void    setDuracionEstimada(int d) { this.duracionEstimada = d; }
+    public long    getTiempoLlegada() { return tiempoLlegada; }
+    public void    setTiempoLlegada(long t) { this.tiempoLlegada = t; }
+    public long    getTiempoInicioAtencion() { return tiempoInicioAtencion; }
+    public void    setTiempoInicioAtencion(long t) { this.tiempoInicioAtencion = t; }
+    public long    getTiempoSalida() { return tiempoSalida; }
+    public void    setTiempoSalida(long t) { this.tiempoSalida = t; }
+    public boolean isEsPreferente() { return esPreferente; }
+    public void    setEsPreferente(boolean v) { this.esPreferente = v; }
+    public int     getPrioridad() { return prioridad; }
+    public void    setPrioridad(int p) { this.prioridad = p; }
+    public boolean isAtendida() { return atendida; }
+    public void    setAtendida(boolean v) { this.atendida = v; }
+}
+
+────────────────────────────────────────────────────────────────
+
+╔══════════════════════════════════════════════════════════════╗
+║  src/main/java/com/supermercado/domain/cooperativa/service/SimuladorCooperativaService.java
+╚══════════════════════════════════════════════════════════════╝
+
+package com.supermercado.domain.cooperativa.service;
+
+import com.supermercado.domain.cooperativa.config.ConfiguracionCooperativa;
+import com.supermercado.domain.cooperativa.event.EventoSimulacion;
+import com.supermercado.domain.cooperativa.event.TipoEvento;
+import com.supermercado.domain.cooperativa.model.*;
+
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
+
+public class SimuladorCooperativaService {
+
+    private long   msPorMinuto      = 62L;
+    private int    maxSociosDia     = 200;
+    private double intervaloMinutos = 1.0;
+    private int    diaActual        = 1;
+    private int    diaSimulado      = 0;
+
+    private volatile boolean corriendo               = false;
+    private volatile boolean pausado                 = false;
+    private volatile boolean faseRezagados           = false;
+    private volatile boolean fasePrincipalFinalizada = false;
+
+    private volatile long tiempoReloj = 510;
+    private volatile long tiempoMotor = 0;
+
+    private SalaEspera               salaEspera;
+    private List<Caja>               cajas;
+    private List<ServicioFinanciero> servicios;
+    private JornadaLaboral           jornadaActual;
+
+    private final GeneradorSociosService         generador    = new GeneradorSociosService();
+    private final AsignadorCajasService          asignador    = new AsignadorCajasService();
+    private final EstadisticasFinancierasService estadisticas = new EstadisticasFinancierasService();
+
+    private final List<Consumer<EventoSimulacion>> listeners = new CopyOnWriteArrayList<>();
+    private Thread hiloMotor;
+
+    public void configurar(long msPorMin, int maxSoc, double intv,
+                           List<ServicioFinanciero> svcs, List<Caja> cajasLista,
+                           ConfiguracionMultiServicio multi,
+                           ConfiguracionCooperativa  cfg) {
+        this.msPorMinuto      = Math.max(1L, msPorMin);
+        this.maxSociosDia     = maxSoc;
+        this.intervaloMinutos = intv;
+        this.servicios        = svcs       != null ? svcs       : new ArrayList<>();
+        this.cajas            = cajasLista != null ? cajasLista : new ArrayList<>();
+        this.salaEspera       = new SalaEspera();
+        generador.setServicios(this.servicios);
+        generador.setConfiguracionMultiServicio(multi != null ? multi : new ConfiguracionMultiServicio());
+        if (cfg != null) generador.setConfiguracion(cfg);
+    }
+
+    public static long calcularEscala(double horasSimuladas, int durRealSeg) {
+        int min = (int)(horasSimuladas * 60);
+        if (min <= 0 || durRealSeg <= 0) return 62L;
+        return Math.max(1L, (long) durRealSeg * 1000L / min);
+    }
+
+    public void setDiaSimulado(int dia) { this.diaSimulado = dia; }
+    public int getDiaSimulado() { return diaSimulado; }
+
+    public void iniciar(JornadaLaboral jornada, int dia) {
+        if (corriendo) return;
+        this.jornadaActual = jornada;
+        this.diaActual     = dia;
+        // diaSimulado ya debe estar establecido por MensualService antes de llamar a iniciar()
+        // NO resetear a 0 aqui; si por alguna razon llega en 0, se deja como esta.
+        corriendo = true; pausado = false;
+        faseRezagados = false; fasePrincipalFinalizada = false;
+        tiempoReloj = jornada != null ? jornada.getMinutoInicio() : 510;
+        tiempoMotor = 0;
+        generador.reiniciar();
+        estadisticas.reiniciar();
+
+        hiloMotor = new Thread(this::bucleMotor, "Motor-Dia-" + dia);
+        hiloMotor.setDaemon(true);
+        hiloMotor.start();
+        // FIX: usar diaSimulado (1,2,3...) en vez de dia (dia del calendario)
+        publicar(TipoEvento.SIMULACION_INICIADA, "=== Dia " + diaSimulado + " iniciado - " + horaSimulada() + " ===");
+    }
+
+    public void pausar() { if (!corriendo || pausado) return; pausado = true; publicar(TipoEvento.SIMULACION_PAUSADA, "Pausado"); }
+    public void reanudar() { if (!corriendo || !pausado) return; pausado = false; synchronized (this) { notifyAll(); } publicar(TipoEvento.SIMULACION_REANUDADA, "Reanudado"); }
+    public void detener() { corriendo = false; pausado = false; if (hiloMotor != null) { synchronized (this) { notifyAll(); } hiloMotor.interrupt(); } publicar(TipoEvento.SIMULACION_DETENIDA, "Detenido"); }
+    public void reiniciarDia() { detener(); if (salaEspera != null) salaEspera.reiniciar(); if (cajas != null) cajas.forEach(Caja::reiniciar); generador.reiniciar(); estadisticas.reiniciar(); tiempoReloj = jornadaActual != null ? jornadaActual.getMinutoInicio() : 510; tiempoMotor = 0; fasePrincipalFinalizada = false; faseRezagados = false; publicar(TipoEvento.SIMULACION_REINICIADA, "Reiniciado"); }
+    public void iniciarFaseRezagados() { if (!fasePrincipalFinalizada || faseRezagados) return; faseRezagados = true; corriendo = true; estadisticas.setFaseRezagados(true); hiloMotor = new Thread(this::bucleRezagados, "Motor-Rez-" + diaActual); hiloMotor.setDaemon(true); hiloMotor.start(); publicar(TipoEvento.FASE_REZAGADOS_INICIADA, "Drenando sala: " + salaEspera.getTotalEsperando() + " socios"); }
+
+    private void bucleMotor() {
+        double acum = 0.0;
+        List<BloqueHorario> bloques = jornadaActual.getBloques();
+        if (bloques.isEmpty()) { fasePrincipalFinalizada = true; corriendo = false; publicar(TipoEvento.FASE_PRINCIPAL_FINALIZADA, "Sin bloques horarios"); return; }
+
+        for (BloqueHorario bloque : bloques) {
+            if (!corriendo) break;
+            int inicio = bloque.getInicio();
+            int fin    = bloque.getFin();
+            tiempoReloj = inicio;
+            for (int minuto = inicio; minuto < fin; minuto++) {
+                if (!corriendo || fasePrincipalFinalizada) break;
+                if (pausado) { synchronized (this) { while (pausado && corriendo) { try { wait(100); } catch (InterruptedException e) { Thread.currentThread().interrupt(); return; } } } if (!corriendo) break; }
+
+                tiempoMotor++;
+                tiempoReloj = minuto;
+
+                acum += 1.0;
+                while (acum >= intervaloMinutos && generador.getTotalGenerados() < maxSociosDia) {
+                    acum -= intervaloMinutos;
+                    Socio s = generador.generarSocio(tiempoMotor);
+                    salaEspera.agregarSocio(s);
+                    estadisticas.setTotalGenerados(generador.getTotalGenerados());
+                    publicar(TipoEvento.SOCIO_GENERADO, s.getFicha() + " llego - " + s.getDescripcionServicios());
+                }
+
+                procesarAsignaciones();
+                procesarAtenciones();
+                sleep();
+            }
+        }
+
+        fasePrincipalFinalizada = true;
+        corriendo = false;
+        int enSala = salaEspera.getTotalEsperando();
+        int cajasOcupadas = (int) cajas.stream().filter(c -> c.getEstado() == EstadoCaja.OCUPADA).count();
+        publicar(TipoEvento.FASE_PRINCIPAL_FINALIZADA, "Fase principal terminada | En sala: " + enSala + " | En cajas: " + cajasOcupadas + " | Atendidos: " + estadisticas.getPrincipal().getTotalAtendidos());
+    }
+
+    private void bucleRezagados() {
+        int extraSeguridad = 0;
+        while (corriendo) {
+            if (pausado) { synchronized (this) { while (pausado && corriendo) { try { wait(100); } catch (InterruptedException e) { Thread.currentThread().interrupt(); return; } } } if (!corriendo) break; }
+
+            tiempoMotor++;
+            tiempoReloj++;
+            if (tiempoReloj >= 24 * 60) tiempoReloj -= 24 * 60;
+
+            procesarAtenciones();
+            procesarAsignaciones();
+
+            boolean salaVacia   = salaEspera.isEmpty();
+            boolean cajasLibres = cajas.stream().noneMatch(c -> c.getEstado() == EstadoCaja.OCUPADA);
+
+            if (salaVacia && cajasLibres) {
+                corriendo = false;
+                // FIX: caracteres corregidos (âœ…) + dia simulado en vez de diaActual
+                publicar(TipoEvento.SIMULACION_FINALIZADA, "âœ… Dia " + diaSimulado + " completo | Total atendidos: " + estadisticas.getTotalAtendidos() + " | Monto: Bs " + String.format("%.2f", estadisticas.getMontoTotal()));
+                break;
+            }
+            extraSeguridad++;
+            if (extraSeguridad > maxSociosDia * 60) {
+                corriendo = false;
+                // FIX: caracteres corregidos (âš ï¸) + dia simulado en vez de diaActual
+                publicar(TipoEvento.SIMULACION_FINALIZADA, "âš ï¸ Dia " + diaSimulado + " - tiempo de drenaje agotado | Atendidos: " + estadisticas.getTotalAtendidos());
+                break;
+            }
+            sleep();
+        }
+    }
+
+    private void procesarAsignaciones() {
+        while (!salaEspera.isEmpty()) {
+            Socio siguiente = salaEspera.verSiguiente();
+            if (siguiente == null) break;
+            Optional<Caja> opt = asignador.asignar(siguiente, cajas);
+            if (opt.isEmpty()) break;
+            Socio s = salaEspera.siguienteSocio();
+            Caja  c = opt.get();
+            asignador.confirmarAsignacion(s, c, tiempoMotor);
+            publicar(TipoEvento.SOCIO_ASIGNADO, s.getFicha() + " -> " + c.getId() + (s.isMultiServicio() ? " [x"+s.getTotalServicios()+"]" : ""));
+        }
+    }
+
+    private void procesarAtenciones() {
+        for (Caja caja : cajas) {
+            if (caja.getEstado() != EstadoCaja.OCUPADA) continue;
+            Socio s = caja.getSocioActual();
+            if (s == null) continue;
+            long enCaja = tiempoMotor - s.getTiempoInicioAtencion();
+            if (enCaja >= s.getDuracionEstimada()) {
+                s.setTiempoSalida(tiempoMotor);
+                s.setAtendida(true);
+                estadisticas.registrarAtencion(s, caja);
+                caja.finalizarAtencion(tiempoMotor);
+                long espera = s.getTiempoInicioAtencion() - s.getTiempoLlegada();
+                // FIX: caracter corregido (âœ“)
+                publicar(TipoEvento.SOCIO_ATENDIDO, s.getFicha() + " âœ“ " + caja.getId() + " | Espera: " + Math.max(0,espera) + " min | Aten: " + s.getDuracionEstimada() + " min | Bs " + String.format("%.0f", s.getMonto()));
+            }
+        }
+    }
+
+    private void sleep() { try { Thread.sleep(msPorMinuto); } catch (InterruptedException e) { Thread.currentThread().interrupt(); } }
+
+    public String horaSimulada() {
+        int m = (int)(tiempoReloj % (24*60));
+        return String.format("D\u00eda %d \u2013 %02d:%02d", diaSimulado, m/60, m%60);
+    }
+
+    public ResumenDiario construirResumenDia() {
+        ResumenDiario r = new ResumenDiario(diaActual, true);
+        r.setNumeroDia(diaSimulado);
+        r.setGenerados(generador.getTotalGenerados());
+        r.setAtendidosPrincipal(estadisticas.getPrincipal().getTotalAtendidos());
+        r.setAtendidosRezagados(estadisticas.getRezagados().getTotalAtendidos());
+        r.setNoAtendidos(Math.max(0, r.getGenerados()-r.getTotalAtendidos()));
+        r.setMontoTotal(estadisticas.getMontoTotal());
+        r.setPromedioEspera(estadisticas.getPromedioEspera());
+        r.setPromedioAtencion(estadisticas.getPromedioAtencion());
+        r.setCajeroEstrella(estadisticas.getCajeroEstrellaGlobal());
+        int min = jornadaActual!=null ? jornadaActual.getTotalMinutosLaborables() : 480;
+        r.setEficienciaGlobal(min>0 ? (double)r.getTotalAtendidos()/min : 0);
+        return r;
+    }
+
+    public void addListener(Consumer<EventoSimulacion> l)    { listeners.add(l); }
+    public void removeListener(Consumer<EventoSimulacion> l) { listeners.remove(l); }
+    private void publicar(TipoEvento t, String msg) { EventoSimulacion ev = new EventoSimulacion(t, msg, horaSimulada()); for (var l : listeners) { try { l.accept(ev); } catch (Exception ignored) {} } }
+
+    public boolean  isCorriendo()               { return corriendo; }
+    public boolean  isPausado()                 { return pausado; }
+    public boolean  isFaseRezagados()           { return faseRezagados; }
+    public boolean  isFasePrincipalFinalizada() { return fasePrincipalFinalizada; }
+    public long     getTiempoReloj()            { return tiempoReloj; }
+    public long     getTiempoMotor()            { return tiempoMotor; }
+    public int      getDiaActual()              { return diaActual; }
+    public SalaEspera getSalaEspera()           { return salaEspera; }
+    public List<Caja> getCajas()                { return cajas; }
+    public EstadisticasFinancierasService getEstadisticas() { return estadisticas; }
+    public GeneradorSociosService         getGenerador()    { return generador; }
+    public JornadaLaboral                 getJornadaActual(){ return jornadaActual; }
+}
+
+────────────────────────────────────────────────────────────────
+
+╔══════════════════════════════════════════════════════════════╗
+║  src/main/java/com/supermercado/domain/cooperativa/service/SimuladorMensualService.java
+╚══════════════════════════════════════════════════════════════╝
+
+package com.supermercado.domain.cooperativa.service;
+
+import com.supermercado.domain.cooperativa.config.ConfiguracionCooperativa;
+import com.supermercado.domain.cooperativa.event.EventoSimulacion;
+import com.supermercado.domain.cooperativa.event.TipoEvento;
+import com.supermercado.domain.cooperativa.model.*;
+
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
+
+public class SimuladorMensualService {
+
+    private final SimuladorCooperativaService     motor;
+    private final List<ResumenDiario>             resumenes = new ArrayList<>();
+    private final List<Consumer<EventoSimulacion>> listeners = new CopyOnWriteArrayList<>();
+
+    private ConfiguracionCooperativa   config;
+    private List<JornadaLaboral>       jornadas;
+    private List<Caja>                 cajas;
+    private List<ServicioFinanciero>   servicios;
+    private ConfiguracionMultiServicio configMulti;
+
+    private volatile boolean corriendo = false;
+    private int diaEnCurso = 0;
+
+    private boolean       preguntarRezagadosHabilitado = false;
+    private BooleanSupplier preguntaRezagados = () -> true;
+
+    public SimuladorMensualService(SimuladorCooperativaService motor) {
+        this.motor = motor;
+        motor.addListener(this::propagar);
+    }
+
+    public void configurar(ConfiguracionCooperativa cfg, List<JornadaLaboral> jornadas,
+                           List<Caja> cajas, List<ServicioFinanciero> servicios,
+                           ConfiguracionMultiServicio multi) {
+        this.config=cfg; this.jornadas=jornadas; this.cajas=cajas;
+        this.servicios=servicios; this.configMulti=multi;
+    }
+
+    public void setPreguntaRezagados(BooleanSupplier fn)       { preguntaRezagados=fn; }
+    public void setPreguntarRezagadosHabilitado(boolean v)     { preguntarRezagadosHabilitado=v; }
+
+    public void iniciar() {
+        if (corriendo) return;
+        corriendo=true; resumenes.clear();
+        Thread h=new Thread(this::bucle,"Motor-Mensual");
+        h.setDaemon(true); h.start();
+    }
+
+    public void pausar()  { motor.pausar(); }
+    public void reanudar(){ motor.reanudar(); }
+
+    public void detener() {
+        corriendo=false; motor.detener();
+        propagar(new EventoSimulacion(TipoEvento.SIMULACION_DETENIDA,"Detenida",""));
+    }
+
+    private void bucle() {
+        int contadorLaborable = 0;
+
+        for (JornadaLaboral jornada : jornadas) {
+            if (!corriendo) break;
+            diaEnCurso = jornada.getDia();
+
+            if (!jornada.isLaborable()) {
+                resumenes.add(new ResumenDiario(diaEnCurso, false));
+                continue;
+            }
+
+            contadorLaborable++;
+            motor.setDiaSimulado(contadorLaborable);
+
+            cajas.forEach(Caja::reiniciar);
+            motor.configurar(config.getMsPorMinuto(), config.getMaxSociosDia(),
+                    config.getIntervaloMinutos(), servicios, cajas, configMulti, config);
+
+            // Mensaje de inicio: solo "=== Dia X iniciado ==="
+            propagar(new EventoSimulacion(TipoEvento.DIA_INICIADO,
+                    "=== Dia " + contadorLaborable + " iniciado ===",
+                    "Dia " + contadorLaborable));
+
+            motor.iniciar(jornada, diaEnCurso);
+            esperarCondicion(() -> motor.isFasePrincipalFinalizada());
+            if (!corriendo) break;
+
+            int enSala = motor.getSalaEspera()!=null ? motor.getSalaEspera().getTotalEsperando():0;
+            int cajasOc= motor.getCajas()!=null
+                    ? (int)motor.getCajas().stream().filter(c->c.getEstado()==EstadoCaja.OCUPADA).count():0;
+            boolean hayRez = enSala>0 || cajasOc>0;
+
+            if (hayRez) {
+                boolean iniciar = preguntarRezagadosHabilitado
+                        ? preguntaRezagados.getAsBoolean() : true;
+                if (iniciar) {
+                    motor.iniciarFaseRezagados();
+                    esperarCondicion(() -> !motor.isCorriendo());
+                } else {
+                    propagar(new EventoSimulacion(TipoEvento.SIMULACION_FINALIZADA,
+                            "Rezagados omitidos: " + enSala + " socios",
+                            motor.horaSimulada()));
+                }
+            } else {
+                propagar(new EventoSimulacion(TipoEvento.SIMULACION_FINALIZADA,
+                        "Dia " + contadorLaborable + " finalizado (sin rezagados)",
+                        motor.horaSimulada()));
+            }
+            if (!corriendo) break;
+
+            ResumenDiario resumen = motor.construirResumenDia();
+            resumenes.add(resumen);
+            motor.getEstadisticas().registrarResumenDiario(resumen);
+
+            // Mensaje de finalizaciÃ³n de dÃ­a: sin emojis y sin duplicar la hora
+            propagar(new EventoSimulacion(TipoEvento.DIA_FINALIZADO,
+                    "Dia " + contadorLaborable + " completo | Gen:" + resumen.getGenerados()
+                    + " | Atend:" + resumen.getTotalAtendidos()
+                    + " | Bs " + String.format("%.0f",resumen.getMontoTotal()),
+                    "Dia " + contadorLaborable));
+
+            try { Thread.sleep(500); } catch (InterruptedException e) { break; }
+        }
+
+        if (corriendo) {
+            corriendo=false;
+            long labs  = resumenes.stream().filter(ResumenDiario::isLaborable).count();
+            int  atend = resumenes.stream().mapToInt(ResumenDiario::getTotalAtendidos).sum();
+            propagar(new EventoSimulacion(TipoEvento.SIMULACION_MENSUAL_FINALIZADA,
+                    "Finalizado | " + labs + " dÃ­as laborables | Total: " + atend + " atendidos",
+                    ""));
+        }
+    }
+
+    private void esperarCondicion(java.util.function.BooleanSupplier cond) {
+        int t=0;
+        while (corriendo && !cond.getAsBoolean()) {
+            try{Thread.sleep(50);}catch(InterruptedException e){return;}
+            if(++t>60000) break;
+        }
+    }
+
+    private void propagar(EventoSimulacion ev) {
+        for (var l:listeners){try{l.accept(ev);}catch(Exception ignored){}}
+    }
+
+    public void addListener(Consumer<EventoSimulacion> l)    { listeners.add(l); }
+    public void removeListener(Consumer<EventoSimulacion> l) { listeners.remove(l); }
+    public boolean isCorriendo()      { return corriendo; }
+    public int     getDiaEnCurso()    { return diaEnCurso; }
+    public List<ResumenDiario> getResumenes() { return Collections.unmodifiableList(resumenes); }
+    public SimuladorCooperativaService getMotor() { return motor; }
+}
+
+────────────────────────────────────────────────────────────────
+
+╔══════════════════════════════════════════════════════════════╗
+║  src/main/java/com/supermercado/domain/cooperativa/model/ResumenDiario.java
+╚══════════════════════════════════════════════════════════════╝
+
+package com.supermercado.domain.cooperativa.model;
+
+/**
+ * Resumen de un dia de simulacion.
+ * dia           = numero del dia en el calendario (puede ser 2, 17, 44...)
+ * numeroDia     = contador de dias laborables simulados (1, 2, 3...)
+ */
+public class ResumenDiario {
+    private int     dia;            // dia del calendario
+    private int     numeroDia;      // contador simulado: 1, 2, 3...
+    private boolean laborable;
+    private int     generados;
+    private int     atendidosPrincipal;
+    private int     atendidosRezagados;
+    private int     noAtendidos;
+    private double  montoTotal;
+    private double  promedioEspera;
+    private double  promedioAtencion;
+    private String  cajeroEstrella;
+    private double  eficienciaGlobal;
+
+    public ResumenDiario(int dia, boolean laborable) {
+        this.dia       = dia;
+        this.laborable = laborable;
+        this.numeroDia = dia; // por defecto igual; se sobrescribe desde el mensual
+    }
+
+    public int     getDia()                     { return dia; }
+    public void    setDia(int d)               { this.dia = d; }
+    public int     getNumeroDia()               { return numeroDia; }
+    public void    setNumeroDia(int n)          { this.numeroDia = n; }
+    public boolean isLaborable()               { return laborable; }
+    public void    setLaborable(boolean v)     { this.laborable = v; }
+    public int     getGenerados()              { return generados; }
+    public void    setGenerados(int v)         { generados = v; }
+    public int     getAtendidosPrincipal()     { return atendidosPrincipal; }
+    public void    setAtendidosPrincipal(int v){ atendidosPrincipal = v; }
+    public int     getAtendidosRezagados()     { return atendidosRezagados; }
+    public void    setAtendidosRezagados(int v){ atendidosRezagados = v; }
+    public int     getTotalAtendidos()         { return atendidosPrincipal + atendidosRezagados; }
+    public int     getNoAtendidos()            { return noAtendidos; }
+    public void    setNoAtendidos(int v)       { noAtendidos = v; }
+    public double  getMontoTotal()             { return montoTotal; }
+    public void    setMontoTotal(double v)     { montoTotal = v; }
+    public double  getPromedioEspera()         { return promedioEspera; }
+    public void    setPromedioEspera(double v) { promedioEspera = v; }
+    public double  getPromedioAtencion()       { return promedioAtencion; }
+    public void    setPromedioAtencion(double v){ promedioAtencion = v; }
+    public String  getCajeroEstrella()         { return cajeroEstrella; }
+    public void    setCajeroEstrella(String v) { cajeroEstrella = v; }
+    public double  getEficienciaGlobal()       { return eficienciaGlobal; }
+    public void    setEficienciaGlobal(double v){ eficienciaGlobal = v; }
+}
+
+────────────────────────────────────────────────────────────────
+
+╔══════════════════════════════════════════════════════════════╗
+║  src/main/java/com/supermercado/domain/cooperativa/service/EstadisticasFinancierasService.java
+╚══════════════════════════════════════════════════════════════╝
+
+package com.supermercado.domain.cooperativa.service;
+
+import com.supermercado.domain.cooperativa.model.Caja;
+import com.supermercado.domain.cooperativa.model.ResumenDiario;
+import com.supermercado.domain.cooperativa.model.Socio;
+
+import java.util.*;
+
+public class EstadisticasFinancierasService {
+
+    private final EstadisticasFase principal = new EstadisticasFase("Principal");
+    private final EstadisticasFase rezagados  = new EstadisticasFase("Rezagados");
+    private boolean enFaseRezagados = false;
+    private int     totalGeneradosDia = 0;
+
+    private final List<ResumenDiario> resumenesDiarios = new ArrayList<>();
+
+    private int    acumGenerados   = 0;
+    private int    acumAtendPpal   = 0;
+    private int    acumAtendRez    = 0;
+    private double acumMonto       = 0.0;
+    private double acumMontoPpal   = 0.0;   // NUEVO
+    private double acumMontoRez    = 0.0;   // NUEVO
+    private double acumSumaEspera  = 0.0;
+    private double acumSumaAtencion= 0.0;
+    private int    diasAcumulados  = 0;
+
+    public void setFaseRezagados(boolean v) { enFaseRezagados = v; }
+    public void setTotalGenerados(int v)    { totalGeneradosDia = v; }
+
+    public void registrarAtencion(Socio socio, Caja caja) {
+        if (enFaseRezagados) rezagados.registrar(socio, caja);
+        else                 principal.registrar(socio, caja);
+    }
+
+    public void acumularDia(ResumenDiario r) {
+        if (r == null || !r.isLaborable()) return;
+        resumenesDiarios.add(r);
+        acumGenerados  += r.getGenerados();
+        acumAtendPpal  += r.getAtendidosPrincipal();
+        acumAtendRez   += r.getAtendidosRezagados();
+        acumMonto      += r.getMontoTotal();
+        acumMontoPpal  += principal.getMontoTotal();
+        acumMontoRez   += rezagados.getMontoTotal();
+        int atend = r.getTotalAtendidos();
+        if (atend > 0) {
+            acumSumaEspera   += r.getPromedioEspera()   * atend;
+            acumSumaAtencion += r.getPromedioAtencion() * atend;
+        }
+        diasAcumulados++;
+    }
+
+    public void registrarResumenDiario(ResumenDiario r) { acumularDia(r); }
+
+    public void reiniciar() {
+        principal.reiniciar(); rezagados.reiniciar();
+        enFaseRezagados = false; totalGeneradosDia = 0;
+    }
+
+    public void reiniciarCompleto() {
+        reiniciar();
+        resumenesDiarios.clear();
+        acumGenerados=0; acumAtendPpal=0; acumAtendRez=0;
+        acumMonto=0.0; acumMontoPpal=0.0; acumMontoRez=0.0;
+        acumSumaEspera=0.0; acumSumaAtencion=0.0; diasAcumulados=0;
+    }
+
+    public EstadisticasFase getPrincipal()   { return principal; }
+    public EstadisticasFase getRezagados()   { return rezagados; }
+    public int    getTotalAtendidos()        { return principal.getTotalAtendidos() + rezagados.getTotalAtendidos(); }
+    public double getMontoTotal()            { return principal.getMontoTotal() + rezagados.getMontoTotal(); }
+    public double getPromedioEspera() {
+        int t = getTotalAtendidos(); if (t==0) return 0;
+        return (principal.getPromedioEspera()*principal.getTotalAtendidos()
+              + rezagados.getPromedioEspera()*rezagados.getTotalAtendidos()) / t;
+    }
+    public double getPromedioAtencion() {
+        int t = getTotalAtendidos(); if (t==0) return 0;
+        return (principal.getPromedioAtencion()*principal.getTotalAtendidos()
+              + rezagados.getPromedioAtencion()*rezagados.getTotalAtendidos()) / t;
+    }
+    public String getCajeroEstrellaGlobal() {
+        Map<String,Integer> combinado = new HashMap<>(principal.getAtendidosPorCaja());
+        rezagados.getAtendidosPorCaja().forEach((k,v)->combinado.merge(k,v,Integer::sum));
+        return combinado.entrySet().stream().max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey).orElse("N/A");
+    }
+    public double getEficienciaGlobal(long minutosSimulados) {
+        return minutosSimulados==0 ? 0 : (double)getTotalAtendidos()/minutosSimulados;
+    }
+
+    public int    getAcumGenerados()         { return acumGenerados; }
+    public int    getAcumAtendPpal()         { return acumAtendPpal; }
+    public int    getAcumAtendRez()          { return acumAtendRez; }
+    public int    getAcumTotalAtendidos()    { return acumAtendPpal + acumAtendRez; }
+    public int    getAcumNoAtendidos()       { return Math.max(0, acumGenerados - getAcumTotalAtendidos()); }
+    public double getAcumMonto()             { return acumMonto; }
+    public double getAcumMontoPpal()         { return acumMontoPpal; }
+    public double getAcumMontoRez()          { return acumMontoRez; }
+    public int    getDiasAcumulados()        { return diasAcumulados; }
+    public double getAcumPromedioEspera()    { int t = getAcumTotalAtendidos(); return t==0?0:acumSumaEspera/t; }
+    public double getAcumPromedioAtencion()  { int t = getAcumTotalAtendidos(); return t==0?0:acumSumaAtencion/t; }
+    public List<ResumenDiario> getResumenesDiarios() { return Collections.unmodifiableList(resumenesDiarios); }
+}
+
+────────────────────────────────────────────────────────────────
+
+╔══════════════════════════════════════════════════════════════╗
+║  src/main/java/com/supermercado/domain/cooperativa/service/EstadisticasFase.java
+╚══════════════════════════════════════════════════════════════╝
+
+package com.supermercado.domain.cooperativa.service;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
+/**
+ * Acumula estadÃ­sticas de una fase de simulaciÃ³n (principal o rezagados).
+ * Thread-safe para ser actualizado desde el hilo del motor.
+ */
+public class EstadisticasFase {
+
+    private final String nombre; // "Principal" o "Rezagados"
+
+    private final AtomicInteger totalAtendidos = new AtomicInteger(0);
+    private final AtomicLong    sumaEspera     = new AtomicLong(0);   // min
+    private final AtomicLong    sumaAtencion   = new AtomicLong(0);   // min
+    private final AtomicLong    montoTotalCts  = new AtomicLong(0);   // centavos
+
+    // Por caja
+    private final Map<String,Integer> atendidosPorCaja     = new ConcurrentHashMap<>();
+    private final Map<String,Long>    tiempoOcupadoPorCaja = new ConcurrentHashMap<>();
+    private final Map<String,Double>  montoPorCaja         = new ConcurrentHashMap<>();
+
+    // Por servicio
+    private final Map<String,Integer> atendidosPorServicio = new ConcurrentHashMap<>();
+
+    public EstadisticasFase(String nombre) { this.nombre = nombre; }
+
+    public void registrar(com.supermercado.domain.cooperativa.model.Socio socio,
+                          com.supermercado.domain.cooperativa.model.Caja  caja) {
+        if (socio == null || caja == null) return;
+
+        totalAtendidos.incrementAndGet();
+        long espera   = Math.max(0, socio.getTiempoInicioAtencion() - socio.getTiempoLlegada());
+        long atencion = Math.max(0, socio.getTiempoSalida() - socio.getTiempoInicioAtencion());
+        sumaEspera.addAndGet(espera);
+        sumaAtencion.addAndGet(atencion);
+        montoTotalCts.addAndGet((long)(socio.getMonto() * 100));
+
+        String id = caja.getId();
+        atendidosPorCaja.merge(id, 1, Integer::sum);
+        tiempoOcupadoPorCaja.merge(id, atencion, Long::sum);
+        montoPorCaja.merge(id, socio.getMonto(), Double::sum);
+
+        for (var s : socio.getTodosLosServicios()) {
+            if (s != null) atendidosPorServicio.merge(s.getNombre(), 1, Integer::sum);
+        }
+    }
+
+    public void reiniciar() {
+        totalAtendidos.set(0); sumaEspera.set(0); sumaAtencion.set(0); montoTotalCts.set(0);
+        atendidosPorCaja.clear(); tiempoOcupadoPorCaja.clear();
+        montoPorCaja.clear(); atendidosPorServicio.clear();
+    }
+
+    // â”€â”€ Getters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    public String  getNombre()         { return nombre; }
+    public int     getTotalAtendidos() { return totalAtendidos.get(); }
+    public double  getMontoTotal()     { return montoTotalCts.get() / 100.0; }
+    public double  getPromedioEspera() {
+        int t = totalAtendidos.get(); return t == 0 ? 0 : (double) sumaEspera.get() / t;
+    }
+    public double  getPromedioAtencion() {
+        int t = totalAtendidos.get(); return t == 0 ? 0 : (double) sumaAtencion.get() / t;
+    }
+
+    public String getCajeroEstrella() {
+        return atendidosPorCaja.entrySet().stream()
+                .max(Comparator.comparingDouble(e -> eficiencia(e.getKey())))
+                .map(Map.Entry::getKey).orElse("N/A");
+    }
+
+    public double getEficienciaCajero(String id) { return eficiencia(id); }
+
+    private double eficiencia(String id) {
+        int    a = atendidosPorCaja.getOrDefault(id, 0);
+        long   t = tiempoOcupadoPorCaja.getOrDefault(id, 1L);
+        double m = montoPorCaja.getOrDefault(id, 0.0);
+        return t == 0 ? 0 : ((double) a / t) * 1000.0 + m / 10000.0;
+    }
+
+    public Map<String,Integer> getAtendidosPorServicio() { return Collections.unmodifiableMap(atendidosPorServicio); }
+    public Map<String,Integer> getAtendidosPorCaja()     { return Collections.unmodifiableMap(atendidosPorCaja); }
+    public Map<String,Double>  getMontoPorCaja()         { return Collections.unmodifiableMap(montoPorCaja); }
+}
+
+────────────────────────────────────────────────────────────────
+
+╔══════════════════════════════════════════════════════════════╗
+║  src/main/java/com/supermercado/domain/cooperativa/service/AsignadorCajasService.java
+╚══════════════════════════════════════════════════════════════╝
+
+package com.supermercado.domain.cooperativa.service;
+
+import com.supermercado.domain.cooperativa.model.Caja;
+import com.supermercado.domain.cooperativa.model.EstadoCaja;
+import com.supermercado.domain.cooperativa.model.Socio;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+public class AsignadorCajasService {
+
+    public Optional<Caja> asignar(Socio socio, List<Caja> cajas) {
+        if (socio == null || cajas == null || cajas.isEmpty()) return Optional.empty();
+        String dest = socio.getTipoCajaDestino() != null ? socio.getTipoCajaDestino() : "GENERAL";
+
+        return switch (dest) {
+            case "PLATAFORMA" -> buscarCaja(cajas, "PLATAFORMA");
+            case "MM" -> {
+                Optional<Caja> mm = buscarCaja(cajas, "MM");
+                yield mm.isPresent() ? mm : buscarCaja(cajas, "GENERAL");
+            }
+            default -> cajas.stream()
+                    .filter(c -> c.isActiva() && c.getEstado() == EstadoCaja.LIBRE
+                            && (tipoCaja(c).equals("GENERAL") || tipoCaja(c).equals("MM")))
+                    .min(Comparator.comparingInt(Caja::getTotalAtendidos));
+        };
+    }
+
+    private Optional<Caja> buscarCaja(List<Caja> cajas, String tipo) {
+        return cajas.stream()
+                .filter(c -> c.isActiva() && c.getEstado() == EstadoCaja.LIBRE
+                        && tipoCaja(c).equals(tipo))
+                .min(Comparator.comparingInt(Caja::getTotalAtendidos));
+    }
+
+    private String tipoCaja(Caja c) {
+        if (c.getTipo() == null) return "GENERAL";
+        return c.getTipo().getId().toUpperCase();
+    }
+
+    public boolean confirmarAsignacion(Socio socio, Caja caja, long tiempoActual) {
+        if (socio == null || caja == null || caja.getEstado() != EstadoCaja.LIBRE) return false;
+        caja.asignarSocio(socio, tiempoActual);
+        socio.setTiempoInicioAtencion(tiempoActual);
+        return true;
+    }
+
+    public List<Caja> cajasDisponibles(List<Caja> cajas) {
+        return cajas.stream()
+                .filter(c -> c.isActiva() && c.getEstado() == EstadoCaja.LIBRE)
+                .sorted(Comparator.comparingInt(Caja::getTotalAtendidos))
+                .collect(Collectors.toList());
+    }
+}
+
+────────────────────────────────────────────────────────────────
+
+╔══════════════════════════════════════════════════════════════╗
+║  src/main/java/com/supermercado/domain/cooperativa/model/SalaEspera.java
+╚══════════════════════════════════════════════════════════════╝
+
+package com.supermercado.domain.cooperativa.model;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
+public class SalaEspera {
+    private final Queue<Socio> colaPreferentes = new LinkedList<>();
+    private final Queue<Socio> colaNormales    = new LinkedList<>();
+    private int totalAtendidos = 0;
+
+    public void agregarSocio(Socio s) {
+        if (s == null) return;
+        if (s.isEsPreferente()) colaPreferentes.offer(s);
+        else                    colaNormales.offer(s);
+    }
+
+    public Socio verSiguiente() {
+        if (!colaPreferentes.isEmpty()) return colaPreferentes.peek();
+        return colaNormales.peek();
+    }
+
+    public Socio siguienteSocio() {
+        if (!colaPreferentes.isEmpty()) return colaPreferentes.poll();
+        return colaNormales.poll();
+    }
+
+    public boolean isEmpty() { return colaPreferentes.isEmpty() && colaNormales.isEmpty(); }
+    public int getTotalEsperando() { return colaPreferentes.size() + colaNormales.size(); }
+    public int getTotalPreferentesEsperando() { return colaPreferentes.size(); }
+    public int getTotalNormalesEsperando()     { return colaNormales.size(); }
+
+    public void incrementarAtendidos() { totalAtendidos++; }
+    public int  getTotalAtendidos()    { return totalAtendidos; }
+
+    public void reiniciar() {
+        colaPreferentes.clear(); colaNormales.clear(); totalAtendidos = 0;
+    }
+
+    public List<Socio> getSocios() {
+        List<Socio> lista = new ArrayList<>(colaPreferentes);
+        lista.addAll(colaNormales);
+        return lista;
+    }
+}
+
+────────────────────────────────────────────────────────────────
+
+=================================================
+FIN DE LOS ARCHIVOS
+=================================================

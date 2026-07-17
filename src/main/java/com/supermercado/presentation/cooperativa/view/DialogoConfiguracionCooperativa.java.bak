@@ -401,16 +401,13 @@ public class DialogoConfiguracionCooperativa extends JDialog {
             if (rbCalibrado.isSelected() && cal.isTieneFechas()) {
                 Map<LocalDate, Boolean> nuevoEstado = new LinkedHashMap<>();
                 for (LocalDate d : cal.getDiasLaborables()) nuevoEstado.put(d, true);
-                panelCalendario.setEstadoDias(nuevoEstado); // Reemplazar completamente el estado del calendario
+                panelCalendario.setEstadoDias(nuevoEstado);
 
                 spnMaxSoc.setValue(Math.max(10, cal.getMaxSociosDia()));
-                // FIX: aceptar el intervalo aunque de 0.00 (resolucion de minuto en
-                // el archivo real), con piso minimo de 0.1 para evitar division rara.
-                double intervaloCalculado = Math.max(0.1,
-                        Math.round(cal.getIntervaloPromedioLlegada() * 10) / 10.0);
-                spnIntv.setValue(Math.min(10.0, intervaloCalculado));
-                System.out.println(">>> [Calibracion] Intervalo aplicado: " + intervaloCalculado
-                        + " min (calculado del historial: " + cal.getIntervaloPromedioLlegada() + ")");
+                if (cal.getIntervaloPromedioLlegada() > 0) {
+                    double intv = Math.max(0.1, Math.round(cal.getIntervaloPromedioLlegada() * 10) / 10.0);
+                    spnIntv.setValue(Math.min(10.0, intv));
+                }
                 calibracionCompleta = true;
             }
             aplicarModo();

@@ -6,19 +6,25 @@ import com.supermercado.domain.cooperativa.service.EstadisticasFinancierasServic
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public class TxtExportadorAdapter implements IReporteExportador {
 
     private static final String LINEA = "=".repeat(78);
     private static final String SUBLINEA = "-".repeat(78);
+    private static final List<String> CODIGOS = List.of("C","A","S","F","P","R","PC","PS","PA","PP");
+    private static final Map<String,String> NOMBRES = Map.ofEntries(
+            Map.entry("C","Ahorro/Credito"), Map.entry("A","Semapa (Agua)"),
+            Map.entry("S","Elfec-Comteco-Semapa"), Map.entry("F","Fraccionamiento"),
+            Map.entry("P","Plataforma"), Map.entry("R","Renta Dignidad"),
+            Map.entry("PC","Pref. Ahorro-Credito"), Map.entry("PS","Pref. Elfec-Comteco-Semapa"),
+            Map.entry("PA","Pref. Semapa"), Map.entry("PP","Pref. Plataforma"));
 
     @Override
     public void exportar(String rutaArchivo,
-                         List<ResumenDiario> resumenes,
-                         EstadisticasFinancierasService est,
-                         long minutosSimulados) throws IOException {
+                          List<ResumenDiario> resumenes,
+                          EstadisticasFinancierasService est,
+                          long minutosSimulados) throws IOException {
 
         try (FileWriter w = new FileWriter(rutaArchivo, false)) {
             w.write(LINEA + "\n");
@@ -30,20 +36,23 @@ public class TxtExportadorAdapter implements IReporteExportador {
             escribirResumenFinal(w, est);
             w.write("\n");
             escribirEstadisticasAcumuladas(w, est, minutosSimulados);
+            w.write("\n");
+            escribirDesgloseServicio(w, est);
         }
     }
 
     private void escribirEvolucion(FileWriter w, List<ResumenDiario> resumenes) throws IOException {
         w.write("EVOLUCION DIARIA\n");
         w.write(SUBLINEA + "\n");
-        w.write(String.format("%-5s | %-9s | %-9s | %-9s | %-8s | %-12s | %-9s | %-9s | %-20s%n",
-                "Dia", "Generados", "Principal", "Rezagados", "Total", "Monto (Bs)", "Espera", "Aten.", "Cajero"));
+        w.write(String.format("%-12s | %-9s | %-9s | %-9s | %-8s | %-12s | %-9s | %-9s | %-20s%n",
+                "Dia/Fecha", "Generados", "Principal", "Rezagados", "Total", "Monto (Bs)", "Espera", "Aten.", "Cajero"));
         w.write(SUBLINEA + "\n");
         for (ResumenDiario r : resumenes) {
             if (!r.isLaborable()) continue;
+            String etiquetaDia = r.getFecha() != null ? r.getFecha().toString() : ("Dia " + r.getNumeroDia());
             w.write(String.format(Locale.ROOT,
-                    "%-5d | %-9d | %-9d | %-9d | %-8d | %-12.2f | %-9.1f | %-9.1f | %-20s%n",
-                    r.getNumeroDia(), r.getGenerados(), r.getAtendidosPrincipal(),
+                    "%-12s | %-9d | %-9d | %-9d | %-8d | %-12.2f | %-9.1f | %-9.1f | %-20s%n",
+                    etiquetaDia, r.getGenerados(), r.getAtendidosPrincipal(),
                     r.getAtendidosRezagados(), r.getTotalAtendidos(), r.getMontoTotal(),
                     r.getPromedioEspera(), r.getPromedioAtencion(),
                     r.getCajeroEstrella() != null ? r.getCajeroEstrella() : "-"));
@@ -94,6 +103,19 @@ public class TxtExportadorAdapter implements IReporteExportador {
         if (minutosSimulados > 0) {
             w.write(String.format(Locale.ROOT, "  Eficiencia global: %.3f atendidos/min%n",
                     est.getEficienciaGlobal(minutosSimulados)));
+        }
+        w.write(SUBLINEA + "\n");
+    }
+
+    private void escribirDesgloseServicio(FileWriter w, EstadisticasFinancierasService est) throws IOException {
+        w.write("DESGLOSE POR TIPO DE SERVICIO\n");
+        w.write(SUBLINEA + "\n");
+        w.write(String.format("%-6s | %-28s | %-12s%n", "Cod.", "Descripcion", "Atendidos"));
+        w.write(SUBLINEA + "\n");
+        Map<String,Integer> desglose = est.getAcumAtendidosPorCodigo();
+        for (String codigo : CODIGOS) {
+            int cantidad = desglose.getOrDefault(codigo, 0);
+            w.write(String.format("%-6s | %-28s | %-12d%n", codigo, NOMBRES.getOrDefault(codigo, codigo), cantidad));
         }
         w.write(SUBLINEA + "\n");
     }

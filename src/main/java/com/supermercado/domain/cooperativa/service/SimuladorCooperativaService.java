@@ -37,6 +37,16 @@ public class SimuladorCooperativaService {
     private final List<Consumer<EventoSimulacion>> listeners = new CopyOnWriteArrayList<>();
     private Thread hiloMotor;
 
+    // NUEVO: modo Replay (reproduce historial real en vez de generar)
+    private List<Socio> sociosPredefinidos;
+    private boolean modoReplay = false;
+
+    public void setSociosPredefinidos(List<Socio> lista) {
+        this.sociosPredefinidos = lista;
+        this.modoReplay = lista != null && !lista.isEmpty();
+    }
+    public boolean isModoReplay() { return modoReplay; }
+
     public void configurar(long msPorMin, int maxSoc, double intv,
                            List<ServicioFinanciero> svcs, List<Caja> cajasLista,
                            ConfiguracionMultiServicio multi,
@@ -65,8 +75,6 @@ public class SimuladorCooperativaService {
         if (corriendo) return;
         this.jornadaActual = jornada;
         this.diaActual     = dia;
-        // diaSimulado ya debe estar establecido por MensualService antes de llamar a iniciar()
-        // NO resetear a 0 aqui; si por alguna razon llega en 0, se deja como esta.
         corriendo = true; pausado = false;
         faseRezagados = false; fasePrincipalFinalizada = false;
         tiempoReloj = jornada != null ? jornada.getMinutoInicio() : 510;
@@ -77,8 +85,8 @@ public class SimuladorCooperativaService {
         hiloMotor = new Thread(this::bucleMotor, "Motor-Dia-" + dia);
         hiloMotor.setDaemon(true);
         hiloMotor.start();
-        // FIX: usar diaSimulado (1,2,3...) en vez de dia (dia del calendario)
-        publicar(TipoEvento.SIMULACION_INICIADA, "=== Dia " + diaSimulado + " iniciado - " + horaSimulada() + " ===");
+        String etiqueta = modoReplay ? " (replay)" : "";
+        publicar(TipoEvento.SIMULACION_INICIADA, "=== Dia " + diaSimulado + " iniciado" + etiqueta + " - " + horaSimulada() + " ===");
     }
 
     public void pausar() { if (!corriendo || pausado) return; pausado = true; publicar(TipoEvento.SIMULACION_PAUSADA, "Pausado"); }
@@ -88,6 +96,11 @@ public class SimuladorCooperativaService {
     public void iniciarFaseRezagados() { if (!fasePrincipalFinalizada || faseRezagados) return; faseRezagados = true; corriendo = true; estadisticas.setFaseRezagados(true); hiloMotor = new Thread(this::bucleRezagados, "Motor-Rez-" + diaActual); hiloMotor.setDaemon(true); hiloMotor.start(); publicar(TipoEvento.FASE_REZAGADOS_INICIADA, "Drenando sala: " + salaEspera.getTotalEsperando() + " socios"); }
 
     private void bucleMotor() {
+        if (modoReplay) {
+            bucleMotorReplay();
+            return;
+        }
+        // ==================== MODO MANUAL (SIN CAMBIOS) ====================
         double acum = 0.0;
         List<BloqueHorario> bloques = jornadaActual.getBloques();
         if (bloques.isEmpty()) { fasePrincipalFinalizada = true; corriendo = false; publicar(TipoEvento.FASE_PRINCIPAL_FINALIZADA, "Sin bloques horarios"); return; }
@@ -126,6 +139,49 @@ public class SimuladorCooperativaService {
         publicar(TipoEvento.FASE_PRINCIPAL_FINALIZADA, "Fase principal terminada | En sala: " + enSala + " | En cajas: " + cajasOcupadas + " | Atendidos: " + estadisticas.getPrincipal().getTotalAtendidos());
     }
 
+    private void bucleMotorReplay() {
+        List<BloqueHorario> bloques = jornadaActual.getBloques();
+        int inicioJornada = bloques.isEmpty() ? (int) tiempoReloj : bloques.get(0).getInicio();
+        int finJornada     = bloques.isEmpty() ? 24 * 60 : bloques.get(bloques.size() - 1).getFin();
+
+        List<Socio> pendientes = new ArrayList<>(sociosPredefinidos);
+        pendientes.sort(Comparator.comparingLong(Socio::getTiempoLlegada));
+
+        int idx = 0;
+        tiempoReloj = inicioJornada;
+
+        for (int minuto = inicioJornada; minuto < finJornada; minuto++) {
+            if (!corriendo || fasePrincipalFinalizada) break;
+            if (pausado) { synchronized (this) { while (pausado && corriendo) { try { wait(100); } catch (InterruptedException e) { Thread.currentThread().interrupt(); return; } } } if (!corriendo) break; }
+
+            tiempoMotor++;
+            tiempoReloj = minuto;
+
+            while (idx < pendientes.size() && pendientes.get(idx).getTiempoLlegada() <= minuto) {
+                Socio s = pendientes.get(idx++);
+                salaEspera.agregarSocio(s);
+                estadisticas.setTotalGenerados(idx);
+                publicar(TipoEvento.SOCIO_GENERADO, s.getFicha() + " llego (replay) - " + s.getDescripcionServicios());
+            }
+
+            procesarAsignaciones();
+            procesarAtenciones();
+            sleep();
+        }
+
+        while (idx < pendientes.size() && corriendo) {
+            Socio s = pendientes.get(idx++);
+            salaEspera.agregarSocio(s);
+            estadisticas.setTotalGenerados(idx);
+        }
+
+        fasePrincipalFinalizada = true;
+        corriendo = false;
+        int enSala = salaEspera.getTotalEsperando();
+        int cajasOcupadas = (int) cajas.stream().filter(c -> c.getEstado() == EstadoCaja.OCUPADA).count();
+        publicar(TipoEvento.FASE_PRINCIPAL_FINALIZADA, "Fase principal (replay) terminada | En sala: " + enSala + " | En cajas: " + cajasOcupadas + " | Atendidos: " + estadisticas.getPrincipal().getTotalAtendidos());
+    }
+
     private void bucleRezagados() {
         int extraSeguridad = 0;
         while (corriendo) {
@@ -143,15 +199,13 @@ public class SimuladorCooperativaService {
 
             if (salaVacia && cajasLibres) {
                 corriendo = false;
-                // FIX: caracteres corregidos (✅) + dia simulado en vez de diaActual
-                publicar(TipoEvento.SIMULACION_FINALIZADA, "✅ Dia " + diaSimulado + " completo | Total atendidos: " + estadisticas.getTotalAtendidos() + " | Monto: Bs " + String.format("%.2f", estadisticas.getMontoTotal()));
+                publicar(TipoEvento.SIMULACION_FINALIZADA, "\u2705 Dia " + diaSimulado + " completo | Total atendidos: " + estadisticas.getTotalAtendidos() + " | Monto: Bs " + String.format("%.2f", estadisticas.getMontoTotal()));
                 break;
             }
             extraSeguridad++;
             if (extraSeguridad > maxSociosDia * 60) {
                 corriendo = false;
-                // FIX: caracteres corregidos (⚠️) + dia simulado en vez de diaActual
-                publicar(TipoEvento.SIMULACION_FINALIZADA, "⚠️ Dia " + diaSimulado + " - tiempo de drenaje agotado | Atendidos: " + estadisticas.getTotalAtendidos());
+                publicar(TipoEvento.SIMULACION_FINALIZADA, "\u26A0\uFE0F Dia " + diaSimulado + " - tiempo de drenaje agotado | Atendidos: " + estadisticas.getTotalAtendidos());
                 break;
             }
             sleep();
@@ -183,8 +237,7 @@ public class SimuladorCooperativaService {
                 estadisticas.registrarAtencion(s, caja);
                 caja.finalizarAtencion(tiempoMotor);
                 long espera = s.getTiempoInicioAtencion() - s.getTiempoLlegada();
-                // FIX: caracter corregido (✓)
-                publicar(TipoEvento.SOCIO_ATENDIDO, s.getFicha() + " ✓ " + caja.getId() + " | Espera: " + Math.max(0,espera) + " min | Aten: " + s.getDuracionEstimada() + " min | Bs " + String.format("%.0f", s.getMonto()));
+                publicar(TipoEvento.SOCIO_ATENDIDO, s.getFicha() + " \u2713 " + caja.getId() + " | Espera: " + Math.max(0,espera) + " min | Aten: " + s.getDuracionEstimada() + " min | Bs " + String.format("%.0f", s.getMonto()));
             }
         }
     }
@@ -199,7 +252,9 @@ public class SimuladorCooperativaService {
     public ResumenDiario construirResumenDia() {
         ResumenDiario r = new ResumenDiario(diaActual, true);
         r.setNumeroDia(diaSimulado);
-        r.setGenerados(generador.getTotalGenerados());
+        r.setGenerados(!modoReplay
+                ? generador.getTotalGenerados()
+                : (sociosPredefinidos != null ? sociosPredefinidos.size() : 0));
         r.setAtendidosPrincipal(estadisticas.getPrincipal().getTotalAtendidos());
         r.setAtendidosRezagados(estadisticas.getRezagados().getTotalAtendidos());
         r.setNoAtendidos(Math.max(0, r.getGenerados()-r.getTotalAtendidos()));
@@ -209,6 +264,11 @@ public class SimuladorCooperativaService {
         r.setCajeroEstrella(estadisticas.getCajeroEstrellaGlobal());
         int min = jornadaActual!=null ? jornadaActual.getTotalMinutosLaborables() : 480;
         r.setEficienciaGlobal(min>0 ? (double)r.getTotalAtendidos()/min : 0);
+
+        Map<String,Integer> desglose = new LinkedHashMap<>(estadisticas.getPrincipal().getAtendidosPorCodigo());
+        estadisticas.getRezagados().getAtendidosPorCodigo().forEach((k, v) -> desglose.merge(k, v, Integer::sum));
+        r.setAtendidosPorServicio(desglose);
+
         return r;
     }
 

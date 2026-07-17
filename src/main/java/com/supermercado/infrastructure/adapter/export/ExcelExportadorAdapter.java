@@ -8,9 +8,17 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
 public class ExcelExportadorAdapter implements IReporteExportador {
+
+    private static final List<String> CODIGOS = List.of("C","A","S","F","P","R","PC","PS","PA","PP");
+    private static final Map<String,String> NOMBRES = Map.ofEntries(
+            Map.entry("C","Ahorro/Credito"), Map.entry("A","Semapa (Agua)"),
+            Map.entry("S","Elfec-Comteco-Semapa"), Map.entry("F","Fraccionamiento"),
+            Map.entry("P","Plataforma"), Map.entry("R","Renta Dignidad"),
+            Map.entry("PC","Pref. Ahorro-Credito"), Map.entry("PS","Pref. Elfec-Comteco-Semapa"),
+            Map.entry("PA","Pref. Semapa"), Map.entry("PP","Pref. Plataforma"));
 
     @Override
     public void exportar(String rutaArchivo,
@@ -23,30 +31,23 @@ public class ExcelExportadorAdapter implements IReporteExportador {
         try (XSSFWorkbook wb = new XSSFWorkbook();
              FileOutputStream out = new FileOutputStream(rutaArchivo)) {
 
-            System.out.println(">>> [Excel] Workbook y FileOutputStream creados.");
-
             CellStyle estiloTitulo = crearEstiloTitulo(wb);
             CellStyle estiloHeader = crearEstiloHeader(wb);
             CellStyle estiloNumero = crearEstiloNumero(wb, "#,##0");
             CellStyle estiloMoneda = crearEstiloNumero(wb, "#,##0.00");
             CellStyle estiloLabel  = crearEstiloLabel(wb);
-            System.out.println(">>> [Excel] Estilos creados.");
 
             hojaEvolucion(wb, resumenes, estiloHeader, estiloNumero, estiloMoneda);
-            System.out.println(">>> [Excel] Hoja Evolucion Diaria creada (" + resumenes.size() + " resumenes).");
-
             hojaResumenFinal(wb, est, minutosSimulados, estiloTitulo, estiloLabel, estiloMoneda);
-            System.out.println(">>> [Excel] Hoja Resumen Final creada.");
-
             hojaEstadisticasAcumuladas(wb, est, estiloTitulo, estiloLabel, estiloMoneda);
-            System.out.println(">>> [Excel] Hoja Estadisticas Acumuladas creada.");
+            hojaDesgloseServicio(wb, est, estiloHeader, estiloNumero);
 
             wb.write(out);
             out.flush();
-            System.out.println(">>> [Excel] Workbook escrito y flush realizado. Exportacion OK: " + rutaArchivo);
+            System.out.println(">>> [Excel] Exportacion OK: " + rutaArchivo);
 
         } catch (Exception e) {
-            System.err.println(">>> [Excel] ERROR durante la exportacion:");
+            System.err.println(">>> [Excel] ERROR:");
             e.printStackTrace();
             throw new IOException("Error al exportar Excel: " + e.getMessage(), e);
         }
@@ -56,7 +57,7 @@ public class ExcelExportadorAdapter implements IReporteExportador {
                                 CellStyle header, CellStyle numero, CellStyle moneda) {
         Sheet sh = wb.createSheet("Evolucion Diaria");
 
-        String[] cols = {"Dia", "Laborable", "Generados", "P.Principal", "Rezagados",
+        String[] cols = {"Dia/Fecha", "Laborable", "Generados", "P.Principal", "Rezagados",
                 "Total", "No Atend.", "Monto (Bs)", "Espera (min)", "Aten. (min)", "Cajero"};
         Row filaHeader = sh.createRow(0);
         for (int i = 0; i < cols.length; i++) {
@@ -70,7 +71,11 @@ public class ExcelExportadorAdapter implements IReporteExportador {
             if (!r.isLaborable()) continue;
             Row fila = sh.createRow(filaIdx++);
             int col = 0;
-            fila.createCell(col++).setCellValue(r.getNumeroDia());
+            // FIX: fecha real si existe (modo Calibrado/Replay), sino "Dia N" (modo Manual)
+            Cell cDia = fila.createCell(col++);
+            if (r.getFecha() != null) cDia.setCellValue(r.getFecha().toString());
+            else cDia.setCellValue("Dia " + r.getNumeroDia());
+
             fila.createCell(col++).setCellValue("Si");
             setNum(fila, col++, r.getGenerados(), numero);
             setNum(fila, col++, r.getAtendidosPrincipal(), numero);
@@ -171,6 +176,30 @@ public class ExcelExportadorAdapter implements IReporteExportador {
 
         sh.autoSizeColumn(0);
         sh.autoSizeColumn(1);
+    }
+
+    /** NUEVO: desglose de cuantos socios de cada tipo de ticket se atendieron en total. */
+    private void hojaDesgloseServicio(XSSFWorkbook wb, EstadisticasFinancierasService est,
+                                       CellStyle header, CellStyle numero) {
+        Sheet sh = wb.createSheet("Desglose por Servicio");
+        Row filaHeader = sh.createRow(0);
+        String[] cols = {"Codigo", "Descripcion", "Atendidos (total)"};
+        for (int i = 0; i < cols.length; i++) {
+            Cell c = filaHeader.createCell(i);
+            c.setCellValue(cols[i]);
+            c.setCellStyle(header);
+        }
+
+        Map<String,Integer> desglose = est.getAcumAtendidosPorCodigo();
+        int filaIdx = 1;
+        for (String codigo : CODIGOS) {
+            int cantidad = desglose.getOrDefault(codigo, 0);
+            Row fila = sh.createRow(filaIdx++);
+            fila.createCell(0).setCellValue(codigo);
+            fila.createCell(1).setCellValue(NOMBRES.getOrDefault(codigo, codigo));
+            setNum(fila, 2, cantidad, numero);
+        }
+        for (int i = 0; i < cols.length; i++) sh.autoSizeColumn(i);
     }
 
     private int filaLabelValor(Sheet sh, int fila, String lbl, int valor, CellStyle label) {

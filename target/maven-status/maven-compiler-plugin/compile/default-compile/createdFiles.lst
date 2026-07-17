@@ -71,6 +71,7 @@ com\supermercado\presentation\cooperativa\view\DialogoConfiguracionCooperativa.c
 com\supermercado\application\cooperativa\dto\ConfiguracionCooperativaDTO.class
 com\supermercado\presentation\cooperativa\panel\PanelEstadisticasFinancieras.class
 com\supermercado\domain\supermercado\model\Cliente.class
+com\supermercado\application\cooperativa\dto\CalibracionMensual.class
 com\supermercado\presentation\cooperativa\view\PanelLog.class
 com\supermercado\domain\cooperativa\event\SimulacionCooperativaIniciadaEvent.class
 com\supermercado\application\supermercado\usecase\TeoriaColasUseCase.class
@@ -100,6 +101,7 @@ com\supermercado\presentation\cooperativa\panel\PanelSalaEspera.class
 com\supermercado\domain\supermercado\model\EstadoCaja.class
 com\supermercado\presentation\supermercado\view\PanelDiagnostico$1.class
 com\supermercado\infrastructure\repository\ConfiguracionRepositorioImpl.class
+com\supermercado\application\cooperativa\dto\RegistroAtencion.class
 com\supermercado\domain\cooperativa\model\ServicioFinanciero.class
 com\supermercado\infrastructure\adapter\export\ExcelExportadorAdapter.class
 com\supermercado\application\supermercado\port\ILogService.class
@@ -134,6 +136,7 @@ com\supermercado\presentation\cooperativa\view\SimuladorCooperativaFrame$2.class
 com\supermercado\presentation\supermercado\view\PanelDiagnostico.class
 com\supermercado\infrastructure\adapter\export\TxtExportadorAdapter.class
 com\supermercado\infrastructure\adapter\export\PdfExportadorAdapter.class
+com\supermercado\infrastructure\adapter\preset\PresetManager.class
 com\supermercado\presentation\cooperativa\panel\PanelVentanillas.class
 com\supermercado\application\supermercado\dto\DiagnosticoDTO.class
 com\supermercado\domain\supermercado\service\DiagnosticoService$Diagnostico.class

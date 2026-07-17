@@ -5,26 +5,21 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * Acumula estadísticas de una fase de simulación (principal o rezagados).
- * Thread-safe para ser actualizado desde el hilo del motor.
- */
 public class EstadisticasFase {
 
-    private final String nombre; // "Principal" o "Rezagados"
+    private final String nombre;
 
     private final AtomicInteger totalAtendidos = new AtomicInteger(0);
-    private final AtomicLong    sumaEspera     = new AtomicLong(0);   // min
-    private final AtomicLong    sumaAtencion   = new AtomicLong(0);   // min
-    private final AtomicLong    montoTotalCts  = new AtomicLong(0);   // centavos
+    private final AtomicLong    sumaEspera     = new AtomicLong(0);
+    private final AtomicLong    sumaAtencion   = new AtomicLong(0);
+    private final AtomicLong    montoTotalCts  = new AtomicLong(0);
 
-    // Por caja
     private final Map<String,Integer> atendidosPorCaja     = new ConcurrentHashMap<>();
     private final Map<String,Long>    tiempoOcupadoPorCaja = new ConcurrentHashMap<>();
     private final Map<String,Double>  montoPorCaja         = new ConcurrentHashMap<>();
 
-    // Por servicio
     private final Map<String,Integer> atendidosPorServicio = new ConcurrentHashMap<>();
+    private final Map<String,Integer> atendidosPorCodigo   = new ConcurrentHashMap<>(); // NUEVO: por codigo (C,A,S...)
 
     public EstadisticasFase(String nombre) { this.nombre = nombre; }
 
@@ -45,17 +40,20 @@ public class EstadisticasFase {
         montoPorCaja.merge(id, socio.getMonto(), Double::sum);
 
         for (var s : socio.getTodosLosServicios()) {
-            if (s != null) atendidosPorServicio.merge(s.getNombre(), 1, Integer::sum);
+            if (s != null) {
+                atendidosPorServicio.merge(s.getNombre(), 1, Integer::sum);
+                String codigo = s.getTipoCajaRequerido();
+                if (codigo != null) atendidosPorCodigo.merge(codigo, 1, Integer::sum);
+            }
         }
     }
 
     public void reiniciar() {
         totalAtendidos.set(0); sumaEspera.set(0); sumaAtencion.set(0); montoTotalCts.set(0);
         atendidosPorCaja.clear(); tiempoOcupadoPorCaja.clear();
-        montoPorCaja.clear(); atendidosPorServicio.clear();
+        montoPorCaja.clear(); atendidosPorServicio.clear(); atendidosPorCodigo.clear();
     }
 
-    // ── Getters ───────────────────────────────────────────────────────────────
     public String  getNombre()         { return nombre; }
     public int     getTotalAtendidos() { return totalAtendidos.get(); }
     public double  getMontoTotal()     { return montoTotalCts.get() / 100.0; }
@@ -82,6 +80,7 @@ public class EstadisticasFase {
     }
 
     public Map<String,Integer> getAtendidosPorServicio() { return Collections.unmodifiableMap(atendidosPorServicio); }
+    public Map<String,Integer> getAtendidosPorCodigo()   { return Collections.unmodifiableMap(atendidosPorCodigo); }
     public Map<String,Integer> getAtendidosPorCaja()     { return Collections.unmodifiableMap(atendidosPorCaja); }
     public Map<String,Double>  getMontoPorCaja()         { return Collections.unmodifiableMap(montoPorCaja); }
 }

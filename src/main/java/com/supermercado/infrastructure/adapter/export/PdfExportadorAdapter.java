@@ -16,8 +16,7 @@ import com.supermercado.domain.cooperativa.model.ResumenDiario;
 import com.supermercado.domain.cooperativa.service.EstadisticasFinancierasService;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public class PdfExportadorAdapter implements IReporteExportador {
 
@@ -25,6 +24,14 @@ public class PdfExportadorAdapter implements IReporteExportador {
     private static final DeviceRgb AZUL_CLARO  = new DeviceRgb(220, 230, 245);
     private static final DeviceRgb GRIS_CLARO  = new DeviceRgb(245, 245, 245);
     private static final DeviceRgb BLANCO      = new DeviceRgb(255, 255, 255);
+
+    private static final List<String> CODIGOS = List.of("C","A","S","F","P","R","PC","PS","PA","PP");
+    private static final Map<String,String> NOMBRES = Map.ofEntries(
+            Map.entry("C","Ahorro/Credito"), Map.entry("A","Semapa (Agua)"),
+            Map.entry("S","Elfec-Comteco-Semapa"), Map.entry("F","Fraccionamiento"),
+            Map.entry("P","Plataforma"), Map.entry("R","Renta Dignidad"),
+            Map.entry("PC","Pref. Ahorro-Credito"), Map.entry("PS","Pref. Elfec-Comteco-Semapa"),
+            Map.entry("PA","Pref. Semapa"), Map.entry("PP","Pref. Plataforma"));
 
     @Override
     public void exportar(String rutaArchivo,
@@ -44,11 +51,12 @@ public class PdfExportadorAdapter implements IReporteExportador {
             escribirTablaEvolucion(doc, resumenes);
             escribirResumenFinal(doc, est, minutosSimulados);
             escribirEstadisticasAcumuladas(doc, est);
+            escribirDesgloseServicio(doc, est);
 
             System.out.println(">>> [PDF] Exportacion completada: " + rutaArchivo);
 
         } catch (Exception e) {
-            System.err.println(">>> [PDF] ERROR durante la exportacion:");
+            System.err.println(">>> [PDF] ERROR:");
             e.printStackTrace();
             throw new IOException("Error al exportar PDF: " + e.getMessage(), e);
         }
@@ -71,10 +79,10 @@ public class PdfExportadorAdapter implements IReporteExportador {
     private void escribirTablaEvolucion(Document doc, List<ResumenDiario> resumenes) {
         doc.add(tituloSeccion("Evolucion Diaria"));
 
-        float[] anchos = {35, 55, 55, 55, 45, 75, 55, 55, 80};
+        float[] anchos = {60, 55, 55, 55, 45, 75, 55, 55, 80};
         Table tabla = new Table(UnitValue.createPercentArray(anchos)).useAllAvailableWidth();
 
-        String[] cols = {"Dia", "Gen.", "Ppal.", "Rezag.", "Total", "Monto (Bs)", "Espera", "Aten.", "Cajero"};
+        String[] cols = {"Dia/Fecha", "Gen.", "Ppal.", "Rezag.", "Total", "Monto (Bs)", "Espera", "Aten.", "Cajero"};
         for (String c : cols) tabla.addHeaderCell(celdaHeader(c));
 
         boolean par = false;
@@ -83,7 +91,8 @@ public class PdfExportadorAdapter implements IReporteExportador {
             DeviceRgb fondo = par ? GRIS_CLARO : BLANCO;
             par = !par;
 
-            tabla.addCell(celdaDato(String.valueOf(r.getNumeroDia()), fondo));
+            String etiquetaDia = r.getFecha() != null ? r.getFecha().toString() : ("Dia " + r.getNumeroDia());
+            tabla.addCell(celdaDato(etiquetaDia, fondo));
             tabla.addCell(celdaDato(String.valueOf(r.getGenerados()), fondo));
             tabla.addCell(celdaDato(String.valueOf(r.getAtendidosPrincipal()), fondo));
             tabla.addCell(celdaDato(String.valueOf(r.getAtendidosRezagados()), fondo));
@@ -161,7 +170,28 @@ public class PdfExportadorAdapter implements IReporteExportador {
         doc.add(tabla);
     }
 
-    // Helpers de estilo
+    /** NUEVO: cuantos socios de cada tipo de ticket se atendieron en total. */
+    private void escribirDesgloseServicio(Document doc, EstadisticasFinancierasService est) {
+        doc.add(tituloSeccion("Desglose por Tipo de Servicio"));
+
+        Table tabla = new Table(UnitValue.createPercentArray(new float[]{20, 55, 25})).useAllAvailableWidth();
+        tabla.addHeaderCell(celdaHeader("Codigo"));
+        tabla.addHeaderCell(celdaHeader("Descripcion"));
+        tabla.addHeaderCell(celdaHeader("Atendidos"));
+
+        Map<String,Integer> desglose = est.getAcumAtendidosPorCodigo();
+        boolean par = false;
+        for (String codigo : CODIGOS) {
+            DeviceRgb fondo = par ? GRIS_CLARO : BLANCO;
+            par = !par;
+            int cantidad = desglose.getOrDefault(codigo, 0);
+            tabla.addCell(celdaDato(codigo, fondo));
+            tabla.addCell(celdaDato(NOMBRES.getOrDefault(codigo, codigo), fondo));
+            tabla.addCell(celdaDato(String.valueOf(cantidad), fondo));
+        }
+        doc.add(tabla);
+    }
+
     private Paragraph tituloSeccion(String texto) {
         return new Paragraph(texto)
                 .setFontSize(14).setBold()

@@ -1,6 +1,6 @@
 package com.supermercado.application.cooperativa.usecase;
 
-import com.supermercado.application.cooperativa.dto.ResultadoCalibracion;
+import com.supermercado.application.cooperativa.dto.CalibracionMensual;
 import com.supermercado.application.cooperativa.port.IHistorialImportador;
 
 import java.io.File;
@@ -14,7 +14,7 @@ public class CalibrarConfiguracionUseCase {
         this.importador = importador;
     }
 
-    public ResultadoCalibracion ejecutar(File archivo) throws IOException {
+    public CalibracionMensual ejecutar(File archivo) throws IOException {
         return importador.importar(archivo);
     }
 }

@@ -19,11 +19,12 @@ public class EstadisticasFinancierasService {
     private int    acumAtendPpal   = 0;
     private int    acumAtendRez    = 0;
     private double acumMonto       = 0.0;
-    private double acumMontoPpal   = 0.0;   // NUEVO
-    private double acumMontoRez    = 0.0;   // NUEVO
+    private double acumMontoPpal   = 0.0;
+    private double acumMontoRez    = 0.0;
     private double acumSumaEspera  = 0.0;
     private double acumSumaAtencion= 0.0;
     private int    diasAcumulados  = 0;
+    private final Map<String,Integer> acumAtendidosPorCodigo = new LinkedHashMap<>(); // NUEVO
 
     public void setFaseRezagados(boolean v) { enFaseRezagados = v; }
     public void setTotalGenerados(int v)    { totalGeneradosDia = v; }
@@ -47,6 +48,9 @@ public class EstadisticasFinancierasService {
             acumSumaEspera   += r.getPromedioEspera()   * atend;
             acumSumaAtencion += r.getPromedioAtencion() * atend;
         }
+        if (r.getAtendidosPorServicio() != null) {
+            r.getAtendidosPorServicio().forEach((k, v) -> acumAtendidosPorCodigo.merge(k, v, Integer::sum));
+        }
         diasAcumulados++;
     }
 
@@ -63,6 +67,7 @@ public class EstadisticasFinancierasService {
         acumGenerados=0; acumAtendPpal=0; acumAtendRez=0;
         acumMonto=0.0; acumMontoPpal=0.0; acumMontoRez=0.0;
         acumSumaEspera=0.0; acumSumaAtencion=0.0; diasAcumulados=0;
+        acumAtendidosPorCodigo.clear();
     }
 
     public EstadisticasFase getPrincipal()   { return principal; }
@@ -101,4 +106,5 @@ public class EstadisticasFinancierasService {
     public double getAcumPromedioEspera()    { int t = getAcumTotalAtendidos(); return t==0?0:acumSumaEspera/t; }
     public double getAcumPromedioAtencion()  { int t = getAcumTotalAtendidos(); return t==0?0:acumSumaAtencion/t; }
     public List<ResumenDiario> getResumenesDiarios() { return Collections.unmodifiableList(resumenesDiarios); }
+    public Map<String,Integer> getAcumAtendidosPorCodigo() { return Collections.unmodifiableMap(acumAtendidosPorCodigo); }
 }

@@ -1,13 +1,23 @@
 package com.supermercado.domain.cooperativa.model;
 
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * Resumen de un dia de simulacion.
  * dia           = numero del dia en el calendario (puede ser 2, 17, 44...)
  * numeroDia     = contador de dias laborables simulados (1, 2, 3...)
+ * fecha         = fecha real del calendario (SOLO en modo Calibrado/Replay;
+ *                  null en modo Manual -- los reportes deben usar "Dia N"
+ *                  como respaldo cuando fecha es null).
+ * atendidosPorServicio = cuantos socios de cada codigo de ticket (C,A,S...)
+ *                  se atendieron ese dia (Principal+Rezagados combinados).
  */
 public class ResumenDiario {
-    private int     dia;            // dia del calendario
-    private int     numeroDia;      // contador simulado: 1, 2, 3...
+    private int     dia;
+    private int     numeroDia;
     private boolean laborable;
     private int     generados;
     private int     atendidosPrincipal;
@@ -18,11 +28,13 @@ public class ResumenDiario {
     private double  promedioAtencion;
     private String  cajeroEstrella;
     private double  eficienciaGlobal;
+    private LocalDate fecha; // NUEVO: null si no se conoce (modo manual)
+    private Map<String, Integer> atendidosPorServicio = new LinkedHashMap<>(); // NUEVO
 
     public ResumenDiario(int dia, boolean laborable) {
         this.dia       = dia;
         this.laborable = laborable;
-        this.numeroDia = dia; // por defecto igual; se sobrescribe desde el mensual
+        this.numeroDia = dia;
     }
 
     public int     getDia()                     { return dia; }
@@ -50,4 +62,14 @@ public class ResumenDiario {
     public void    setCajeroEstrella(String v) { cajeroEstrella = v; }
     public double  getEficienciaGlobal()       { return eficienciaGlobal; }
     public void    setEficienciaGlobal(double v){ eficienciaGlobal = v; }
+
+    public LocalDate getFecha()                { return fecha; }
+    public void       setFecha(LocalDate f)    { this.fecha = f; }
+
+    public Map<String, Integer> getAtendidosPorServicio() {
+        return Collections.unmodifiableMap(atendidosPorServicio);
+    }
+    public void setAtendidosPorServicio(Map<String, Integer> mapa) {
+        this.atendidosPorServicio = mapa != null ? new LinkedHashMap<>(mapa) : new LinkedHashMap<>();
+    }
 }

@@ -1,12 +1,5 @@
 @echo off
-cd /d "%~dp0"
-echo Compilando y copiando dependencias a target/lib...
+cd /d "C:\Users\ASUS\Documents\DClass\SimCristoRey"
 mvn clean package -DskipTests
-if errorlevel 1 (
-    echo Error en la compilacion.
-    pause
-    exit /b
-)
-echo Ejecutando SimCristoRey...
-java -cp "target/classes;target/lib/*" com.supermercado.presentation.cooperativa.MainCooperativa
+java -jar target\bottleneck-buster-1.0.0.jar
 pause

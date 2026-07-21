@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PanelEvolucionDiaria.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.presentation.cooperativa.view</a> &gt; <span class="el_source">PanelEvolucionDiaria.java</span></div><h1>PanelEvolucionDiaria.java</h1><pre class="source lang-java linenums">package com.supermercado.presentation.cooperativa.view;
+
+import com.supermercado.domain.cooperativa.model.ResumenDiario;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.util.ArrayList;
+import java.util.List;
+
+public class PanelEvolucionDiaria extends JPanel {
+
+<span class="nc" id="L16">    private static final String[] COLS = {</span>
+        &quot;Dia&quot;, &quot;Laborable&quot;, &quot;Generados&quot;, &quot;P.Principal&quot;, &quot;Rezagados&quot;,
+        &quot;Total&quot;, &quot;No Atend.&quot;, &quot;Monto (Bs)&quot;, &quot;Espera(min)&quot;,
+        &quot;Aten.(min)&quot;, &quot;Cajero&quot;
+    };
+
+    private final DefaultTableModel modelo;
+    private final JTable            tabla;
+    private final JScrollPane       scroll;
+<span class="nc" id="L25">    private final List&lt;ResumenDiario&gt; resumenes = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L26">    private boolean tieneTotales = false;</span>
+
+<span class="nc" id="L28">    public PanelEvolucionDiaria() {</span>
+<span class="nc" id="L29">        setLayout(new BorderLayout());</span>
+<span class="nc" id="L30">        setBorder(BorderFactory.createTitledBorder(&quot;Evolucion Diaria&quot;));</span>
+
+<span class="nc" id="L32">        modelo = new DefaultTableModel(COLS, 0) {</span>
+<span class="nc" id="L33">            @Override public boolean isCellEditable(int r, int c) { return false; }</span>
+            @Override public Class&lt;?&gt; getColumnClass(int c) {
+<span class="nc bnc" id="L35" title="All 3 branches missed.">                return switch(c) {</span>
+<span class="nc" id="L36">                    case 0,2,3,4,5,6 -&gt; Integer.class;</span>
+<span class="nc" id="L37">                    case 7,8,9       -&gt; Double.class;</span>
+<span class="nc" id="L38">                    default          -&gt; String.class;</span>
+                };
+            }
+        };
+
+<span class="nc" id="L43">        tabla = new JTable(modelo);</span>
+<span class="nc" id="L44">        tabla.setRowHeight(24);</span>
+<span class="nc" id="L45">        tabla.setFont(new Font(&quot;SansSerif&quot;, Font.PLAIN, 11));</span>
+<span class="nc" id="L46">        tabla.getTableHeader().setFont(new Font(&quot;SansSerif&quot;, Font.BOLD, 11));</span>
+<span class="nc" id="L47">        tabla.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);</span>
+<span class="nc" id="L48">        tabla.setFillsViewportHeight(true);</span>
+
+<span class="nc" id="L50">        int[] anchos = {40, 70, 72, 85, 75, 65, 72, 105, 85, 80, 90};</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        for (int i = 0; i &lt; anchos.length; i++)</span>
+<span class="nc" id="L52">            tabla.getColumnModel().getColumn(i).setPreferredWidth(anchos[i]);</span>
+
+<span class="nc" id="L54">        tabla.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {</span>
+            @Override public Component getTableCellRendererComponent(
+                    JTable t, Object v, boolean sel, boolean foc, int row, int col) {
+<span class="nc" id="L57">                super.getTableCellRendererComponent(t, v, sel, foc, row, col);</span>
+<span class="nc" id="L58">                Object lab = modelo.getValueAt(row, 1);</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">                if (&quot;No&quot;.equals(lab)) {</span>
+<span class="nc" id="L60">                    setBackground(new Color(240, 240, 240));</span>
+<span class="nc" id="L61">                    setForeground(Color.GRAY);</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">                } else if (&quot;TOTAL&quot;.equals(lab)) {</span>
+<span class="nc" id="L63">                    setBackground(new Color(200, 230, 255));</span>
+<span class="nc" id="L64">                    setForeground(new Color(0, 60, 120));</span>
+<span class="nc" id="L65">                    setFont(getFont().deriveFont(Font.BOLD));</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">                } else if (sel) {</span>
+<span class="nc" id="L67">                    setBackground(new Color(173, 216, 230));</span>
+<span class="nc" id="L68">                    setForeground(Color.BLACK);</span>
+                } else {
+<span class="nc bnc" id="L70" title="All 2 branches missed.">                    setBackground(row % 2 == 0 ? Color.WHITE : new Color(245, 248, 255));</span>
+<span class="nc" id="L71">                    setForeground(Color.BLACK);</span>
+                }
+<span class="nc bnc" id="L73" title="All 2 branches missed.">                if (v instanceof Number) setHorizontalAlignment(RIGHT);</span>
+<span class="nc" id="L74">                else setHorizontalAlignment(LEFT);</span>
+<span class="nc" id="L75">                return this;</span>
+            }
+        });
+
+<span class="nc" id="L79">        scroll = new JScrollPane(tabla,</span>
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+<span class="nc" id="L82">        scroll.getVerticalScrollBar().setUnitIncrement(20);</span>
+<span class="nc" id="L83">        scroll.getHorizontalScrollBar().setUnitIncrement(20);</span>
+<span class="nc" id="L84">        add(scroll, BorderLayout.CENTER);</span>
+
+<span class="nc" id="L86">        addComponentListener(new ComponentAdapter() {</span>
+            @Override
+            public void componentShown(ComponentEvent e) {
+<span class="nc bnc" id="L89" title="All 2 branches missed.">                if (!resumenes.isEmpty()) reconstruirTabla();</span>
+<span class="nc" id="L90">            }</span>
+        });
+<span class="nc" id="L92">    }</span>
+
+    public void addResumenDia(ResumenDiario r) {
+<span class="nc bnc" id="L95" title="All 4 branches missed.">        if (r == null || !r.isLaborable()) return;</span>
+<span class="nc" id="L96">        resumenes.add(r);</span>
+<span class="nc" id="L97">        SwingUtilities.invokeLater(() -&gt; {</span>
+<span class="nc" id="L98">            agregarFilaModelo(r);</span>
+<span class="nc" id="L99">            repintarTodo();</span>
+<span class="nc" id="L100">        });</span>
+<span class="nc" id="L101">    }</span>
+
+    private void agregarFilaModelo(ResumenDiario r) {
+<span class="nc" id="L104">        modelo.addRow(new Object[]{</span>
+<span class="nc" id="L105">            r.getNumeroDia(),</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">            r.isLaborable() ? &quot;Si&quot; : &quot;No&quot;,</span>
+<span class="nc" id="L107">            r.getGenerados(),</span>
+<span class="nc" id="L108">            r.getAtendidosPrincipal(),</span>
+<span class="nc" id="L109">            r.getAtendidosRezagados(),</span>
+<span class="nc" id="L110">            r.getTotalAtendidos(),</span>
+<span class="nc" id="L111">            r.getNoAtendidos(),</span>
+<span class="nc" id="L112">            round2(r.getMontoTotal()),</span>
+<span class="nc" id="L113">            round1(r.getPromedioEspera()),</span>
+<span class="nc" id="L114">            round1(r.getPromedioAtencion()),</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">            r.getCajeroEstrella() != null ? r.getCajeroEstrella() : &quot;-&quot;</span>
+        });
+<span class="nc" id="L117">    }</span>
+
+    public void mostrarTotalesYRefrescar() {
+<span class="nc" id="L120">        tieneTotales = true;</span>
+<span class="nc" id="L121">        SwingUtilities.invokeLater(() -&gt; {</span>
+<span class="nc" id="L122">            int gen=0,ppal=0,rez=0,tot=0,no=0;</span>
+<span class="nc" id="L123">            double monto=0,esp=0,aten=0;</span>
+<span class="nc" id="L124">            int cont = 0;</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">            for (ResumenDiario r : resumenes) {</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">                if (r.isLaborable()) {</span>
+<span class="nc" id="L127">                    gen  += r.getGenerados();</span>
+<span class="nc" id="L128">                    ppal += r.getAtendidosPrincipal();</span>
+<span class="nc" id="L129">                    rez  += r.getAtendidosRezagados();</span>
+<span class="nc" id="L130">                    tot  += r.getTotalAtendidos();</span>
+<span class="nc" id="L131">                    no   += r.getNoAtendidos();</span>
+<span class="nc" id="L132">                    monto+= r.getMontoTotal();</span>
+<span class="nc" id="L133">                    esp  += r.getPromedioEspera();</span>
+<span class="nc" id="L134">                    aten += r.getPromedioAtencion();</span>
+<span class="nc" id="L135">                    cont++;</span>
+                }
+<span class="nc" id="L137">            }</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">            if (cont &gt; 0) {</span>
+<span class="nc" id="L139">                modelo.addRow(new Object[]{</span>
+<span class="nc" id="L140">                    &quot;-&quot;, &quot;TOTAL&quot;, gen, ppal, rez, tot, no,</span>
+<span class="nc" id="L141">                    round2(monto),</span>
+<span class="nc" id="L142">                    round1(esp / cont),</span>
+<span class="nc" id="L143">                    round1(aten / cont),</span>
+                    &quot;-&quot;
+                });
+            }
+<span class="nc" id="L147">            repintarTodo();</span>
+<span class="nc" id="L148">        });</span>
+<span class="nc" id="L149">    }</span>
+
+    public void reconstruirTabla() {
+<span class="nc" id="L152">        SwingUtilities.invokeLater(() -&gt; {</span>
+<span class="nc" id="L153">            modelo.setRowCount(0);</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">            for (ResumenDiario r : resumenes) {</span>
+<span class="nc" id="L155">                agregarFilaModelo(r);</span>
+<span class="nc" id="L156">            }</span>
+<span class="nc bnc" id="L157" title="All 4 branches missed.">            if (tieneTotales &amp;&amp; !resumenes.isEmpty()) {</span>
+<span class="nc" id="L158">                int gen=0,ppal=0,rez=0,tot=0,no=0;</span>
+<span class="nc" id="L159">                double monto=0,esp=0,aten=0; int cont=0;</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">                for (ResumenDiario r : resumenes) {</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">                    if (r.isLaborable()) {</span>
+<span class="nc" id="L162">                        gen+=r.getGenerados(); ppal+=r.getAtendidosPrincipal();</span>
+<span class="nc" id="L163">                        rez+=r.getAtendidosRezagados(); tot+=r.getTotalAtendidos();</span>
+<span class="nc" id="L164">                        no+=r.getNoAtendidos(); monto+=r.getMontoTotal();</span>
+<span class="nc" id="L165">                        esp+=r.getPromedioEspera(); aten+=r.getPromedioAtencion();</span>
+<span class="nc" id="L166">                        cont++;</span>
+                    }
+<span class="nc" id="L168">                }</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">                if (cont &gt; 0) {</span>
+<span class="nc" id="L170">                    modelo.addRow(new Object[]{</span>
+<span class="nc" id="L171">                        &quot;-&quot;,&quot;TOTAL&quot;,gen,ppal,rez,tot,no,</span>
+<span class="nc" id="L172">                        round2(monto),round1(esp/cont),round1(aten/cont),&quot;-&quot;</span>
+                    });
+                }
+            }
+<span class="nc" id="L176">            repintarTodo();</span>
+<span class="nc" id="L177">        });</span>
+<span class="nc" id="L178">    }</span>
+
+    private void repintarTodo() {
+        try {
+<span class="nc" id="L182">            modelo.fireTableDataChanged();</span>
+<span class="nc" id="L183">            tabla.revalidate();</span>
+<span class="nc" id="L184">            tabla.repaint();</span>
+<span class="nc" id="L185">            scroll.revalidate();</span>
+<span class="nc" id="L186">            scroll.repaint();</span>
+
+<span class="nc bnc" id="L188" title="All 2 branches missed.">            if (isShowing()) {</span>
+<span class="nc" id="L189">                tabla.paintImmediately(tabla.getBounds());</span>
+<span class="nc" id="L190">                scroll.paintImmediately(scroll.getBounds());</span>
+            }
+
+<span class="nc" id="L193">            tabla.updateUI();</span>
+<span class="nc" id="L194">            scroll.updateUI();</span>
+<span class="nc" id="L195">            revalidate();</span>
+<span class="nc" id="L196">            repaint();</span>
+<span class="nc" id="L197">        } catch (Exception ex) {</span>
+<span class="nc" id="L198">            SwingUtilities.invokeLater(() -&gt; {</span>
+<span class="nc" id="L199">                modelo.fireTableDataChanged();</span>
+<span class="nc" id="L200">                revalidate();</span>
+<span class="nc" id="L201">                repaint();</span>
+<span class="nc" id="L202">            });</span>
+<span class="nc" id="L203">        }</span>
+<span class="nc" id="L204">    }</span>
+
+<span class="nc" id="L206">    public void mostrarTotales() { mostrarTotalesYRefrescar(); }</span>
+
+    public void reiniciar() {
+<span class="nc" id="L209">        resumenes.clear();</span>
+<span class="nc" id="L210">        tieneTotales = false;</span>
+<span class="nc" id="L211">        SwingUtilities.invokeLater(() -&gt; {</span>
+<span class="nc" id="L212">            modelo.setRowCount(0);</span>
+<span class="nc" id="L213">            repintarTodo();</span>
+<span class="nc" id="L214">        });</span>
+<span class="nc" id="L215">    }</span>
+
+<span class="nc" id="L217">    private static double round1(double v) { return Math.round(v * 10.0) / 10.0; }</span>
+<span class="nc" id="L218">    private static double round2(double v) { return Math.round(v * 100.0) / 100.0; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

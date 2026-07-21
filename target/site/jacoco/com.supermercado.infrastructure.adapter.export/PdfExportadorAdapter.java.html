@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PdfExportadorAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.infrastructure.adapter.export</a> &gt; <span class="el_source">PdfExportadorAdapter.java</span></div><h1>PdfExportadorAdapter.java</h1><pre class="source lang-java linenums">package com.supermercado.infrastructure.adapter.export;
+
+import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.colors.DeviceRgb;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
+import com.supermercado.application.cooperativa.port.IReporteExportador;
+import com.supermercado.domain.cooperativa.model.ResumenDiario;
+import com.supermercado.domain.cooperativa.service.EstadisticasFinancierasService;
+
+import java.io.IOException;
+import java.util.*;
+
+<span class="nc" id="L21">public class PdfExportadorAdapter implements IReporteExportador {</span>
+
+<span class="nc" id="L23">    private static final DeviceRgb AZUL_OSCURO = new DeviceRgb(30, 60, 110);</span>
+<span class="nc" id="L24">    private static final DeviceRgb AZUL_CLARO  = new DeviceRgb(220, 230, 245);</span>
+<span class="nc" id="L25">    private static final DeviceRgb GRIS_CLARO  = new DeviceRgb(245, 245, 245);</span>
+<span class="nc" id="L26">    private static final DeviceRgb BLANCO      = new DeviceRgb(255, 255, 255);</span>
+
+<span class="nc" id="L28">    private static final List&lt;String&gt; CODIGOS = List.of(&quot;C&quot;,&quot;A&quot;,&quot;S&quot;,&quot;F&quot;,&quot;P&quot;,&quot;R&quot;,&quot;PC&quot;,&quot;PS&quot;,&quot;PA&quot;,&quot;PP&quot;);</span>
+<span class="nc" id="L29">    private static final Map&lt;String,String&gt; NOMBRES = Map.ofEntries(</span>
+<span class="nc" id="L30">            Map.entry(&quot;C&quot;,&quot;Ahorro/Credito&quot;), Map.entry(&quot;A&quot;,&quot;Semapa (Agua)&quot;),</span>
+<span class="nc" id="L31">            Map.entry(&quot;S&quot;,&quot;Elfec-Comteco-Semapa&quot;), Map.entry(&quot;F&quot;,&quot;Fraccionamiento&quot;),</span>
+<span class="nc" id="L32">            Map.entry(&quot;P&quot;,&quot;Plataforma&quot;), Map.entry(&quot;R&quot;,&quot;Renta Dignidad&quot;),</span>
+<span class="nc" id="L33">            Map.entry(&quot;PC&quot;,&quot;Pref. Ahorro-Credito&quot;), Map.entry(&quot;PS&quot;,&quot;Pref. Elfec-Comteco-Semapa&quot;),</span>
+<span class="nc" id="L34">            Map.entry(&quot;PA&quot;,&quot;Pref. Semapa&quot;), Map.entry(&quot;PP&quot;,&quot;Pref. Plataforma&quot;));</span>
+
+    @Override
+    public void exportar(String rutaArchivo,
+                          List&lt;ResumenDiario&gt; resumenes,
+                          EstadisticasFinancierasService est,
+                          long minutosSimulados) throws IOException {
+
+<span class="nc" id="L42">        System.out.println(&quot;&gt;&gt;&gt; [PDF] Iniciando exportacion: &quot; + rutaArchivo);</span>
+
+<span class="nc" id="L44">        try (PdfWriter writer = new PdfWriter(rutaArchivo);</span>
+<span class="nc" id="L45">             PdfDocument pdfDoc = new PdfDocument(writer);</span>
+<span class="nc" id="L46">             Document doc = new Document(pdfDoc, PageSize.A4)) {</span>
+
+<span class="nc" id="L48">            doc.setMargins(30, 30, 30, 30);</span>
+
+<span class="nc" id="L50">            escribirCabecera(doc);</span>
+<span class="nc" id="L51">            escribirTablaEvolucion(doc, resumenes);</span>
+<span class="nc" id="L52">            escribirResumenFinal(doc, est, minutosSimulados);</span>
+<span class="nc" id="L53">            escribirEstadisticasAcumuladas(doc, est);</span>
+<span class="nc" id="L54">            escribirDesgloseServicio(doc, est);</span>
+
+<span class="nc" id="L56">            System.out.println(&quot;&gt;&gt;&gt; [PDF] Exportacion completada: &quot; + rutaArchivo);</span>
+
+<span class="nc" id="L58">        } catch (Exception e) {</span>
+<span class="nc" id="L59">            System.err.println(&quot;&gt;&gt;&gt; [PDF] ERROR:&quot;);</span>
+<span class="nc" id="L60">            e.printStackTrace();</span>
+<span class="nc" id="L61">            throw new IOException(&quot;Error al exportar PDF: &quot; + e.getMessage(), e);</span>
+<span class="nc" id="L62">        }</span>
+<span class="nc" id="L63">    }</span>
+
+    private void escribirCabecera(Document doc) {
+<span class="nc" id="L66">        Paragraph titulo = new Paragraph(&quot;Reporte de Simulacion - SimCristoRey&quot;)</span>
+<span class="nc" id="L67">                .setFontSize(18).setBold()</span>
+<span class="nc" id="L68">                .setFontColor(AZUL_OSCURO)</span>
+<span class="nc" id="L69">                .setTextAlignment(TextAlignment.CENTER);</span>
+<span class="nc" id="L70">        doc.add(titulo);</span>
+
+<span class="nc" id="L72">        Paragraph subtitulo = new Paragraph(&quot;Cooperativa de Ahorro y Credito Cristo Rey&quot;)</span>
+<span class="nc" id="L73">                .setFontSize(11).setItalic()</span>
+<span class="nc" id="L74">                .setTextAlignment(TextAlignment.CENTER)</span>
+<span class="nc" id="L75">                .setMarginBottom(20);</span>
+<span class="nc" id="L76">        doc.add(subtitulo);</span>
+<span class="nc" id="L77">    }</span>
+
+    private void escribirTablaEvolucion(Document doc, List&lt;ResumenDiario&gt; resumenes) {
+<span class="nc" id="L80">        doc.add(tituloSeccion(&quot;Evolucion Diaria&quot;));</span>
+
+<span class="nc" id="L82">        float[] anchos = {60, 55, 55, 55, 45, 75, 55, 55, 80};</span>
+<span class="nc" id="L83">        Table tabla = new Table(UnitValue.createPercentArray(anchos)).useAllAvailableWidth();</span>
+
+<span class="nc" id="L85">        String[] cols = {&quot;Dia/Fecha&quot;, &quot;Gen.&quot;, &quot;Ppal.&quot;, &quot;Rezag.&quot;, &quot;Total&quot;, &quot;Monto (Bs)&quot;, &quot;Espera&quot;, &quot;Aten.&quot;, &quot;Cajero&quot;};</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        for (String c : cols) tabla.addHeaderCell(celdaHeader(c));</span>
+
+<span class="nc" id="L88">        boolean par = false;</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        for (ResumenDiario r : resumenes) {</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">            if (!r.isLaborable()) continue;</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">            DeviceRgb fondo = par ? GRIS_CLARO : BLANCO;</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">            par = !par;</span>
+
+<span class="nc bnc" id="L94" title="All 2 branches missed.">            String etiquetaDia = r.getFecha() != null ? r.getFecha().toString() : (&quot;Dia &quot; + r.getNumeroDia());</span>
+<span class="nc" id="L95">            tabla.addCell(celdaDato(etiquetaDia, fondo));</span>
+<span class="nc" id="L96">            tabla.addCell(celdaDato(String.valueOf(r.getGenerados()), fondo));</span>
+<span class="nc" id="L97">            tabla.addCell(celdaDato(String.valueOf(r.getAtendidosPrincipal()), fondo));</span>
+<span class="nc" id="L98">            tabla.addCell(celdaDato(String.valueOf(r.getAtendidosRezagados()), fondo));</span>
+<span class="nc" id="L99">            tabla.addCell(celdaDato(String.valueOf(r.getTotalAtendidos()), fondo));</span>
+<span class="nc" id="L100">            tabla.addCell(celdaDato(String.format(Locale.ROOT, &quot;%,.2f&quot;, r.getMontoTotal()), fondo));</span>
+<span class="nc" id="L101">            tabla.addCell(celdaDato(String.format(Locale.ROOT, &quot;%.1f&quot;, r.getPromedioEspera()), fondo));</span>
+<span class="nc" id="L102">            tabla.addCell(celdaDato(String.format(Locale.ROOT, &quot;%.1f&quot;, r.getPromedioAtencion()), fondo));</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">            tabla.addCell(celdaDato(r.getCajeroEstrella() != null ? r.getCajeroEstrella() : &quot;-&quot;, fondo));</span>
+<span class="nc" id="L104">        }</span>
+
+<span class="nc" id="L106">        doc.add(tabla);</span>
+<span class="nc" id="L107">    }</span>
+
+    private void escribirResumenFinal(Document doc, EstadisticasFinancierasService est, long minutosSimulados) {
+<span class="nc" id="L110">        doc.add(tituloSeccion(&quot;Resumen Final&quot;));</span>
+
+<span class="nc" id="L112">        Table tabla = new Table(UnitValue.createPercentArray(new float[]{50, 50})).useAllAvailableWidth();</span>
+
+<span class="nc" id="L114">        agregarSeccionFase(tabla, &quot;FASE PRINCIPAL (acumulado)&quot;,</span>
+<span class="nc" id="L115">                est.getAcumAtendPpal(), est.getAcumMontoPpal(),</span>
+<span class="nc" id="L116">                est.getPrincipal().getPromedioEspera(), est.getPrincipal().getPromedioAtencion(),</span>
+<span class="nc" id="L117">                est.getPrincipal().getCajeroEstrella());</span>
+
+<span class="nc" id="L119">        agregarSeccionFase(tabla, &quot;FASE REZAGADOS (acumulado)&quot;,</span>
+<span class="nc" id="L120">                est.getAcumAtendRez(), est.getAcumMontoRez(),</span>
+<span class="nc" id="L121">                est.getRezagados().getPromedioEspera(), est.getRezagados().getPromedioAtencion(),</span>
+<span class="nc" id="L122">                est.getRezagados().getCajeroEstrella());</span>
+
+<span class="nc" id="L124">        doc.add(tabla);</span>
+
+<span class="nc" id="L126">        Table totalTabla = new Table(UnitValue.createPercentArray(new float[]{50, 50})).useAllAvailableWidth();</span>
+<span class="nc" id="L127">        totalTabla.addCell(celdaLabel(&quot;Dias laborables:&quot;)); totalTabla.addCell(celdaValor(String.valueOf(est.getDiasAcumulados())));</span>
+<span class="nc" id="L128">        totalTabla.addCell(celdaLabel(&quot;Generados:&quot;)); totalTabla.addCell(celdaValor(String.valueOf(est.getAcumGenerados())));</span>
+<span class="nc" id="L129">        totalTabla.addCell(celdaLabel(&quot;Atendidos:&quot;)); totalTabla.addCell(celdaValor(String.valueOf(est.getAcumTotalAtendidos())));</span>
+<span class="nc" id="L130">        totalTabla.addCell(celdaLabel(&quot;No atendidos:&quot;)); totalTabla.addCell(celdaValor(String.valueOf(est.getAcumNoAtendidos())));</span>
+<span class="nc" id="L131">        totalTabla.addCell(celdaLabel(&quot;Monto total (Bs):&quot;)); totalTabla.addCell(celdaValor(String.format(Locale.ROOT, &quot;%,.2f&quot;, est.getAcumMonto())));</span>
+<span class="nc" id="L132">        totalTabla.addCell(celdaLabel(&quot;Espera promedio (min):&quot;)); totalTabla.addCell(celdaValor(String.format(Locale.ROOT, &quot;%.1f&quot;, est.getAcumPromedioEspera())));</span>
+<span class="nc" id="L133">        totalTabla.addCell(celdaLabel(&quot;Atencion promedio (min):&quot;)); totalTabla.addCell(celdaValor(String.format(Locale.ROOT, &quot;%.1f&quot;, est.getAcumPromedioAtencion())));</span>
+<span class="nc" id="L134">        totalTabla.addCell(celdaLabel(&quot;Cajero estrella:&quot;)); totalTabla.addCell(celdaValor(est.getCajeroEstrellaGlobal()));</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">        if (minutosSimulados &gt; 0) {</span>
+<span class="nc" id="L136">            totalTabla.addCell(celdaLabel(&quot;Eficiencia global (aten/min):&quot;));</span>
+<span class="nc" id="L137">            totalTabla.addCell(celdaValor(String.format(Locale.ROOT, &quot;%.3f&quot;, est.getEficienciaGlobal(minutosSimulados))));</span>
+        }
+
+<span class="nc" id="L140">        doc.add(new Paragraph(&quot;Total Global&quot;).setBold().setFontSize(12).setMarginTop(8));</span>
+<span class="nc" id="L141">        doc.add(totalTabla);</span>
+<span class="nc" id="L142">    }</span>
+
+    private void agregarSeccionFase(Table tabla, String titulo, int atendidos, double monto,
+                                     double espera, double atencion, String cajero) {
+<span class="nc" id="L146">        Cell header = new Cell(1, 2).add(new Paragraph(titulo).setBold())</span>
+<span class="nc" id="L147">                .setBackgroundColor(AZUL_CLARO);</span>
+<span class="nc" id="L148">        tabla.addCell(header);</span>
+
+<span class="nc" id="L150">        tabla.addCell(celdaLabel(&quot;Atendidos:&quot;)); tabla.addCell(celdaValor(String.valueOf(atendidos)));</span>
+<span class="nc" id="L151">        tabla.addCell(celdaLabel(&quot;Monto (Bs):&quot;)); tabla.addCell(celdaValor(String.format(Locale.ROOT, &quot;%,.2f&quot;, monto)));</span>
+<span class="nc" id="L152">        tabla.addCell(celdaLabel(&quot;Espera (min):&quot;)); tabla.addCell(celdaValor(String.format(Locale.ROOT, &quot;%.1f&quot;, espera)));</span>
+<span class="nc" id="L153">        tabla.addCell(celdaLabel(&quot;Atencion (min):&quot;)); tabla.addCell(celdaValor(String.format(Locale.ROOT, &quot;%.1f&quot;, atencion)));</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">        tabla.addCell(celdaLabel(&quot;Cajero:&quot;)); tabla.addCell(celdaValor(cajero != null ? cajero : &quot;-&quot;));</span>
+<span class="nc" id="L155">    }</span>
+
+    private void escribirEstadisticasAcumuladas(Document doc, EstadisticasFinancierasService est) {
+<span class="nc" id="L158">        doc.add(tituloSeccion(&quot;Estadisticas Acumuladas Globales&quot;));</span>
+
+<span class="nc" id="L160">        Table tabla = new Table(UnitValue.createPercentArray(new float[]{50, 50})).useAllAvailableWidth();</span>
+<span class="nc" id="L161">        tabla.addCell(celdaLabel(&quot;Dias acumulados:&quot;)); tabla.addCell(celdaValor(String.valueOf(est.getDiasAcumulados())));</span>
+<span class="nc" id="L162">        tabla.addCell(celdaLabel(&quot;Generados:&quot;)); tabla.addCell(celdaValor(String.valueOf(est.getAcumGenerados())));</span>
+<span class="nc" id="L163">        tabla.addCell(celdaLabel(&quot;Atendidos Principal:&quot;)); tabla.addCell(celdaValor(String.valueOf(est.getAcumAtendPpal())));</span>
+<span class="nc" id="L164">        tabla.addCell(celdaLabel(&quot;Atendidos Rezagados:&quot;)); tabla.addCell(celdaValor(String.valueOf(est.getAcumAtendRez())));</span>
+<span class="nc" id="L165">        tabla.addCell(celdaLabel(&quot;Monto Principal (Bs):&quot;)); tabla.addCell(celdaValor(String.format(Locale.ROOT, &quot;%,.2f&quot;, est.getAcumMontoPpal())));</span>
+<span class="nc" id="L166">        tabla.addCell(celdaLabel(&quot;Monto Rezagados (Bs):&quot;)); tabla.addCell(celdaValor(String.format(Locale.ROOT, &quot;%,.2f&quot;, est.getAcumMontoRez())));</span>
+<span class="nc" id="L167">        tabla.addCell(celdaLabel(&quot;Monto total (Bs):&quot;)); tabla.addCell(celdaValor(String.format(Locale.ROOT, &quot;%,.2f&quot;, est.getAcumMonto())));</span>
+<span class="nc" id="L168">        tabla.addCell(celdaLabel(&quot;Cajero estrella global:&quot;)); tabla.addCell(celdaValor(est.getCajeroEstrellaGlobal()));</span>
+
+<span class="nc" id="L170">        doc.add(tabla);</span>
+<span class="nc" id="L171">    }</span>
+
+    /** NUEVO: cuantos socios de cada tipo de ticket se atendieron en total. */
+    private void escribirDesgloseServicio(Document doc, EstadisticasFinancierasService est) {
+<span class="nc" id="L175">        doc.add(tituloSeccion(&quot;Desglose por Tipo de Servicio&quot;));</span>
+
+<span class="nc" id="L177">        Table tabla = new Table(UnitValue.createPercentArray(new float[]{20, 55, 25})).useAllAvailableWidth();</span>
+<span class="nc" id="L178">        tabla.addHeaderCell(celdaHeader(&quot;Codigo&quot;));</span>
+<span class="nc" id="L179">        tabla.addHeaderCell(celdaHeader(&quot;Descripcion&quot;));</span>
+<span class="nc" id="L180">        tabla.addHeaderCell(celdaHeader(&quot;Atendidos&quot;));</span>
+
+<span class="nc" id="L182">        Map&lt;String,Integer&gt; desglose = est.getAcumAtendidosPorCodigo();</span>
+<span class="nc" id="L183">        boolean par = false;</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">        for (String codigo : CODIGOS) {</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">            DeviceRgb fondo = par ? GRIS_CLARO : BLANCO;</span>
+<span class="nc bnc" id="L186" title="All 2 branches missed.">            par = !par;</span>
+<span class="nc" id="L187">            int cantidad = desglose.getOrDefault(codigo, 0);</span>
+<span class="nc" id="L188">            tabla.addCell(celdaDato(codigo, fondo));</span>
+<span class="nc" id="L189">            tabla.addCell(celdaDato(NOMBRES.getOrDefault(codigo, codigo), fondo));</span>
+<span class="nc" id="L190">            tabla.addCell(celdaDato(String.valueOf(cantidad), fondo));</span>
+<span class="nc" id="L191">        }</span>
+<span class="nc" id="L192">        doc.add(tabla);</span>
+<span class="nc" id="L193">    }</span>
+
+    private Paragraph tituloSeccion(String texto) {
+<span class="nc" id="L196">        return new Paragraph(texto)</span>
+<span class="nc" id="L197">                .setFontSize(14).setBold()</span>
+<span class="nc" id="L198">                .setFontColor(ColorConstants.WHITE)</span>
+<span class="nc" id="L199">                .setBackgroundColor(AZUL_OSCURO)</span>
+<span class="nc" id="L200">                .setPadding(6)</span>
+<span class="nc" id="L201">                .setMarginTop(16).setMarginBottom(8);</span>
+    }
+
+    private Cell celdaHeader(String texto) {
+<span class="nc" id="L205">        return new Cell().add(new Paragraph(texto).setBold().setFontSize(9)</span>
+<span class="nc" id="L206">                        .setFontColor(ColorConstants.WHITE))</span>
+<span class="nc" id="L207">                .setBackgroundColor(AZUL_OSCURO)</span>
+<span class="nc" id="L208">                .setTextAlignment(TextAlignment.CENTER)</span>
+<span class="nc" id="L209">                .setPadding(4);</span>
+    }
+
+    private Cell celdaDato(String texto, DeviceRgb fondo) {
+<span class="nc" id="L213">        return new Cell().add(new Paragraph(texto).setFontSize(9))</span>
+<span class="nc" id="L214">                .setBackgroundColor(fondo)</span>
+<span class="nc" id="L215">                .setTextAlignment(TextAlignment.CENTER)</span>
+<span class="nc" id="L216">                .setPadding(3);</span>
+    }
+
+    private Cell celdaLabel(String texto) {
+<span class="nc" id="L220">        return new Cell().add(new Paragraph(texto).setBold().setFontSize(10))</span>
+<span class="nc" id="L221">                .setPadding(4);</span>
+    }
+
+    private Cell celdaValor(String texto) {
+<span class="nc" id="L225">        return new Cell().add(new Paragraph(texto).setFontSize(10))</span>
+<span class="nc" id="L226">                .setPadding(4);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

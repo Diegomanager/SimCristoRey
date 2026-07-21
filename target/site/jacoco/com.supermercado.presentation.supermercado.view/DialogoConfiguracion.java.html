@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DialogoConfiguracion.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.presentation.supermercado.view</a> &gt; <span class="el_source">DialogoConfiguracion.java</span></div><h1>DialogoConfiguracion.java</h1><pre class="source lang-java linenums">package com.supermercado.presentation.supermercado.view;
+
+import com.supermercado.application.supermercado.dto.ConfiguracionDTO;
+import javax.swing.*;
+import javax.swing.border.*;
+import java.awt.*;
+
+public class DialogoConfiguracion extends JDialog {
+
+    private static final long serialVersionUID = 1L;
+
+    private JSpinner spinnerCajasNormales;
+    private JSpinner spinnerCajasRapidas;
+    private JSpinner spinnerHoras;
+    private JSpinner spinnerDuracion;
+    private JSpinner spinnerLimiteClientes;
+    private JSpinner spinnerProbabilidad;
+    private JSpinner spinnerArticulosMin;
+    private JSpinner spinnerArticulosMax;
+    private JSpinner spinnerTiempoNormalMin;
+    private JSpinner spinnerTiempoNormalMax;
+    private JSpinner spinnerTiempoRapidaMin;
+    private JSpinner spinnerTiempoRapidaMax;
+    private JSpinner spinnerLimiteRapido;
+
+<span class="nc" id="L26">    private boolean confirmado = false;</span>
+    private ConfiguracionDTO configuracionOriginal;
+
+<span class="nc" id="L29">    private static final Font FONT_SECCION = new Font(&quot;Segoe UI&quot;, Font.BOLD,  12);</span>
+<span class="nc" id="L30">    private static final Font FONT_LABEL   = new Font(&quot;Segoe UI&quot;, Font.PLAIN, 12);</span>
+<span class="nc" id="L31">    private static final Font FONT_TITULO  = new Font(&quot;Segoe UI&quot;, Font.BOLD,  16);</span>
+<span class="nc" id="L32">    private static final Color COLOR_SECCION = new Color(41, 98, 155);</span>
+<span class="nc" id="L33">    private static final Color COLOR_LABEL   = new Color(50, 50, 50);</span>
+<span class="nc" id="L34">    private static final Color COLOR_BG      = new Color(245, 245, 245);</span>
+<span class="nc" id="L35">    private static final Color COLOR_PANEL   = Color.WHITE;</span>
+
+    public DialogoConfiguracion(JFrame parent, ConfiguracionDTO config) {
+<span class="nc" id="L38">        super(parent, &quot;Configuracion de la Simulacion&quot;, true);</span>
+<span class="nc" id="L39">        this.configuracionOriginal = config;</span>
+<span class="nc" id="L40">        setSize(580, 720);</span>
+<span class="nc" id="L41">        setLocationRelativeTo(parent);</span>
+<span class="nc" id="L42">        setResizable(false);</span>
+<span class="nc" id="L43">        setLayout(new BorderLayout());</span>
+<span class="nc" id="L44">        getContentPane().setBackground(COLOR_BG);</span>
+<span class="nc" id="L45">        inicializarComponentes();</span>
+<span class="nc" id="L46">    }</span>
+
+    private void inicializarComponentes() {
+<span class="nc" id="L49">        JPanel pp = new JPanel();</span>
+<span class="nc" id="L50">        pp.setLayout(new BoxLayout(pp, BoxLayout.Y_AXIS));</span>
+<span class="nc" id="L51">        pp.setBackground(COLOR_BG);</span>
+<span class="nc" id="L52">        pp.setBorder(BorderFactory.createEmptyBorder(20, 25, 10, 25));</span>
+
+<span class="nc" id="L54">        JLabel lblTitulo = new JLabel(&quot;Configuracion del Simulador de Supermercado&quot;);</span>
+<span class="nc" id="L55">        lblTitulo.setFont(FONT_TITULO);</span>
+<span class="nc" id="L56">        lblTitulo.setForeground(new Color(30, 30, 30));</span>
+<span class="nc" id="L57">        lblTitulo.setAlignmentX(Component.LEFT_ALIGNMENT);</span>
+<span class="nc" id="L58">        pp.add(lblTitulo);</span>
+<span class="nc" id="L59">        pp.add(Box.createVerticalStrut(18));</span>
+
+        // ---- 1. Tiempo de Simulacion ----
+<span class="nc" id="L62">        pp.add(crearSeccion(&quot;1. Tiempo de Simulacion&quot;));</span>
+<span class="nc" id="L63">        pp.add(Box.createVerticalStrut(5));</span>
+<span class="nc" id="L64">        JPanel s1 = crearPanelCampos();</span>
+<span class="nc" id="L65">        agregarCampo(s1, &quot;Horas simuladas (duracion del dia):&quot;,</span>
+<span class="nc" id="L66">            spinnerHoras = crearSpinner(configuracionOriginal.getHorasSimuladas(), 1, 24), 0);</span>
+<span class="nc" id="L67">        agregarCampo(s1, &quot;Duracion real (segundos):&quot;,</span>
+<span class="nc" id="L68">            spinnerDuracion = crearSpinner(configuracionOriginal.getDuracionRealSegundos(), 5, 120), 1);</span>
+<span class="nc" id="L69">        pp.add(s1);</span>
+<span class="nc" id="L70">        pp.add(Box.createVerticalStrut(12));</span>
+
+        // ---- 2. Cajas Registradoras ----
+<span class="nc" id="L73">        pp.add(crearSeccion(&quot;2. Cajas Registradoras&quot;));</span>
+<span class="nc" id="L74">        pp.add(Box.createVerticalStrut(5));</span>
+<span class="nc" id="L75">        JPanel s2 = crearPanelCampos();</span>
+<span class="nc" id="L76">        agregarCampo(s2, &quot;Cajas Normales:&quot;,</span>
+<span class="nc" id="L77">            spinnerCajasNormales = crearSpinner(configuracionOriginal.getNumCajasNormales(), 0, 20), 0);</span>
+<span class="nc" id="L78">        agregarCampo(s2, &quot;Cajas Rapidas:&quot;,</span>
+<span class="nc" id="L79">            spinnerCajasRapidas = crearSpinner(configuracionOriginal.getNumCajasRapidas(), 0, 10), 1);</span>
+<span class="nc" id="L80">        pp.add(s2);</span>
+<span class="nc" id="L81">        pp.add(Box.createVerticalStrut(12));</span>
+
+        // ---- 3. Flujo de Clientes ----
+<span class="nc" id="L84">        pp.add(crearSeccion(&quot;3. Flujo de Clientes&quot;));</span>
+<span class="nc" id="L85">        pp.add(Box.createVerticalStrut(5));</span>
+<span class="nc" id="L86">        JPanel s3 = crearPanelCampos();</span>
+<span class="nc" id="L87">        agregarCampo(s3, &quot;Probabilidad llegada / tick (%):&quot;,</span>
+<span class="nc" id="L88">            spinnerProbabilidad = crearSpinner(configuracionOriginal.getProbabilidadLlegadaCliente(), 1, 100), 0);</span>
+<span class="nc" id="L89">        agregarCampo(s3, &quot;Max. clientes (0 = sin limite):&quot;,</span>
+<span class="nc" id="L90">            spinnerLimiteClientes = crearSpinner(configuracionOriginal.getLimiteClientes(), 0, 10000), 1);</span>
+<span class="nc" id="L91">        pp.add(s3);</span>
+<span class="nc" id="L92">        pp.add(Box.createVerticalStrut(12));</span>
+
+        // ---- 4. Tiempos de Atencion ----
+<span class="nc" id="L95">        pp.add(crearSeccion(&quot;4. Tiempos de Atencion (minutos simulados)&quot;));</span>
+<span class="nc" id="L96">        pp.add(Box.createVerticalStrut(5));</span>
+<span class="nc" id="L97">        JPanel s4 = crearPanelCampos();</span>
+<span class="nc" id="L98">        agregarCampoDual(s4,</span>
+            &quot;Normal minimo:&quot;,
+<span class="nc" id="L100">            spinnerTiempoNormalMin = crearSpinner(configuracionOriginal.getTiempoCajaNormalMin(), 1, 30),</span>
+            &quot;Normal maximo:&quot;,
+<span class="nc" id="L102">            spinnerTiempoNormalMax = crearSpinner(configuracionOriginal.getTiempoCajaNormalMax(), 1, 30), 0);</span>
+<span class="nc" id="L103">        agregarCampoDual(s4,</span>
+            &quot;Rapida minimo:&quot;,
+<span class="nc" id="L105">            spinnerTiempoRapidaMin = crearSpinner(configuracionOriginal.getTiempoCajaRapidaMin(), 1, 15),</span>
+            &quot;Rapida maximo:&quot;,
+<span class="nc" id="L107">            spinnerTiempoRapidaMax = crearSpinner(configuracionOriginal.getTiempoCajaRapidaMax(), 1, 15), 1);</span>
+<span class="nc" id="L108">        pp.add(s4);</span>
+<span class="nc" id="L109">        pp.add(Box.createVerticalStrut(12));</span>
+
+        // ---- 5. Articulos por Cliente ----
+<span class="nc" id="L112">        pp.add(crearSeccion(&quot;5. Articulos por Cliente&quot;));</span>
+<span class="nc" id="L113">        pp.add(Box.createVerticalStrut(5));</span>
+<span class="nc" id="L114">        JPanel s5 = crearPanelCampos();</span>
+<span class="nc" id="L115">        agregarCampoDual(s5,</span>
+            &quot;Minimo:&quot;,
+<span class="nc" id="L117">            spinnerArticulosMin = crearSpinner(configuracionOriginal.getArticulosClienteMin(), 1, 10000),</span>
+            &quot;Maximo:&quot;,
+<span class="nc" id="L119">            spinnerArticulosMax = crearSpinner(configuracionOriginal.getArticulosClienteMax(), 1, 10000), 0);</span>
+        // Campo para límite de cliente rápido
+<span class="nc" id="L121">        agregarCampo(s5, &quot;Límite artículos para caja rápida:&quot;,</span>
+<span class="nc" id="L122">            spinnerLimiteRapido = crearSpinner(configuracionOriginal.getLimiteClienteRapido(), 1, 100), 1);</span>
+<span class="nc" id="L123">        pp.add(s5);</span>
+<span class="nc" id="L124">        pp.add(Box.createVerticalStrut(10));</span>
+
+<span class="nc" id="L126">        JScrollPane scroll = new JScrollPane(pp);</span>
+<span class="nc" id="L127">        scroll.setBorder(null);</span>
+<span class="nc" id="L128">        scroll.getViewport().setBackground(COLOR_BG);</span>
+<span class="nc" id="L129">        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);</span>
+<span class="nc" id="L130">        scroll.getVerticalScrollBar().setUnitIncrement(20);</span>
+<span class="nc" id="L131">        scroll.getVerticalScrollBar().setBlockIncrement(60);</span>
+<span class="nc" id="L132">        add(scroll, BorderLayout.CENTER);</span>
+
+        // Botones
+<span class="nc" id="L135">        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 10));</span>
+<span class="nc" id="L136">        panelBotones.setBackground(COLOR_BG);</span>
+<span class="nc" id="L137">        panelBotones.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(210, 210, 210)));</span>
+
+<span class="nc" id="L139">        JButton btnCancelar = crearBotonDialogo(&quot;Cancelar&quot;,         new Color(160, 160, 160));</span>
+<span class="nc" id="L140">        JButton btnIniciar  = crearBotonDialogo(&quot;Iniciar Simulacion&quot;, new Color(41,  98, 155));</span>
+<span class="nc" id="L141">        btnCancelar.addActionListener(e -&gt; { confirmado = false; dispose(); });</span>
+<span class="nc" id="L142">        btnIniciar.addActionListener(e -&gt; guardar());</span>
+
+<span class="nc" id="L144">        panelBotones.add(btnCancelar);</span>
+<span class="nc" id="L145">        panelBotones.add(btnIniciar);</span>
+<span class="nc" id="L146">        add(panelBotones, BorderLayout.SOUTH);</span>
+<span class="nc" id="L147">    }</span>
+
+    private JPanel crearSeccion(String texto) {
+<span class="nc" id="L150">        JPanel p = new JPanel(new BorderLayout(8, 0));</span>
+<span class="nc" id="L151">        p.setBackground(COLOR_BG);</span>
+<span class="nc" id="L152">        p.setAlignmentX(Component.LEFT_ALIGNMENT);</span>
+<span class="nc" id="L153">        p.setMaximumSize(new Dimension(Integer.MAX_VALUE, 22));</span>
+<span class="nc" id="L154">        JLabel lbl = new JLabel(texto);</span>
+<span class="nc" id="L155">        lbl.setFont(FONT_SECCION); lbl.setForeground(COLOR_SECCION);</span>
+<span class="nc" id="L156">        p.add(lbl, BorderLayout.WEST);</span>
+<span class="nc" id="L157">        JSeparator sep = new JSeparator();</span>
+<span class="nc" id="L158">        sep.setForeground(new Color(200, 210, 225));</span>
+<span class="nc" id="L159">        p.add(sep, BorderLayout.CENTER);</span>
+<span class="nc" id="L160">        return p;</span>
+    }
+
+    private JPanel crearPanelCampos() {
+<span class="nc" id="L164">        JPanel p = new JPanel(new GridBagLayout());</span>
+<span class="nc" id="L165">        p.setBackground(COLOR_PANEL);</span>
+<span class="nc" id="L166">        p.setAlignmentX(Component.LEFT_ALIGNMENT);</span>
+<span class="nc" id="L167">        p.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));</span>
+<span class="nc" id="L168">        p.setBorder(BorderFactory.createCompoundBorder(</span>
+<span class="nc" id="L169">            BorderFactory.createLineBorder(new Color(220, 220, 220), 1),</span>
+<span class="nc" id="L170">            BorderFactory.createEmptyBorder(8, 12, 8, 12)</span>
+        ));
+<span class="nc" id="L172">        return p;</span>
+    }
+
+    private void agregarCampo(JPanel panel, String labelTxt, JSpinner spinner, int fila) {
+<span class="nc" id="L176">        GridBagConstraints gbc = new GridBagConstraints();</span>
+<span class="nc" id="L177">        gbc.fill = GridBagConstraints.HORIZONTAL;</span>
+<span class="nc" id="L178">        gbc.insets = new Insets(5, 4, 5, 4);</span>
+<span class="nc" id="L179">        gbc.gridy = fila;</span>
+<span class="nc" id="L180">        gbc.gridx = 0; gbc.weightx = 0.65;</span>
+<span class="nc" id="L181">        JLabel lbl = new JLabel(labelTxt);</span>
+<span class="nc" id="L182">        lbl.setFont(FONT_LABEL); lbl.setForeground(COLOR_LABEL);</span>
+<span class="nc" id="L183">        panel.add(lbl, gbc);</span>
+<span class="nc" id="L184">        gbc.gridx = 1; gbc.weightx = 0.35;</span>
+<span class="nc" id="L185">        panel.add(spinner, gbc);</span>
+<span class="nc" id="L186">    }</span>
+
+    private void agregarCampoDual(JPanel panel,
+            String lbl1, JSpinner sp1, String lbl2, JSpinner sp2, int fila) {
+<span class="nc" id="L190">        GridBagConstraints gbc = new GridBagConstraints();</span>
+<span class="nc" id="L191">        gbc.fill = GridBagConstraints.HORIZONTAL;</span>
+<span class="nc" id="L192">        gbc.insets = new Insets(5, 4, 5, 4);</span>
+<span class="nc" id="L193">        gbc.gridy = fila;</span>
+<span class="nc" id="L194">        gbc.gridx = 0; gbc.weightx = 0.28;</span>
+<span class="nc" id="L195">        JLabel l1 = new JLabel(lbl1); l1.setFont(FONT_LABEL); l1.setForeground(COLOR_LABEL);</span>
+<span class="nc" id="L196">        panel.add(l1, gbc);</span>
+<span class="nc" id="L197">        gbc.gridx = 1; gbc.weightx = 0.22; panel.add(sp1, gbc);</span>
+<span class="nc" id="L198">        gbc.gridx = 2; gbc.weightx = 0.28;</span>
+<span class="nc" id="L199">        JLabel l2 = new JLabel(lbl2); l2.setFont(FONT_LABEL); l2.setForeground(COLOR_LABEL);</span>
+<span class="nc" id="L200">        panel.add(l2, gbc);</span>
+<span class="nc" id="L201">        gbc.gridx = 3; gbc.weightx = 0.22; panel.add(sp2, gbc);</span>
+<span class="nc" id="L202">    }</span>
+
+    private JSpinner crearSpinner(int valor, int min, int max) {
+<span class="nc" id="L205">        int v = Math.max(min, Math.min(max, valor));</span>
+<span class="nc" id="L206">        JSpinner sp = new JSpinner(new SpinnerNumberModel(v, min, max, 1));</span>
+<span class="nc" id="L207">        sp.setPreferredSize(new Dimension(90, 26));</span>
+<span class="nc" id="L208">        sp.setFont(FONT_LABEL);</span>
+<span class="nc" id="L209">        return sp;</span>
+    }
+
+    private JButton crearBotonDialogo(String texto, Color fondo) {
+<span class="nc" id="L213">        JButton btn = new JButton(texto);</span>
+<span class="nc" id="L214">        btn.setFont(new Font(&quot;Segoe UI&quot;, Font.PLAIN, 12));</span>
+<span class="nc" id="L215">        btn.setBackground(fondo); btn.setForeground(Color.WHITE);</span>
+<span class="nc" id="L216">        btn.setOpaque(true); btn.setFocusPainted(false);</span>
+<span class="nc" id="L217">        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));</span>
+<span class="nc" id="L218">        btn.setBorder(BorderFactory.createCompoundBorder(</span>
+<span class="nc" id="L219">            BorderFactory.createLineBorder(fondo.darker(), 1),</span>
+<span class="nc" id="L220">            BorderFactory.createEmptyBorder(6, 18, 6, 18)</span>
+        ));
+<span class="nc" id="L222">        btn.addMouseListener(new java.awt.event.MouseAdapter() {</span>
+<span class="nc" id="L223">            public void mouseEntered(java.awt.event.MouseEvent e) { btn.setBackground(fondo.brighter()); }</span>
+<span class="nc" id="L224">            public void mouseExited (java.awt.event.MouseEvent e) { btn.setBackground(fondo); }</span>
+        });
+<span class="nc" id="L226">        return btn;</span>
+    }
+
+    private void guardar() {
+        try {
+<span class="nc" id="L231">            ConfiguracionDTO config = new ConfiguracionDTO.Builder()</span>
+<span class="nc" id="L232">                .numCajasNormales((int) spinnerCajasNormales.getValue())</span>
+<span class="nc" id="L233">                .numCajasRapidas((int) spinnerCajasRapidas.getValue())</span>
+<span class="nc" id="L234">                .horasSimuladas((int) spinnerHoras.getValue())</span>
+<span class="nc" id="L235">                .duracionRealSegundos((int) spinnerDuracion.getValue())</span>
+<span class="nc" id="L236">                .limiteClientes((int) spinnerLimiteClientes.getValue())</span>
+<span class="nc" id="L237">                .probabilidadLlegadaCliente((int) spinnerProbabilidad.getValue())</span>
+<span class="nc" id="L238">                .articulosClienteMin((int) spinnerArticulosMin.getValue())</span>
+<span class="nc" id="L239">                .articulosClienteMax((int) spinnerArticulosMax.getValue())</span>
+<span class="nc" id="L240">                .tiempoCajaNormalMin((int) spinnerTiempoNormalMin.getValue())</span>
+<span class="nc" id="L241">                .tiempoCajaNormalMax((int) spinnerTiempoNormalMax.getValue())</span>
+<span class="nc" id="L242">                .tiempoCajaRapidaMin((int) spinnerTiempoRapidaMin.getValue())</span>
+<span class="nc" id="L243">                .tiempoCajaRapidaMax((int) spinnerTiempoRapidaMax.getValue())</span>
+<span class="nc" id="L244">                .limiteClienteRapido((int) spinnerLimiteRapido.getValue())</span>
+<span class="nc" id="L245">                .build();</span>
+<span class="nc" id="L246">            configuracionOriginal = config;</span>
+<span class="nc" id="L247">            confirmado = true;</span>
+<span class="nc" id="L248">            dispose();</span>
+<span class="nc" id="L249">        } catch (Exception e) {</span>
+<span class="nc" id="L250">            JOptionPane.showMessageDialog(this,</span>
+<span class="nc" id="L251">                &quot;Error al guardar la configuracion: &quot; + e.getMessage(),</span>
+                &quot;Error&quot;, JOptionPane.ERROR_MESSAGE);
+<span class="nc" id="L253">        }</span>
+<span class="nc" id="L254">    }</span>
+
+<span class="nc" id="L256">    public boolean isConfirmado() { return confirmado; }</span>
+<span class="nc" id="L257">    public ConfiguracionDTO getConfiguracion() { return configuracionOriginal; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

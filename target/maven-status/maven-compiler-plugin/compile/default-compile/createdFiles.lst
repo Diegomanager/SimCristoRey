@@ -13,6 +13,7 @@ com\supermercado\presentation\cooperativa\panel\PanelVentanillas$TarjetaCaja.cla
 com\supermercado\presentation\supermercado\view\PanelDiagnostico$2.class
 com\supermercado\application\cooperativa\dto\SocioDTO.class
 com\supermercado\application\supermercado\dto\OptimizacionDTO$ResultadoOptimizacion.class
+com\supermercado\presentation\cooperativa\view\PanelCalendario$1.class
 com\supermercado\application\supermercado\usecase\ConfigurarSimulacionUseCase.class
 com\supermercado\infrastructure\adapter\ui\SwingEventAdapter.class
 com\supermercado\domain\supermercado\model\Recomendacion.class

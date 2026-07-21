@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PanelDiagnostico.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.presentation.supermercado.view</a> &gt; <span class="el_source">PanelDiagnostico.java</span></div><h1>PanelDiagnostico.java</h1><pre class="source lang-java linenums">package com.supermercado.presentation.supermercado.view;
+
+import com.supermercado.application.supermercado.dto.DiagnosticoDTO;
+import com.supermercado.application.supermercado.usecase.DiagnosticarConfiguracionUseCase;
+import com.supermercado.domain.supermercado.model.Caja;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import java.awt.*;
+import java.util.List;
+
+public class PanelDiagnostico extends JPanel {
+    
+    private static final long serialVersionUID = 1L;
+    
+    private JTable tablaDiagnostico;
+    private JTextArea txtResumen;
+    private JButton btnActualizar;
+    private DiagnosticarConfiguracionUseCase diagnosticarUseCase;
+    private List&lt;Caja&gt; cajasReferencia;
+    
+<span class="nc" id="L23">    private static final Color COLOR_VERDE = new Color(46, 204, 113);</span>
+<span class="nc" id="L24">    private static final Color COLOR_AMARILLO = new Color(241, 196, 15);</span>
+<span class="nc" id="L25">    private static final Color COLOR_NARANJA = new Color(243, 156, 18);</span>
+<span class="nc" id="L26">    private static final Color COLOR_ROJO = new Color(231, 76, 60);</span>
+    
+<span class="nc" id="L28">    public PanelDiagnostico() {</span>
+<span class="nc" id="L29">        this.diagnosticarUseCase = new DiagnosticarConfiguracionUseCase();</span>
+<span class="nc" id="L30">        setLayout(new BorderLayout(10, 10));</span>
+<span class="nc" id="L31">        setBorder(BorderFactory.createTitledBorder(&quot;Diagnostico del Sistema&quot;));</span>
+<span class="nc" id="L32">        inicializarComponentes();</span>
+<span class="nc" id="L33">    }</span>
+    
+    private void inicializarComponentes() {
+<span class="nc" id="L36">        String[] columnas = {&quot;Caja&quot;, &quot;Nivel&quot;, &quot;Estado&quot;, &quot;Mensaje&quot;, &quot;Sugerencia&quot;};</span>
+<span class="nc" id="L37">        tablaDiagnostico = new JTable(new DefaultTableModel(columnas, 0)) {</span>
+            @Override
+            public boolean isCellEditable(int row, int column) {
+<span class="nc" id="L40">                return false;</span>
+            }
+        };
+<span class="nc" id="L43">        tablaDiagnostico.setRowHeight(30);</span>
+<span class="nc" id="L44">        tablaDiagnostico.getTableHeader().setReorderingAllowed(false);</span>
+        
+<span class="nc" id="L46">        JScrollPane scroll = new JScrollPane(tablaDiagnostico);</span>
+<span class="nc" id="L47">        scroll.setPreferredSize(new Dimension(0, 200));</span>
+<span class="nc" id="L48">        add(scroll, BorderLayout.CENTER);</span>
+        
+<span class="nc" id="L50">        JPanel panelInferior = new JPanel(new BorderLayout(10, 5));</span>
+        
+<span class="nc" id="L52">        txtResumen = new JTextArea(4, 40);</span>
+<span class="nc" id="L53">        txtResumen.setEditable(false);</span>
+<span class="nc" id="L54">        txtResumen.setFont(new Font(&quot;Monospaced&quot;, Font.PLAIN, 12));</span>
+<span class="nc" id="L55">        txtResumen.setBackground(new Color(245, 245, 250));</span>
+<span class="nc" id="L56">        panelInferior.add(new JScrollPane(txtResumen), BorderLayout.CENTER);</span>
+        
+<span class="nc" id="L58">        JPanel panelBotones = new JPanel(new FlowLayout());</span>
+<span class="nc" id="L59">        btnActualizar = new JButton(&quot;Actualizar Diagnostico&quot;);</span>
+<span class="nc" id="L60">        btnActualizar.addActionListener(e -&gt; actualizarDiagnostico());</span>
+<span class="nc" id="L61">        panelBotones.add(btnActualizar);</span>
+<span class="nc" id="L62">        panelInferior.add(panelBotones, BorderLayout.EAST);</span>
+        
+<span class="nc" id="L64">        add(panelInferior, BorderLayout.SOUTH);</span>
+<span class="nc" id="L65">    }</span>
+    
+    public void setCajas(List&lt;Caja&gt; cajas) {
+<span class="nc" id="L68">        this.cajasReferencia = cajas;</span>
+<span class="nc" id="L69">        actualizarDiagnostico();</span>
+<span class="nc" id="L70">    }</span>
+    
+    public void actualizarDiagnostico() {
+<span class="nc bnc" id="L73" title="All 4 branches missed.">        if (cajasReferencia == null || cajasReferencia.isEmpty()) {</span>
+<span class="nc" id="L74">            txtResumen.setText(&quot;No hay datos de cajas disponibles. Ejecute una simulacion primero.&quot;);</span>
+<span class="nc" id="L75">            return;</span>
+        }
+        
+<span class="nc" id="L78">        DiagnosticoDTO diagnostico = diagnosticarUseCase.ejecutar(cajasReferencia);</span>
+        
+<span class="nc" id="L80">        DefaultTableModel model = (DefaultTableModel) tablaDiagnostico.getModel();</span>
+<span class="nc" id="L81">        model.setRowCount(0);</span>
+        
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        for (DiagnosticoDTO.DiagnosticoItem item : diagnostico.getItems()) {</span>
+<span class="nc" id="L84">            String nivelDisplay = item.getIcono() + &quot; &quot; + item.getNivel();</span>
+<span class="nc" id="L85">            String estadoDisplay = item.getColaActual() + &quot;/&quot; + item.getColaMaxima();</span>
+            
+<span class="nc" id="L87">            model.addRow(new Object[]{</span>
+<span class="nc" id="L88">                item.getCajaId(),</span>
+                nivelDisplay,
+                estadoDisplay,
+<span class="nc" id="L91">                item.getMensaje(),</span>
+<span class="nc" id="L92">                item.getSugerencia()</span>
+            });
+<span class="nc" id="L94">        }</span>
+        
+        // Aplicar colores a las filas
+<span class="nc" id="L97">        tablaDiagnostico.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {</span>
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+<span class="nc" id="L101">                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);</span>
+                
+<span class="nc" id="L103">                String nivel = table.getValueAt(row, 1).toString();</span>
+<span class="nc" id="L104">                Color bgColor = Color.WHITE;</span>
+                
+<span class="nc bnc" id="L106" title="All 2 branches missed.">                if (nivel.contains(&quot;CRITICO&quot;)) {</span>
+<span class="nc" id="L107">                    bgColor = COLOR_ROJO;</span>
+<span class="nc" id="L108">                    c.setForeground(Color.WHITE);</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">                } else if (nivel.contains(&quot;ALERTA&quot;)) {</span>
+<span class="nc" id="L110">                    bgColor = COLOR_NARANJA;</span>
+<span class="nc" id="L111">                    c.setForeground(Color.WHITE);</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">                } else if (nivel.contains(&quot;ATENCION&quot;)) {</span>
+<span class="nc" id="L113">                    bgColor = COLOR_AMARILLO;</span>
+<span class="nc" id="L114">                    c.setForeground(Color.BLACK);</span>
+                } else {
+<span class="nc" id="L116">                    bgColor = COLOR_VERDE;</span>
+<span class="nc" id="L117">                    c.setForeground(Color.WHITE);</span>
+                }
+                
+<span class="nc bnc" id="L120" title="All 2 branches missed.">                if (!isSelected) {</span>
+<span class="nc" id="L121">                    c.setBackground(bgColor);</span>
+                }
+<span class="nc" id="L123">                return c;</span>
+            }
+        });
+        
+<span class="nc" id="L127">        txtResumen.setText(diagnostico.getResumenEjecutivo());</span>
+<span class="nc" id="L128">    }</span>
+    
+    public void limpiar() {
+<span class="nc" id="L131">        DefaultTableModel model = (DefaultTableModel) tablaDiagnostico.getModel();</span>
+<span class="nc" id="L132">        model.setRowCount(0);</span>
+<span class="nc" id="L133">        txtResumen.setText(&quot;&quot;);</span>
+<span class="nc" id="L134">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

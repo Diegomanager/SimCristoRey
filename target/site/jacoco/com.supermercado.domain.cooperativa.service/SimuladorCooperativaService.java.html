@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SimuladorCooperativaService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.domain.cooperativa.service</a> &gt; <span class="el_source">SimuladorCooperativaService.java</span></div><h1>SimuladorCooperativaService.java</h1><pre class="source lang-java linenums">package com.supermercado.domain.cooperativa.service;
+
+import com.supermercado.domain.cooperativa.config.ConfiguracionCooperativa;
+import com.supermercado.domain.cooperativa.event.EventoSimulacion;
+import com.supermercado.domain.cooperativa.event.TipoEvento;
+import com.supermercado.domain.cooperativa.model.*;
+
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
+
+<span class="nc" id="L12">public class SimuladorCooperativaService {</span>
+
+<span class="nc" id="L14">    private long msPorMinuto = 62L;</span>
+<span class="nc" id="L15">    private int maxSociosDia = 200;</span>
+<span class="nc" id="L16">    private double intervaloMinutos = 1.0;</span>
+<span class="nc" id="L17">    private int diaActual = 1;</span>
+<span class="nc" id="L18">    private int diaSimulado = 0;</span>
+
+<span class="nc" id="L20">    private volatile boolean corriendo = false;</span>
+<span class="nc" id="L21">    private volatile boolean pausado = false;</span>
+<span class="nc" id="L22">    private volatile boolean faseRezagados = false;</span>
+<span class="nc" id="L23">    private volatile boolean fasePrincipalFinalizada = false;</span>
+
+<span class="nc" id="L25">    private volatile long tiempoReloj = 510;</span>
+<span class="nc" id="L26">    private volatile long tiempoMotor = 0;</span>
+
+    private SalaEspera salaEspera;
+    private List&lt;Caja&gt; cajas;
+    private List&lt;ServicioFinanciero&gt; servicios;
+    private JornadaLaboral jornadaActual;
+
+<span class="nc" id="L33">    private final GeneradorSociosService generador = new GeneradorSociosService();</span>
+<span class="nc" id="L34">    private final AsignadorCajasService asignador = new AsignadorCajasService();</span>
+<span class="nc" id="L35">    private final EstadisticasFinancierasService estadisticas = new EstadisticasFinancierasService();</span>
+
+<span class="nc" id="L37">    private final List&lt;Consumer&lt;EventoSimulacion&gt;&gt; listeners = new CopyOnWriteArrayList&lt;&gt;();</span>
+    private Thread hiloMotor;
+
+    private List&lt;Socio&gt; sociosPredefinidos;
+<span class="nc" id="L41">    private boolean modoReplay = false;</span>
+
+    public void setSociosPredefinidos(List&lt;Socio&gt; lista) {
+<span class="nc" id="L44">        this.sociosPredefinidos = lista;</span>
+<span class="nc bnc" id="L45" title="All 4 branches missed.">        this.modoReplay = lista != null &amp;&amp; !lista.isEmpty();</span>
+<span class="nc" id="L46">    }</span>
+
+    public boolean isModoReplay() {
+<span class="nc" id="L49">        return modoReplay;</span>
+    }
+
+    public void configurar(long msPorMin, int maxSoc, double intv,
+                           List&lt;ServicioFinanciero&gt; svcs, List&lt;Caja&gt; cajasLista,
+                           ConfiguracionMultiServicio multi,
+                           ConfiguracionCooperativa cfg) {
+<span class="nc" id="L56">        this.msPorMinuto = Math.max(1L, msPorMin);</span>
+<span class="nc" id="L57">        this.maxSociosDia = maxSoc;</span>
+<span class="nc" id="L58">        this.intervaloMinutos = intv;</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">        this.servicios = svcs != null ? svcs : new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        this.cajas = cajasLista != null ? cajasLista : new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L61">        this.salaEspera = new SalaEspera();</span>
+<span class="nc" id="L62">        generador.setServicios(this.servicios);</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        generador.setConfiguracionMultiServicio(multi != null ? multi : new ConfiguracionMultiServicio());</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        if (cfg != null) generador.setConfiguracion(cfg);</span>
+<span class="nc" id="L65">    }</span>
+
+    public static long calcularEscala(double horasSimuladas, int durRealSeg) {
+<span class="nc" id="L68">        int min = (int) (horasSimuladas * 60);</span>
+<span class="nc bnc" id="L69" title="All 4 branches missed.">        if (min &lt;= 0 || durRealSeg &lt;= 0) return 62L;</span>
+<span class="nc" id="L70">        return Math.max(1L, (long) durRealSeg * 1000L / min);</span>
+    }
+
+    public void setDiaSimulado(int dia) {
+<span class="nc" id="L74">        this.diaSimulado = dia;</span>
+<span class="nc" id="L75">    }</span>
+
+    public int getDiaSimulado() {
+<span class="nc" id="L78">        return diaSimulado;</span>
+    }
+
+    public void iniciar(JornadaLaboral jornada, int dia) {
+<span class="nc bnc" id="L82" title="All 2 branches missed.">        if (corriendo) return;</span>
+<span class="nc" id="L83">        this.jornadaActual = jornada;</span>
+<span class="nc" id="L84">        this.diaActual = dia;</span>
+<span class="nc" id="L85">        corriendo = true;</span>
+<span class="nc" id="L86">        pausado = false;</span>
+<span class="nc" id="L87">        faseRezagados = false;</span>
+<span class="nc" id="L88">        fasePrincipalFinalizada = false;</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        tiempoReloj = jornada != null ? jornada.getMinutoInicio() : 510;</span>
+<span class="nc" id="L90">        tiempoMotor = 0;</span>
+<span class="nc" id="L91">        generador.reiniciar();</span>
+<span class="nc" id="L92">        estadisticas.reiniciar();</span>
+
+<span class="nc" id="L94">        hiloMotor = new Thread(this::bucleMotor, &quot;Motor-Dia-&quot; + dia);</span>
+<span class="nc" id="L95">        hiloMotor.setDaemon(true);</span>
+<span class="nc" id="L96">        hiloMotor.start();</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">        String etiqueta = modoReplay ? &quot; (replay)&quot; : &quot;&quot;;</span>
+<span class="nc" id="L98">        publicar(TipoEvento.SIMULACION_INICIADA, &quot;=== Dia &quot; + diaSimulado + &quot; iniciado&quot; + etiqueta + &quot; - &quot; + horaSimulada() + &quot; ===&quot;);</span>
+<span class="nc" id="L99">    }</span>
+
+    public void pausar() {
+<span class="nc bnc" id="L102" title="All 4 branches missed.">        if (!corriendo || pausado) return;</span>
+<span class="nc" id="L103">        pausado = true;</span>
+<span class="nc" id="L104">        publicar(TipoEvento.SIMULACION_PAUSADA, &quot;Pausado&quot;);</span>
+<span class="nc" id="L105">    }</span>
+
+    public void reanudar() {
+<span class="nc bnc" id="L108" title="All 4 branches missed.">        if (!corriendo || !pausado) return;</span>
+<span class="nc" id="L109">        pausado = false;</span>
+<span class="nc" id="L110">        synchronized (this) {</span>
+<span class="nc" id="L111">            notifyAll();</span>
+<span class="nc" id="L112">        }</span>
+<span class="nc" id="L113">        publicar(TipoEvento.SIMULACION_REANUDADA, &quot;Reanudado&quot;);</span>
+<span class="nc" id="L114">    }</span>
+
+    public void detener() {
+<span class="nc" id="L117">        corriendo = false;</span>
+<span class="nc" id="L118">        pausado = false;</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">        if (hiloMotor != null) {</span>
+<span class="nc" id="L120">            synchronized (this) {</span>
+<span class="nc" id="L121">                notifyAll();</span>
+<span class="nc" id="L122">            }</span>
+<span class="nc" id="L123">            hiloMotor.interrupt();</span>
+        }
+<span class="nc" id="L125">        publicar(TipoEvento.SIMULACION_DETENIDA, &quot;Detenido&quot;);</span>
+<span class="nc" id="L126">    }</span>
+
+    public void reiniciarDia() {
+<span class="nc" id="L129">        detener();</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">        if (salaEspera != null) salaEspera.reiniciar();</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        if (cajas != null) cajas.forEach(Caja::reiniciar);</span>
+<span class="nc" id="L132">        generador.reiniciar();</span>
+<span class="nc" id="L133">        estadisticas.reiniciar();</span>
+<span class="nc bnc" id="L134" title="All 2 branches missed.">        tiempoReloj = jornadaActual != null ? jornadaActual.getMinutoInicio() : 510;</span>
+<span class="nc" id="L135">        tiempoMotor = 0;</span>
+<span class="nc" id="L136">        fasePrincipalFinalizada = false;</span>
+<span class="nc" id="L137">        faseRezagados = false;</span>
+<span class="nc" id="L138">        publicar(TipoEvento.SIMULACION_REINICIADA, &quot;Reiniciado&quot;);</span>
+<span class="nc" id="L139">    }</span>
+
+    public void iniciarFaseRezagados() {
+<span class="nc bnc" id="L142" title="All 4 branches missed.">        if (!fasePrincipalFinalizada || faseRezagados) return;</span>
+<span class="nc" id="L143">        faseRezagados = true;</span>
+<span class="nc" id="L144">        corriendo = true;</span>
+<span class="nc" id="L145">        estadisticas.setFaseRezagados(true);</span>
+<span class="nc" id="L146">        hiloMotor = new Thread(this::bucleRezagados, &quot;Motor-Rez-&quot; + diaActual);</span>
+<span class="nc" id="L147">        hiloMotor.setDaemon(true);</span>
+<span class="nc" id="L148">        hiloMotor.start();</span>
+<span class="nc" id="L149">        publicar(TipoEvento.FASE_REZAGADOS_INICIADA, &quot;Drenando sala: &quot; + salaEspera.getTotalEsperando() + &quot; socios&quot;);</span>
+<span class="nc" id="L150">    }</span>
+
+    private void bucleMotor() {
+<span class="nc bnc" id="L153" title="All 2 branches missed.">        if (modoReplay) {</span>
+<span class="nc bnc" id="L154" title="All 4 branches missed.">            if (sociosPredefinidos != null &amp;&amp; !sociosPredefinidos.isEmpty()) {</span>
+<span class="nc" id="L155">                bucleMotorReplay();</span>
+            } else {
+<span class="nc" id="L157">                System.out.println(&quot;&gt;&gt;&gt; [Replay] Sin socios predefinidos. Día finalizado sin generación.&quot;);</span>
+<span class="nc" id="L158">                fasePrincipalFinalizada = true;</span>
+<span class="nc" id="L159">                corriendo = false;</span>
+            }
+<span class="nc" id="L161">            return;</span>
+        }
+
+        // MODO MANUAL
+<span class="nc" id="L165">        double acum = 0.0;</span>
+<span class="nc" id="L166">        List&lt;BloqueHorario&gt; bloques = jornadaActual.getBloques();</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">        if (bloques.isEmpty()) {</span>
+<span class="nc" id="L168">            fasePrincipalFinalizada = true;</span>
+<span class="nc" id="L169">            corriendo = false;</span>
+<span class="nc" id="L170">            publicar(TipoEvento.FASE_PRINCIPAL_FINALIZADA, &quot;Sin bloques horarios&quot;);</span>
+<span class="nc" id="L171">            return;</span>
+        }
+
+<span class="nc bnc" id="L174" title="All 2 branches missed.">        for (BloqueHorario bloque : bloques) {</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">            if (!corriendo) break;</span>
+<span class="nc" id="L176">            int inicio = bloque.getInicio();</span>
+<span class="nc" id="L177">            int fin = bloque.getFin();</span>
+<span class="nc" id="L178">            tiempoReloj = inicio;</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">            for (int minuto = inicio; minuto &lt; fin; minuto++) {</span>
+<span class="nc bnc" id="L180" title="All 4 branches missed.">                if (!corriendo || fasePrincipalFinalizada) break;</span>
+<span class="nc bnc" id="L181" title="All 2 branches missed.">                if (pausado) {</span>
+<span class="nc" id="L182">                    synchronized (this) {</span>
+<span class="nc bnc" id="L183" title="All 4 branches missed.">                        while (pausado &amp;&amp; corriendo) {</span>
+                            try {
+<span class="nc" id="L185">                                wait(100);</span>
+<span class="nc" id="L186">                            } catch (InterruptedException e) {</span>
+<span class="nc" id="L187">                                Thread.currentThread().interrupt();</span>
+<span class="nc" id="L188">                                return;</span>
+<span class="nc" id="L189">                            }</span>
+                        }
+<span class="nc" id="L191">                    }</span>
+<span class="nc bnc" id="L192" title="All 2 branches missed.">                    if (!corriendo) break;</span>
+                }
+
+<span class="nc" id="L195">                tiempoMotor++;</span>
+<span class="nc" id="L196">                tiempoReloj = minuto;</span>
+
+<span class="nc" id="L198">                acum += 1.0;</span>
+<span class="nc bnc" id="L199" title="All 4 branches missed.">                while (acum &gt;= intervaloMinutos &amp;&amp; generador.getTotalGenerados() &lt; maxSociosDia) {</span>
+<span class="nc" id="L200">                    acum -= intervaloMinutos;</span>
+<span class="nc" id="L201">                    Socio s = generador.generarSocio(tiempoMotor);</span>
+<span class="nc" id="L202">                    salaEspera.agregarSocio(s);</span>
+<span class="nc" id="L203">                    estadisticas.setTotalGenerados(generador.getTotalGenerados());</span>
+<span class="nc" id="L204">                    publicar(TipoEvento.SOCIO_GENERADO, s.getFicha() + &quot; llego - &quot; + s.getDescripcionServicios());</span>
+<span class="nc" id="L205">                }</span>
+
+<span class="nc" id="L207">                procesarAsignaciones();</span>
+<span class="nc" id="L208">                procesarAtenciones();</span>
+<span class="nc" id="L209">                sleep();</span>
+            }
+<span class="nc" id="L211">        }</span>
+
+<span class="nc" id="L213">        fasePrincipalFinalizada = true;</span>
+<span class="nc" id="L214">        corriendo = false;</span>
+<span class="nc" id="L215">        int enSala = salaEspera.getTotalEsperando();</span>
+<span class="nc bnc" id="L216" title="All 2 branches missed.">        int cajasOcupadas = (int) cajas.stream().filter(c -&gt; c.getEstado() == EstadoCaja.OCUPADA).count();</span>
+<span class="nc" id="L217">        publicar(TipoEvento.FASE_PRINCIPAL_FINALIZADA, &quot;Fase principal terminada | En sala: &quot; + enSala + &quot; | En cajas: &quot; + cajasOcupadas + &quot; | Atendidos: &quot; + estadisticas.getPrincipal().getTotalAtendidos());</span>
+<span class="nc" id="L218">    }</span>
+
+    private void bucleMotorReplay() {
+<span class="nc" id="L221">        List&lt;BloqueHorario&gt; bloques = jornadaActual.getBloques();</span>
+<span class="nc bnc" id="L222" title="All 2 branches missed.">        int inicioJornada = bloques.isEmpty() ? (int) tiempoReloj : bloques.get(0).getInicio();</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">        int finJornada = bloques.isEmpty() ? 24 * 60 : bloques.get(bloques.size() - 1).getFin();</span>
+
+<span class="nc" id="L225">        List&lt;Socio&gt; pendientes = new ArrayList&lt;&gt;(sociosPredefinidos);</span>
+<span class="nc" id="L226">        pendientes.sort(Comparator.comparingLong(Socio::getTiempoLlegada));</span>
+
+<span class="nc" id="L228">        int idx = 0;</span>
+<span class="nc" id="L229">        tiempoReloj = inicioJornada;</span>
+
+<span class="nc bnc" id="L231" title="All 2 branches missed.">        for (int minuto = inicioJornada; minuto &lt; finJornada; minuto++) {</span>
+<span class="nc bnc" id="L232" title="All 4 branches missed.">            if (!corriendo || fasePrincipalFinalizada) break;</span>
+<span class="nc bnc" id="L233" title="All 2 branches missed.">            if (pausado) {</span>
+<span class="nc" id="L234">                synchronized (this) {</span>
+<span class="nc bnc" id="L235" title="All 4 branches missed.">                    while (pausado &amp;&amp; corriendo) {</span>
+                        try {
+<span class="nc" id="L237">                            wait(100);</span>
+<span class="nc" id="L238">                        } catch (InterruptedException e) {</span>
+<span class="nc" id="L239">                            Thread.currentThread().interrupt();</span>
+<span class="nc" id="L240">                            return;</span>
+<span class="nc" id="L241">                        }</span>
+                    }
+<span class="nc" id="L243">                }</span>
+<span class="nc bnc" id="L244" title="All 2 branches missed.">                if (!corriendo) break;</span>
+            }
+
+<span class="nc" id="L247">            tiempoMotor++;</span>
+<span class="nc" id="L248">            tiempoReloj = minuto;</span>
+
+<span class="nc bnc" id="L250" title="All 4 branches missed.">            while (idx &lt; pendientes.size() &amp;&amp; pendientes.get(idx).getTiempoLlegada() &lt;= minuto) {</span>
+<span class="nc" id="L251">                Socio s = pendientes.get(idx++);</span>
+<span class="nc" id="L252">                salaEspera.agregarSocio(s);</span>
+<span class="nc" id="L253">                estadisticas.setTotalGenerados(idx);</span>
+<span class="nc" id="L254">                publicar(TipoEvento.SOCIO_GENERADO, s.getFicha() + &quot; llego (replay) - &quot; + s.getDescripcionServicios());</span>
+<span class="nc" id="L255">            }</span>
+
+<span class="nc" id="L257">            procesarAsignaciones();</span>
+<span class="nc" id="L258">            procesarAtenciones();</span>
+<span class="nc" id="L259">            sleep();</span>
+        }
+
+<span class="nc bnc" id="L262" title="All 4 branches missed.">        while (idx &lt; pendientes.size() &amp;&amp; corriendo) {</span>
+<span class="nc" id="L263">            Socio s = pendientes.get(idx++);</span>
+<span class="nc" id="L264">            salaEspera.agregarSocio(s);</span>
+<span class="nc" id="L265">            estadisticas.setTotalGenerados(idx);</span>
+<span class="nc" id="L266">        }</span>
+
+<span class="nc" id="L268">        fasePrincipalFinalizada = true;</span>
+<span class="nc" id="L269">        corriendo = false;</span>
+<span class="nc" id="L270">        int enSala = salaEspera.getTotalEsperando();</span>
+<span class="nc bnc" id="L271" title="All 2 branches missed.">        int cajasOcupadas = (int) cajas.stream().filter(c -&gt; c.getEstado() == EstadoCaja.OCUPADA).count();</span>
+<span class="nc" id="L272">        publicar(TipoEvento.FASE_PRINCIPAL_FINALIZADA, &quot;Fase principal (replay) terminada | En sala: &quot; + enSala + &quot; | En cajas: &quot; + cajasOcupadas + &quot; | Atendidos: &quot; + estadisticas.getPrincipal().getTotalAtendidos());</span>
+<span class="nc" id="L273">    }</span>
+
+    private void bucleRezagados() {
+<span class="nc" id="L276">        int extraSeguridad = 0;</span>
+<span class="nc bnc" id="L277" title="All 2 branches missed.">        while (corriendo) {</span>
+<span class="nc bnc" id="L278" title="All 2 branches missed.">            if (pausado) {</span>
+<span class="nc" id="L279">                synchronized (this) {</span>
+<span class="nc bnc" id="L280" title="All 4 branches missed.">                    while (pausado &amp;&amp; corriendo) {</span>
+                        try {
+<span class="nc" id="L282">                            wait(100);</span>
+<span class="nc" id="L283">                        } catch (InterruptedException e) {</span>
+<span class="nc" id="L284">                            Thread.currentThread().interrupt();</span>
+<span class="nc" id="L285">                            return;</span>
+<span class="nc" id="L286">                        }</span>
+                    }
+<span class="nc" id="L288">                }</span>
+<span class="nc bnc" id="L289" title="All 2 branches missed.">                if (!corriendo) break;</span>
+            }
+
+<span class="nc" id="L292">            tiempoMotor++;</span>
+<span class="nc" id="L293">            tiempoReloj++;</span>
+<span class="nc bnc" id="L294" title="All 2 branches missed.">            if (tiempoReloj &gt;= 24 * 60) tiempoReloj -= 24 * 60;</span>
+
+<span class="nc" id="L296">            procesarAtenciones();</span>
+<span class="nc" id="L297">            procesarAsignaciones();</span>
+
+<span class="nc" id="L299">            boolean salaVacia = salaEspera.isEmpty();</span>
+<span class="nc bnc" id="L300" title="All 2 branches missed.">            boolean cajasLibres = cajas.stream().noneMatch(c -&gt; c.getEstado() == EstadoCaja.OCUPADA);</span>
+
+<span class="nc bnc" id="L302" title="All 4 branches missed.">            if (salaVacia &amp;&amp; cajasLibres) {</span>
+<span class="nc" id="L303">                corriendo = false;</span>
+<span class="nc" id="L304">                publicar(TipoEvento.SIMULACION_FINALIZADA, &quot;\u2705 Dia &quot; + diaSimulado + &quot; completo | Total atendidos: &quot; + estadisticas.getTotalAtendidos() + &quot; | Monto: Bs &quot; + String.format(&quot;%.2f&quot;, estadisticas.getMontoTotal()));</span>
+<span class="nc" id="L305">                break;</span>
+            }
+<span class="nc" id="L307">            extraSeguridad++;</span>
+<span class="nc bnc" id="L308" title="All 2 branches missed.">            if (extraSeguridad &gt; maxSociosDia * 60) {</span>
+<span class="nc" id="L309">                corriendo = false;</span>
+<span class="nc" id="L310">                publicar(TipoEvento.SIMULACION_FINALIZADA, &quot;\u26A0\uFE0F Dia &quot; + diaSimulado + &quot; - tiempo de drenaje agotado | Atendidos: &quot; + estadisticas.getTotalAtendidos());</span>
+<span class="nc" id="L311">                break;</span>
+            }
+<span class="nc" id="L313">            sleep();</span>
+<span class="nc" id="L314">        }</span>
+<span class="nc" id="L315">    }</span>
+
+    private void procesarAsignaciones() {
+<span class="nc bnc" id="L318" title="All 2 branches missed.">        while (!salaEspera.isEmpty()) {</span>
+<span class="nc" id="L319">            Socio siguiente = salaEspera.verSiguiente();</span>
+<span class="nc bnc" id="L320" title="All 2 branches missed.">            if (siguiente == null) break;</span>
+<span class="nc" id="L321">            Optional&lt;Caja&gt; opt = asignador.asignar(siguiente, cajas);</span>
+<span class="nc bnc" id="L322" title="All 2 branches missed.">            if (opt.isEmpty()) break;</span>
+<span class="nc" id="L323">            Socio s = salaEspera.siguienteSocio();</span>
+<span class="nc" id="L324">            Caja c = opt.get();</span>
+<span class="nc" id="L325">            asignador.confirmarAsignacion(s, c, tiempoMotor);</span>
+<span class="nc bnc" id="L326" title="All 2 branches missed.">            publicar(TipoEvento.SOCIO_ASIGNADO, s.getFicha() + &quot; -&gt; &quot; + c.getId() + (s.isMultiServicio() ? &quot; [x&quot; + s.getTotalServicios() + &quot;]&quot; : &quot;&quot;));</span>
+<span class="nc" id="L327">        }</span>
+<span class="nc" id="L328">    }</span>
+
+    private void procesarAtenciones() {
+<span class="nc bnc" id="L331" title="All 2 branches missed.">        for (Caja caja : cajas) {</span>
+<span class="nc bnc" id="L332" title="All 2 branches missed.">            if (caja.getEstado() != EstadoCaja.OCUPADA) continue;</span>
+<span class="nc" id="L333">            Socio s = caja.getSocioActual();</span>
+<span class="nc bnc" id="L334" title="All 2 branches missed.">            if (s == null) continue;</span>
+<span class="nc" id="L335">            long enCaja = tiempoMotor - s.getTiempoInicioAtencion();</span>
+<span class="nc bnc" id="L336" title="All 2 branches missed.">            if (enCaja &gt;= s.getDuracionEstimada()) {</span>
+<span class="nc" id="L337">                s.setTiempoSalida(tiempoMotor);</span>
+<span class="nc" id="L338">                s.setAtendida(true);</span>
+<span class="nc" id="L339">                estadisticas.registrarAtencion(s, caja);</span>
+<span class="nc" id="L340">                caja.finalizarAtencion(tiempoMotor);</span>
+<span class="nc" id="L341">                long espera = s.getTiempoInicioAtencion() - s.getTiempoLlegada();</span>
+<span class="nc" id="L342">                publicar(TipoEvento.SOCIO_ATENDIDO, s.getFicha() + &quot; \u2713 &quot; + caja.getId() + &quot; | Espera: &quot; + Math.max(0, espera) + &quot; min | Aten: &quot; + s.getDuracionEstimada() + &quot; min | Bs &quot; + String.format(&quot;%.0f&quot;, s.getMonto()));</span>
+            }
+<span class="nc" id="L344">        }</span>
+<span class="nc" id="L345">    }</span>
+
+    private void sleep() {
+        try {
+<span class="nc" id="L349">            Thread.sleep(msPorMinuto);</span>
+<span class="nc" id="L350">        } catch (InterruptedException e) {</span>
+<span class="nc" id="L351">            Thread.currentThread().interrupt();</span>
+<span class="nc" id="L352">        }</span>
+<span class="nc" id="L353">    }</span>
+
+    public String horaSimulada() {
+<span class="nc" id="L356">        int m = (int) (tiempoReloj % (24 * 60));</span>
+<span class="nc" id="L357">        return String.format(&quot;D\u00eda %d \u2013 %02d:%02d&quot;, diaSimulado, m / 60, m % 60);</span>
+    }
+
+    public ResumenDiario construirResumenDia() {
+<span class="nc" id="L361">        ResumenDiario r = new ResumenDiario(diaActual, true);</span>
+<span class="nc" id="L362">        r.setNumeroDia(diaSimulado);</span>
+<span class="nc bnc" id="L363" title="All 2 branches missed.">        r.setGenerados(!modoReplay</span>
+<span class="nc" id="L364">                ? generador.getTotalGenerados()</span>
+<span class="nc bnc" id="L365" title="All 2 branches missed.">                : (sociosPredefinidos != null ? sociosPredefinidos.size() : 0));</span>
+<span class="nc" id="L366">        r.setAtendidosPrincipal(estadisticas.getPrincipal().getTotalAtendidos());</span>
+<span class="nc" id="L367">        r.setAtendidosRezagados(estadisticas.getRezagados().getTotalAtendidos());</span>
+<span class="nc" id="L368">        r.setNoAtendidos(Math.max(0, r.getGenerados() - r.getTotalAtendidos()));</span>
+<span class="nc" id="L369">        r.setMontoTotal(estadisticas.getMontoTotal());</span>
+<span class="nc" id="L370">        r.setPromedioEspera(estadisticas.getPromedioEspera());</span>
+<span class="nc" id="L371">        r.setPromedioAtencion(estadisticas.getPromedioAtencion());</span>
+<span class="nc" id="L372">        r.setCajeroEstrella(estadisticas.getCajeroEstrellaGlobal());</span>
+<span class="nc bnc" id="L373" title="All 2 branches missed.">        int min = jornadaActual != null ? jornadaActual.getTotalMinutosLaborables() : 480;</span>
+<span class="nc bnc" id="L374" title="All 2 branches missed.">        r.setEficienciaGlobal(min &gt; 0 ? (double) r.getTotalAtendidos() / min : 0);</span>
+
+<span class="nc" id="L376">        Map&lt;String, Integer&gt; desglose = new LinkedHashMap&lt;&gt;(estadisticas.getPrincipal().getAtendidosPorCodigo());</span>
+<span class="nc" id="L377">        estadisticas.getRezagados().getAtendidosPorCodigo().forEach((k, v) -&gt; desglose.merge(k, v, Integer::sum));</span>
+<span class="nc" id="L378">        r.setAtendidosPorServicio(desglose);</span>
+
+<span class="nc" id="L380">        return r;</span>
+    }
+
+    public void addListener(Consumer&lt;EventoSimulacion&gt; l) {
+<span class="nc" id="L384">        listeners.add(l);</span>
+<span class="nc" id="L385">    }</span>
+
+    public void removeListener(Consumer&lt;EventoSimulacion&gt; l) {
+<span class="nc" id="L388">        listeners.remove(l);</span>
+<span class="nc" id="L389">    }</span>
+
+    private void publicar(TipoEvento t, String msg) {
+<span class="nc" id="L392">        EventoSimulacion ev = new EventoSimulacion(t, msg, horaSimulada());</span>
+<span class="nc bnc" id="L393" title="All 2 branches missed.">        for (var l : listeners) {</span>
+            try {
+<span class="nc" id="L395">                l.accept(ev);</span>
+<span class="nc" id="L396">            } catch (Exception ignored) {</span>
+<span class="nc" id="L397">            }</span>
+<span class="nc" id="L398">        }</span>
+<span class="nc" id="L399">    }</span>
+
+    public boolean isCorriendo() {
+<span class="nc" id="L402">        return corriendo;</span>
+    }
+
+    public boolean isPausado() {
+<span class="nc" id="L406">        return pausado;</span>
+    }
+
+    public boolean isFaseRezagados() {
+<span class="nc" id="L410">        return faseRezagados;</span>
+    }
+
+    public boolean isFasePrincipalFinalizada() {
+<span class="nc" id="L414">        return fasePrincipalFinalizada;</span>
+    }
+
+    public long getTiempoReloj() {
+<span class="nc" id="L418">        return tiempoReloj;</span>
+    }
+
+    public long getTiempoMotor() {
+<span class="nc" id="L422">        return tiempoMotor;</span>
+    }
+
+    public int getDiaActual() {
+<span class="nc" id="L426">        return diaActual;</span>
+    }
+
+    public SalaEspera getSalaEspera() {
+<span class="nc" id="L430">        return salaEspera;</span>
+    }
+
+    public List&lt;Caja&gt; getCajas() {
+<span class="nc" id="L434">        return cajas;</span>
+    }
+
+    public EstadisticasFinancierasService getEstadisticas() {
+<span class="nc" id="L438">        return estadisticas;</span>
+    }
+
+    public GeneradorSociosService getGenerador() {
+<span class="nc" id="L442">        return generador;</span>
+    }
+
+    public JornadaLaboral getJornadaActual() {
+<span class="nc" id="L446">        return jornadaActual;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Theme.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.presentation.supermercado.view</a> &gt; <span class="el_source">Theme.java</span></div><h1>Theme.java</h1><pre class="source lang-java linenums">package com.supermercado.presentation.supermercado.view;
+
+import java.awt.*;
+
+<span class="nc" id="L5">public class Theme {</span>
+
+    // Azul corporativo principal
+<span class="nc" id="L8">    public static final Color PRIMARY_BLUE     = new Color(41,  98,  155);</span>
+<span class="nc" id="L9">    public static final Color PRIMARY_DARK     = new Color(25,  60,  110);</span>
+<span class="nc" id="L10">    public static final Color PRIMARY_LIGHT    = new Color(180, 210, 240);</span>
+<span class="nc" id="L11">    public static final Color PRIMARY_VERY_LIGHT = new Color(230, 242, 255);</span>
+
+    // Naranja acento (solo para badges, no botones)
+<span class="nc" id="L14">    public static final Color SECONDARY_ORANGE = new Color(210, 120, 30);</span>
+<span class="nc" id="L15">    public static final Color SECONDARY_DARK   = new Color(170,  90, 15);</span>
+<span class="nc" id="L16">    public static final Color SECONDARY_LIGHT  = new Color(255, 220, 170);</span>
+
+    // Estados - tonos suaves, no saturados
+<span class="nc" id="L19">    public static final Color SUCCESS_GREEN  = new Color(39,  150,  80);</span>
+<span class="nc" id="L20">    public static final Color WARNING_YELLOW = new Color(200, 150,  20);</span>
+<span class="nc" id="L21">    public static final Color ALERT_RED      = new Color(180,  50,  40);</span>
+
+    // Aliases para compatibilidad con todos los archivos
+<span class="nc" id="L24">    public static final Color PRIMARY  = PRIMARY_BLUE;</span>
+<span class="nc" id="L25">    public static final Color SUCCESS  = SUCCESS_GREEN;</span>
+<span class="nc" id="L26">    public static final Color WARNING  = WARNING_YELLOW;</span>
+<span class="nc" id="L27">    public static final Color DANGER   = ALERT_RED;</span>
+<span class="nc" id="L28">    public static final Color INFO     = new Color(30, 130, 190);</span>
+<span class="nc" id="L29">    public static final Color PAUSE    = new Color(120, 60, 160);</span>
+<span class="nc" id="L30">    public static final Color SECONDARY = SECONDARY_ORANGE;</span>
+
+    // Barras de cola progresivas
+<span class="nc" id="L33">    public static final Color COLA_VERDE    = new Color(39,  150,  80);</span>
+<span class="nc" id="L34">    public static final Color COLA_AMARILLO = new Color(200, 160,  20);</span>
+<span class="nc" id="L35">    public static final Color COLA_NARANJA  = new Color(210, 100,  20);</span>
+<span class="nc" id="L36">    public static final Color COLA_ROJO     = new Color(180,  50,  40);</span>
+
+    // Neutros
+<span class="nc" id="L39">    public static final Color BACKGROUND    = new Color(242, 244, 247);</span>
+<span class="nc" id="L40">    public static final Color SURFACE       = Color.WHITE;</span>
+<span class="nc" id="L41">    public static final Color SURFACE_LIGHT = new Color(250, 251, 253);</span>
+<span class="nc" id="L42">    public static final Color TEXT_PRIMARY   = new Color(25,  25,  25);</span>
+<span class="nc" id="L43">    public static final Color TEXT_SECONDARY = new Color(90,  90,  90);</span>
+<span class="nc" id="L44">    public static final Color TEXT_LIGHT     = Color.WHITE;</span>
+<span class="nc" id="L45">    public static final Color BORDER_GRAY    = new Color(200, 205, 210);</span>
+<span class="nc" id="L46">    public static final Color BORDER_LIGHT   = new Color(215, 220, 225);</span>
+<span class="nc" id="L47">    public static final Color BORDER_DARK    = new Color(150, 158, 168);</span>
+
+    // Fuentes
+<span class="nc" id="L50">    public static final Font FONT_TITLE  = new Font(&quot;Segoe UI&quot;, Font.BOLD,  18);</span>
+<span class="nc" id="L51">    public static final Font FONT_HEADER = new Font(&quot;Segoe UI&quot;, Font.BOLD,  13);</span>
+<span class="nc" id="L52">    public static final Font FONT_NORMAL = new Font(&quot;Segoe UI&quot;, Font.PLAIN, 12);</span>
+<span class="nc" id="L53">    public static final Font FONT_SMALL  = new Font(&quot;Segoe UI&quot;, Font.PLAIN, 11);</span>
+<span class="nc" id="L54">    public static final Font FONT_MONO   = new Font(&quot;Monospaced&quot;, Font.PLAIN, 12);</span>
+
+    public static final int PADDING_SMALL  = 5;
+    public static final int PADDING_MEDIUM = 10;
+    public static final int PADDING_LARGE  = 15;
+    public static final int BORDER_RADIUS  = 6;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

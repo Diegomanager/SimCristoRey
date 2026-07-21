@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JornadaLaboral.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.domain.cooperativa.model</a> &gt; <span class="el_source">JornadaLaboral.java</span></div><h1>JornadaLaboral.java</h1><pre class="source lang-java linenums">package com.supermercado.domain.cooperativa.model;
+
+import java.time.LocalDate;
+import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+public class JornadaLaboral {
+    private int                 dia;
+<span class="pc" id="L11">    private boolean             laborable = true;</span>
+<span class="pc" id="L12">    private List&lt;BloqueHorario&gt; bloques   = new ArrayList&lt;&gt;();</span>
+<span class="pc" id="L13">    private LocalDate           fechaReal = null;</span>
+
+<span class="nc" id="L15">    public JornadaLaboral() {}</span>
+
+<span class="fc" id="L17">    public JornadaLaboral(int dia, boolean laborable) {</span>
+<span class="fc" id="L18">        this.dia = dia;</span>
+<span class="fc" id="L19">        this.laborable = laborable;</span>
+<span class="fc" id="L20">    }</span>
+
+<span class="nc" id="L22">    public JornadaLaboral(int dia, LocalDate fechaReal, List&lt;BloqueHorario&gt; bloques, boolean laborable) {</span>
+<span class="nc" id="L23">        this.dia = dia;</span>
+<span class="nc" id="L24">        this.fechaReal = fechaReal;</span>
+<span class="nc bnc" id="L25" title="All 2 branches missed.">        this.bloques = bloques != null ? bloques : new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L26">        this.laborable = laborable;</span>
+<span class="nc" id="L27">    }</span>
+
+    public JornadaLaboral(int dia, LocalDate fechaReal, int horaInicio, int horaAlmuerzoFin,
+<span class="nc" id="L30">                          int horaReanudacion, int horaFin, boolean partida) {</span>
+<span class="nc" id="L31">        this.dia = dia;</span>
+<span class="nc" id="L32">        this.fechaReal = fechaReal;</span>
+<span class="nc" id="L33">        this.laborable = true;</span>
+<span class="nc" id="L34">        this.bloques = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">        if (partida) {</span>
+<span class="nc" id="L36">            this.bloques.add(new BloqueHorario(horaInicio, horaAlmuerzoFin));</span>
+<span class="nc" id="L37">            this.bloques.add(new BloqueHorario(horaReanudacion, horaFin));</span>
+        } else {
+<span class="nc" id="L39">            this.bloques.add(new BloqueHorario(horaInicio, horaFin));</span>
+        }
+<span class="nc" id="L41">    }</span>
+
+    public static JornadaLaboral continua(int dia, int inicio, int fin) {
+<span class="nc" id="L44">        JornadaLaboral j = new JornadaLaboral(dia, true);</span>
+<span class="nc" id="L45">        j.agregarBloque(new BloqueHorario(inicio, fin));</span>
+<span class="nc" id="L46">        return j;</span>
+    }
+
+    public static JornadaLaboral partida(int dia, int iM, int fM, int iT, int fT) {
+<span class="nc" id="L50">        JornadaLaboral j = new JornadaLaboral(dia, true);</span>
+<span class="nc" id="L51">        j.agregarBloque(new BloqueHorario(iM, fM));</span>
+<span class="nc" id="L52">        j.agregarBloque(new BloqueHorario(iT, fT));</span>
+<span class="nc" id="L53">        return j;</span>
+    }
+
+    public void agregarBloque(BloqueHorario b) {
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">        if (b != null) bloques.add(b);</span>
+<span class="fc" id="L58">    }</span>
+
+    public int getTotalMinutosLaborables() {
+<span class="nc" id="L61">        return bloques.stream().mapToInt(BloqueHorario::getDuracion).sum();</span>
+    }
+
+    public int getMinutoInicio() {
+<span class="nc bnc" id="L65" title="All 2 branches missed.">        return bloques.isEmpty() ? 510 : bloques.get(0).getInicio();</span>
+    }
+
+    public int getMinutoFin() {
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        return bloques.isEmpty() ? 990 : bloques.get(bloques.size() - 1).getFin();</span>
+    }
+
+    public String getNombreCompleto() {
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        if (fechaReal != null) {</span>
+<span class="nc" id="L74">            String nombreDia = fechaReal.getDayOfWeek()</span>
+<span class="nc" id="L75">                    .getDisplayName(TextStyle.FULL, Locale.forLanguageTag(&quot;es-BO&quot;));</span>
+<span class="nc" id="L76">            nombreDia = Character.toUpperCase(nombreDia.charAt(0)) + nombreDia.substring(1);</span>
+<span class="nc" id="L77">            return &quot;Día &quot; + dia + &quot; (&quot; + nombreDia + &quot;, &quot; + fechaReal + &quot;)&quot;;</span>
+        }
+<span class="nc" id="L79">        return &quot;Día &quot; + dia;</span>
+    }
+
+<span class="nc" id="L82">    public int getDia() { return dia; }</span>
+<span class="nc" id="L83">    public void setDia(int d) { this.dia = d; }</span>
+<span class="nc" id="L84">    public boolean isLaborable() { return laborable; }</span>
+<span class="nc" id="L85">    public void setLaborable(boolean v) { this.laborable = v; }</span>
+<span class="nc" id="L86">    public List&lt;BloqueHorario&gt; getBloques() { return bloques; }</span>
+<span class="nc" id="L87">    public void setBloques(List&lt;BloqueHorario&gt; b) { this.bloques = b; }</span>
+<span class="nc" id="L88">    public LocalDate getFechaReal() { return fechaReal; }</span>
+<span class="nc" id="L89">    public void setFechaReal(LocalDate f) { this.fechaReal = f; }</span>
+
+    @Override
+    public String toString() {
+<span class="nc bnc" id="L93" title="All 2 branches missed.">        if (!laborable) return getNombreCompleto() + &quot; – No laborable&quot;;</span>
+<span class="nc" id="L94">        return getNombreCompleto() + &quot; – &quot; + bloques + &quot; (&quot; + getTotalMinutosLaborables() + &quot; min)&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

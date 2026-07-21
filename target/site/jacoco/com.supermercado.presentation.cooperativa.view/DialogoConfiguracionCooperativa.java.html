@@ -1,0 +1,916 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DialogoConfiguracionCooperativa.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.presentation.cooperativa.view</a> &gt; <span class="el_source">DialogoConfiguracionCooperativa.java</span></div><h1>DialogoConfiguracionCooperativa.java</h1><pre class="source lang-java linenums">package com.supermercado.presentation.cooperativa.view;
+
+import com.supermercado.application.cooperativa.dto.CalibracionMensual;
+import com.supermercado.application.cooperativa.usecase.CalibrarConfiguracionUseCase;
+import com.supermercado.domain.cooperativa.config.ConfiguracionCooperativa;
+import com.supermercado.domain.cooperativa.model.ConfiguracionMultiServicio;
+import com.supermercado.domain.cooperativa.model.JornadaLaboral;
+import com.supermercado.domain.cooperativa.model.ServicioFinanciero;
+import com.supermercado.domain.cooperativa.service.GeneradorSociosService;
+import com.supermercado.infrastructure.adapter.export.HistorialImportadorAdapter;
+import com.supermercado.infrastructure.adapter.preset.PresetManager;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.List;
+
+public class DialogoConfiguracionCooperativa extends JDialog {
+
+    private final ConfiguracionCooperativa config;
+<span class="nc" id="L26">    private final PanelCalendario panelCalendario = new PanelCalendario();</span>
+
+<span class="nc" id="L28">    private final JRadioButton rbLibre = new JRadioButton(&quot;Libre (Manual)&quot;, true);</span>
+<span class="nc" id="L29">    private final JRadioButton rbCalibrado = new JRadioButton(&quot;Calibrado (Desde Historial)&quot;);</span>
+
+<span class="nc" id="L31">    private final JSpinner spnHoras = new JSpinner(new SpinnerNumberModel(8.0, 1.0, 24.0, 0.5));</span>
+<span class="nc" id="L32">    private final JSpinner spnReal = new JSpinner(new SpinnerNumberModel(30, 5, 600, 5));</span>
+<span class="nc" id="L33">    private final JSpinner spnMaxSoc = new JSpinner(new SpinnerNumberModel(200, 10, 2000, 10));</span>
+<span class="nc" id="L34">    private final JSpinner spnIntv = new JSpinner(new SpinnerNumberModel(1.0, 0.1, 10.0, 0.1));</span>
+<span class="nc" id="L35">    private final JLabel lblEscala = new JLabel();</span>
+<span class="nc" id="L36">    private final JLabel lblDias = new JLabel();</span>
+
+<span class="nc" id="L38">    private final JCheckBox chkPartida = new JCheckBox(&quot;Jornada partida&quot;, true);</span>
+<span class="nc" id="L39">    private final JSpinner spnHIni = spnMin(510);</span>
+<span class="nc" id="L40">    private final JSpinner spnHAlmFin = spnMin(720);</span>
+<span class="nc" id="L41">    private final JSpinner spnHRean = spnMin(870);</span>
+<span class="nc" id="L42">    private final JSpinner spnHFin = spnMin(990);</span>
+<span class="nc" id="L43">    private final JLabel lblHorario = new JLabel();</span>
+
+<span class="nc" id="L45">    private final Map&lt;String, Object[]&gt; slidersPorCodigo = new LinkedHashMap&lt;&gt;();</span>
+<span class="nc" id="L46">    private final JPanel panelProb = new JPanel(new GridBagLayout());</span>
+<span class="nc" id="L47">    private final JLabel lblSumaProb = new JLabel(&quot;Suma: 0%&quot;);</span>
+
+<span class="nc" id="L49">    private final JSpinner spnGen = new JSpinner(new SpinnerNumberModel(7, 0, 20, 1));</span>
+<span class="nc" id="L50">    private final JSpinner spnPlat = new JSpinner(new SpinnerNumberModel(2, 0, 10, 1));</span>
+<span class="nc" id="L51">    private final JSpinner spnMM = new JSpinner(new SpinnerNumberModel(1, 0, 10, 1));</span>
+<span class="nc" id="L52">    private final JLabel lblTot = new JLabel();</span>
+
+<span class="nc" id="L54">    private final String[] COLS = {&quot;ID&quot;, &quot;Nombre&quot;, &quot;C\u00f3digo&quot;, &quot;Dur.Min&quot;, &quot;Dur.Max&quot;, &quot;Monto Min&quot;, &quot;Monto Max&quot;, &quot;Tasa%&quot;, &quot;Activo&quot;};</span>
+<span class="nc" id="L55">    private final DefaultTableModel modeloTabla = new DefaultTableModel(COLS, 0) {</span>
+        @Override
+        public Class&lt;?&gt; getColumnClass(int c) {
+<span class="nc bnc" id="L58" title="All 4 branches missed.">            return switch (c) {</span>
+<span class="nc" id="L59">                case 3, 4 -&gt; Integer.class;</span>
+<span class="nc" id="L60">                case 5, 6, 7 -&gt; Double.class;</span>
+<span class="nc" id="L61">                case 8 -&gt; Boolean.class;</span>
+<span class="nc" id="L62">                default -&gt; String.class;</span>
+            };
+        }
+
+        @Override
+        public boolean isCellEditable(int r, int c) {
+<span class="nc bnc" id="L68" title="All 2 branches missed.">            return c != 0;</span>
+        }
+    };
+
+    private List&lt;ServicioFinanciero&gt; servicios;
+    private CalibracionMensual ultimaCalibracion;
+<span class="nc" id="L74">    private boolean modoCalibradoGuardado = false;</span>
+<span class="nc" id="L75">    private boolean confirmado = false;</span>
+<span class="nc" id="L76">    private long msPorMin = 62L;</span>
+<span class="nc" id="L77">    private ConfiguracionMultiServicio configMulti = new ConfiguracionMultiServicio();</span>
+
+    public DialogoConfiguracionCooperativa(Frame owner,
+                                           List&lt;ServicioFinanciero&gt; svcsActuales,
+                                           ConfiguracionCooperativa cfg) {
+<span class="nc" id="L82">        super(owner, &quot;\u2699  Configuraci\u00f3n \u2013 SimCristoRey&quot;, true);</span>
+<span class="nc" id="L83">        this.config = cfg;</span>
+<span class="nc bnc" id="L84" title="All 4 branches missed.">        this.servicios = (svcsActuales != null &amp;&amp; !svcsActuales.isEmpty())</span>
+<span class="nc" id="L85">                ? new ArrayList&lt;&gt;(svcsActuales)</span>
+<span class="nc" id="L86">                : crearServiciosPorDefecto();</span>
+<span class="nc" id="L87">        initUI();</span>
+<span class="nc" id="L88">        cargar();</span>
+<span class="nc" id="L89">        actualizarEscala();</span>
+<span class="nc" id="L90">        actualizarHorario();</span>
+<span class="nc" id="L91">        actualizarTotal();</span>
+<span class="nc" id="L92">        aplicarModo();</span>
+<span class="nc" id="L93">        setSize(1080, 800);</span>
+<span class="nc" id="L94">        setMinimumSize(new Dimension(920, 680));</span>
+<span class="nc" id="L95">        setLocationRelativeTo(owner);</span>
+<span class="nc" id="L96">    }</span>
+
+    private void initUI() {
+<span class="nc" id="L99">        setLayout(new BorderLayout(8, 8));</span>
+
+<span class="nc" id="L101">        ButtonGroup grupoModo = new ButtonGroup();</span>
+<span class="nc" id="L102">        grupoModo.add(rbLibre);</span>
+<span class="nc" id="L103">        grupoModo.add(rbCalibrado);</span>
+<span class="nc" id="L104">        rbLibre.addActionListener(e -&gt; aplicarModo());</span>
+<span class="nc" id="L105">        rbCalibrado.addActionListener(e -&gt; aplicarModo());</span>
+
+<span class="nc" id="L107">        JPanel panelModo = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 4));</span>
+<span class="nc" id="L108">        panelModo.setBorder(BorderFactory.createTitledBorder(&quot;Modo de simulaci\u00f3n&quot;));</span>
+<span class="nc" id="L109">        panelModo.add(rbLibre);</span>
+<span class="nc" id="L110">        panelModo.add(rbCalibrado);</span>
+<span class="nc" id="L111">        JLabel lblAyudaModo = new JLabel(&quot;&lt;html&gt;&lt;i&gt;Calibrado: importa un historial y bloquea Calendario/Probabilidades/&quot;</span>
+                + &quot;M\u00e1x.socios/Intervalo (se calculan solos). Horario y Cajas se editan siempre.&lt;/i&gt;&lt;/html&gt;&quot;);
+<span class="nc" id="L113">        lblAyudaModo.setFont(new Font(&quot;SansSerif&quot;, Font.PLAIN, 10));</span>
+<span class="nc" id="L114">        panelModo.add(lblAyudaModo);</span>
+
+<span class="nc" id="L116">        JTabbedPane tabs = new JTabbedPane();</span>
+<span class="nc" id="L117">        tabs.addTab(&quot;\u23F1 Velocidad&quot;, tabVelocidad());</span>
+<span class="nc" id="L118">        tabs.addTab(&quot;\uD83D\uDCC5 Calendario&quot;, panelCalendario);</span>
+<span class="nc" id="L119">        tabs.addTab(&quot;\uD83D\uDD70 Horario&quot;, tabHorario());</span>
+<span class="nc" id="L120">        tabs.addTab(&quot;\uD83D\uDCCA Probabilidades&quot;, tabProb());</span>
+<span class="nc" id="L121">        tabs.addTab(&quot;\uD83D\uDDBF Cajas&quot;, tabCajas());</span>
+<span class="nc" id="L122">        tabs.addTab(&quot;\uD83C\uDFE6 Servicios&quot;, tabServicios());</span>
+
+<span class="nc" id="L124">        JButton btnGuardarPreset = new JButton(&quot;\uD83D\uDCBE Guardar Config.&quot;);</span>
+<span class="nc" id="L125">        JButton btnCargarPreset = new JButton(&quot;\uD83D\uDCC2 Cargar Config.&quot;);</span>
+<span class="nc" id="L126">        btnGuardarPreset.addActionListener(e -&gt; guardarPreset());</span>
+<span class="nc" id="L127">        btnCargarPreset.addActionListener(e -&gt; cargarPreset());</span>
+
+<span class="nc" id="L129">        JButton ok = new JButton(&quot;Aceptar&quot;);</span>
+<span class="nc" id="L130">        JButton cnc = new JButton(&quot;Cancelar&quot;);</span>
+<span class="nc" id="L131">        ok.setFont(new Font(&quot;SansSerif&quot;, Font.BOLD, 12));</span>
+<span class="nc" id="L132">        ok.addActionListener(e -&gt; {</span>
+<span class="nc" id="L133">            guardar();</span>
+<span class="nc" id="L134">            dispose();</span>
+<span class="nc" id="L135">        });</span>
+<span class="nc" id="L136">        cnc.addActionListener(e -&gt; dispose());</span>
+
+<span class="nc" id="L138">        JPanel bot = new JPanel(new BorderLayout());</span>
+<span class="nc" id="L139">        JPanel botIzq = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 6));</span>
+<span class="nc" id="L140">        botIzq.add(btnGuardarPreset);</span>
+<span class="nc" id="L141">        botIzq.add(btnCargarPreset);</span>
+<span class="nc" id="L142">        JPanel botDer = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 6));</span>
+<span class="nc" id="L143">        botDer.add(cnc);</span>
+<span class="nc" id="L144">        botDer.add(ok);</span>
+<span class="nc" id="L145">        bot.add(botIzq, BorderLayout.WEST);</span>
+<span class="nc" id="L146">        bot.add(botDer, BorderLayout.EAST);</span>
+
+<span class="nc" id="L148">        add(panelModo, BorderLayout.NORTH);</span>
+<span class="nc" id="L149">        add(tabs, BorderLayout.CENTER);</span>
+<span class="nc" id="L150">        add(bot, BorderLayout.SOUTH);</span>
+<span class="nc" id="L151">    }</span>
+
+    private void aplicarModo() {
+<span class="nc" id="L154">        boolean calibrado = rbCalibrado.isSelected();</span>
+<span class="nc bnc" id="L155" title="All 2 branches missed.">        setEnabledRecursivo(panelCalendario, !calibrado);</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">        spnMaxSoc.setEnabled(!calibrado);</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">        spnIntv.setEnabled(!calibrado);</span>
+<span class="nc bnc" id="L158" title="All 2 branches missed.">        for (Object[] arr : slidersPorCodigo.values()) {</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">            ((JSlider) arr[0]).setEnabled(!calibrado);</span>
+<span class="nc" id="L160">        }</span>
+<span class="nc" id="L161">    }</span>
+
+    private void setEnabledRecursivo(Component comp, boolean enabled) {
+<span class="nc" id="L164">        comp.setEnabled(enabled);</span>
+<span class="nc bnc" id="L165" title="All 2 branches missed.">        if (comp instanceof Container) {</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">            for (Component hijo : ((Container) comp).getComponents()) {</span>
+<span class="nc" id="L167">                setEnabledRecursivo(hijo, enabled);</span>
+            }
+        }
+<span class="nc" id="L170">    }</span>
+
+    private JPanel tabVelocidad() {
+<span class="nc" id="L173">        JPanel p = gbp();</span>
+<span class="nc" id="L174">        GridBagConstraints c = gbc();</span>
+<span class="nc" id="L175">        int r = 0;</span>
+<span class="nc" id="L176">        fila(p, c, r++, &quot;Horas de jornada por d\u00eda:&quot;, spnHoras, &quot;8.0 = 8 horas laborales&quot;);</span>
+<span class="nc" id="L177">        fila(p, c, r++, &quot;Duraci\u00f3n real por d\u00eda (seg):&quot;, spnReal, &quot;Segundos reales para un d\u00eda simulado&quot;);</span>
+<span class="nc" id="L178">        fila(p, c, r++, &quot;Escala calculada:&quot;, lblEscala, &quot;ms por minuto simulado (auto)&quot;);</span>
+<span class="nc" id="L179">        fila(p, c, r++, &quot;M\u00e1x. socios por d\u00eda:&quot;, spnMaxSoc, &quot;L\u00edmite de socios diario&quot;);</span>
+<span class="nc" id="L180">        fila(p, c, r++, &quot;Intervalo llegada (min sim):&quot;, spnIntv, &quot;Min simulados entre llegadas&quot;);</span>
+<span class="nc" id="L181">        fila(p, c, r++, &quot;D\u00edas laborables:&quot;, lblDias, &quot;Del calendario seleccionado&quot;);</span>
+<span class="nc" id="L182">        spnHoras.addChangeListener(e -&gt; actualizarEscala());</span>
+<span class="nc" id="L183">        spnReal.addChangeListener(e -&gt; actualizarEscala());</span>
+<span class="nc" id="L184">        return p;</span>
+    }
+
+    private JPanel tabHorario() {
+<span class="nc" id="L188">        JPanel p = gbp();</span>
+<span class="nc" id="L189">        GridBagConstraints c = gbc();</span>
+<span class="nc" id="L190">        int r = 0;</span>
+<span class="nc" id="L191">        GridBagConstraints ch = new GridBagConstraints();</span>
+<span class="nc" id="L192">        ch.gridx = 0;</span>
+<span class="nc" id="L193">        ch.gridy = r++;</span>
+<span class="nc" id="L194">        ch.gridwidth = 2;</span>
+<span class="nc" id="L195">        ch.insets = new Insets(0, 6, 10, 6);</span>
+<span class="nc" id="L196">        p.add(new JLabel(&quot;&lt;html&gt;&lt;b&gt;Horario global para todos los d\u00edas laborables.&lt;/b&gt;&lt;/html&gt;&quot;), ch);</span>
+<span class="nc" id="L197">        fila(p, c, r++, &quot;Inicio (ej. 510=08:30):&quot;, spnHIni, &quot;Apertura en minutos desde 00:00&quot;);</span>
+<span class="nc" id="L198">        fila(p, c, r++, &quot;&quot;, chkPartida, &quot;Activar pausa de almuerzo&quot;);</span>
+<span class="nc" id="L199">        fila(p, c, r++, &quot;Fin ma\u00f1ana (ej. 720=12:00):&quot;, spnHAlmFin, &quot;Fin del primer bloque&quot;);</span>
+<span class="nc" id="L200">        fila(p, c, r++, &quot;Reanudaci\u00f3n (ej. 870=14:30):&quot;, spnHRean, &quot;Inicio del segundo bloque&quot;);</span>
+<span class="nc" id="L201">        fila(p, c, r++, &quot;Cierre (ej. 990=16:30):&quot;, spnHFin, &quot;Cierre&quot;);</span>
+<span class="nc" id="L202">        fila(p, c, r++, &quot;Horario calculado:&quot;, lblHorario, &quot;Resumen visual&quot;);</span>
+<span class="nc bnc" id="L203" title="All 2 branches missed.">        for (JSpinner s : new JSpinner[]{spnHIni, spnHAlmFin, spnHRean, spnHFin})</span>
+<span class="nc" id="L204">            s.addChangeListener(e -&gt; actualizarHorario());</span>
+<span class="nc" id="L205">        chkPartida.addActionListener(e -&gt; actualizarHorario());</span>
+<span class="nc" id="L206">        JPanel w = new JPanel(new BorderLayout());</span>
+<span class="nc" id="L207">        w.add(p, BorderLayout.NORTH);</span>
+<span class="nc" id="L208">        return w;</span>
+    }
+
+    private JPanel tabProb() {
+<span class="nc" id="L212">        JPanel outer = new JPanel(new BorderLayout(4, 4));</span>
+<span class="nc" id="L213">        outer.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));</span>
+
+<span class="nc" id="L215">        JLabel instruccion = new JLabel(&quot;&lt;html&gt;&lt;b&gt;Probabilidades por c\u00f3digo de ticket.&lt;/b&gt; &quot;</span>
+                + &quot;La suma debe ser 100%.&lt;/html&gt;&quot;);
+<span class="nc" id="L217">        instruccion.setFont(new Font(&quot;SansSerif&quot;, Font.PLAIN, 12));</span>
+<span class="nc" id="L218">        outer.add(instruccion, BorderLayout.NORTH);</span>
+
+<span class="nc" id="L220">        panelProb.setLayout(new GridBagLayout());</span>
+<span class="nc" id="L221">        JScrollPane scrollSliders = new JScrollPane(panelProb);</span>
+<span class="nc" id="L222">        scrollSliders.getVerticalScrollBar().setUnitIncrement(20);</span>
+<span class="nc" id="L223">        scrollSliders.setPreferredSize(new Dimension(380, 280));</span>
+
+<span class="nc" id="L225">        JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 4));</span>
+<span class="nc" id="L226">        lblSumaProb.setFont(new Font(&quot;SansSerif&quot;, Font.BOLD, 14));</span>
+<span class="nc" id="L227">        bottom.add(lblSumaProb);</span>
+
+<span class="nc" id="L229">        outer.add(scrollSliders, BorderLayout.CENTER);</span>
+<span class="nc" id="L230">        outer.add(bottom, BorderLayout.SOUTH);</span>
+<span class="nc" id="L231">        return outer;</span>
+    }
+
+    private void reconstruirSliders() {
+<span class="nc" id="L235">        panelProb.removeAll();</span>
+<span class="nc" id="L236">        slidersPorCodigo.clear();</span>
+
+<span class="nc" id="L238">        Map&lt;String, Double&gt; probs = config.getProbPorCodigo();</span>
+<span class="nc bnc" id="L239" title="All 2 branches missed.">        if (probs.isEmpty()) {</span>
+<span class="nc" id="L240">            aplicarModo();</span>
+<span class="nc" id="L241">            return;</span>
+        }
+
+<span class="nc" id="L244">        GridBagConstraints c = new GridBagConstraints();</span>
+<span class="nc" id="L245">        c.insets = new Insets(4, 8, 4, 8);</span>
+<span class="nc" id="L246">        c.fill = GridBagConstraints.HORIZONTAL;</span>
+<span class="nc" id="L247">        c.gridx = 0;</span>
+<span class="nc" id="L248">        c.weightx = 0.3;</span>
+<span class="nc" id="L249">        int row = 0;</span>
+
+<span class="nc" id="L251">        List&lt;String&gt; orden = List.of(&quot;C&quot;, &quot;A&quot;, &quot;S&quot;, &quot;F&quot;, &quot;P&quot;, &quot;R&quot;, &quot;PC&quot;, &quot;PS&quot;, &quot;PA&quot;, &quot;PP&quot;);</span>
+<span class="nc" id="L252">        List&lt;String&gt; claves = new ArrayList&lt;&gt;(probs.keySet());</span>
+<span class="nc" id="L253">        claves.sort((a, b) -&gt; {</span>
+<span class="nc" id="L254">            int ia = orden.indexOf(a);</span>
+<span class="nc" id="L255">            int ib = orden.indexOf(b);</span>
+<span class="nc bnc" id="L256" title="All 4 branches missed.">            if (ia &gt;= 0 &amp;&amp; ib &gt;= 0) return Integer.compare(ia, ib);</span>
+<span class="nc bnc" id="L257" title="All 2 branches missed.">            if (ia &gt;= 0) return -1;</span>
+<span class="nc bnc" id="L258" title="All 2 branches missed.">            if (ib &gt;= 0) return 1;</span>
+<span class="nc" id="L259">            return a.compareTo(b);</span>
+        });
+
+<span class="nc bnc" id="L262" title="All 2 branches missed.">        for (String codigo : claves) {</span>
+<span class="nc" id="L263">            double valor = probs.getOrDefault(codigo, 0.0);</span>
+<span class="nc" id="L264">            int valInt = (int) Math.round(valor * 100);</span>
+
+<span class="nc" id="L266">            JLabel lblCodigo = new JLabel(codigo + &quot; (&quot; + GeneradorSociosService.getNombreCodigo(codigo) + &quot;)&quot;);</span>
+<span class="nc" id="L267">            lblCodigo.setFont(new Font(&quot;SansSerif&quot;, Font.BOLD, 11));</span>
+
+<span class="nc" id="L269">            JSlider slider = new JSlider(0, 100, valInt);</span>
+<span class="nc" id="L270">            slider.setMajorTickSpacing(20);</span>
+<span class="nc" id="L271">            slider.setPaintTicks(true);</span>
+<span class="nc" id="L272">            slider.setPaintLabels(true);</span>
+
+<span class="nc" id="L274">            JLabel lblPorc = new JLabel(valInt + &quot;%&quot;);</span>
+<span class="nc" id="L275">            lblPorc.setFont(new Font(&quot;SansSerif&quot;, Font.BOLD, 12));</span>
+<span class="nc" id="L276">            lblPorc.setPreferredSize(new Dimension(45, 20));</span>
+
+<span class="nc" id="L278">            slider.addChangeListener(e -&gt; {</span>
+<span class="nc" id="L279">                int v = slider.getValue();</span>
+<span class="nc" id="L280">                lblPorc.setText(v + &quot;%&quot;);</span>
+<span class="nc" id="L281">                actualizarSuma();</span>
+<span class="nc" id="L282">            });</span>
+
+<span class="nc" id="L284">            c.gridy = row;</span>
+<span class="nc" id="L285">            c.gridx = 0;</span>
+<span class="nc" id="L286">            panelProb.add(lblCodigo, c);</span>
+<span class="nc" id="L287">            c.gridx = 1;</span>
+<span class="nc" id="L288">            c.weightx = 0.6;</span>
+<span class="nc" id="L289">            panelProb.add(slider, c);</span>
+<span class="nc" id="L290">            c.gridx = 2;</span>
+<span class="nc" id="L291">            c.weightx = 0.1;</span>
+<span class="nc" id="L292">            panelProb.add(lblPorc, c);</span>
+<span class="nc" id="L293">            row++;</span>
+<span class="nc" id="L294">            slidersPorCodigo.put(codigo, new Object[]{slider, lblPorc});</span>
+<span class="nc" id="L295">        }</span>
+
+<span class="nc" id="L297">        actualizarSuma();</span>
+<span class="nc" id="L298">        panelProb.revalidate();</span>
+<span class="nc" id="L299">        panelProb.repaint();</span>
+<span class="nc" id="L300">        aplicarModo();</span>
+<span class="nc" id="L301">    }</span>
+
+    private void actualizarSuma() {
+<span class="nc" id="L304">        int suma = 0;</span>
+<span class="nc bnc" id="L305" title="All 2 branches missed.">        for (Object[] arr : slidersPorCodigo.values()) {</span>
+<span class="nc" id="L306">            JSlider sl = (JSlider) arr[0];</span>
+<span class="nc" id="L307">            suma += sl.getValue();</span>
+<span class="nc" id="L308">        }</span>
+<span class="nc bnc" id="L309" title="All 2 branches missed.">        lblSumaProb.setText(&quot;Suma: &quot; + suma + &quot;%  &quot; + (suma == 100 ? &quot;\u2705&quot; : &quot;\u26A0 Debe ser 100%&quot;));</span>
+<span class="nc bnc" id="L310" title="All 2 branches missed.">        lblSumaProb.setForeground(suma == 100 ? new Color(0, 120, 0) : Color.RED);</span>
+<span class="nc" id="L311">    }</span>
+
+    private JPanel tabCajas() {
+<span class="nc" id="L314">        JPanel outer = new JPanel();</span>
+<span class="nc" id="L315">        outer.setLayout(new BoxLayout(outer, BoxLayout.Y_AXIS));</span>
+<span class="nc" id="L316">        outer.setBorder(BorderFactory.createEmptyBorder(12, 16, 12, 16));</span>
+<span class="nc" id="L317">        outer.add(new JLabel(&quot;&lt;html&gt;&lt;b&gt;Tipos de caja:&lt;/b&gt; General, Plataforma, Montos Mayores (MM).&lt;br&gt;&quot;</span>
+                + &quot;Tickets P y PP solo van a PLATAFORMA. Montos \u2265 Bs 100.000 van a MM.&lt;/html&gt;&quot;));
+<span class="nc" id="L319">        outer.add(Box.createVerticalStrut(12));</span>
+<span class="nc" id="L320">        outer.add(grupoCaja(&quot;\uD83C\uDFE6  Cajas Generales (G-XX)&quot;, &quot;Atienden todos los tickets excepto P/PP.&quot;, new Color(210, 240, 210), spnGen));</span>
+<span class="nc" id="L321">        outer.add(Box.createVerticalStrut(8));</span>
+<span class="nc" id="L322">        outer.add(grupoCaja(&quot;\uD83D\uDDA5  Cajas de Plataforma (P-XX)&quot;, &quot;Atienden P, PP y tambi\u00e9n otros tickets.&quot;, new Color(210, 225, 255), spnPlat));</span>
+<span class="nc" id="L323">        outer.add(Box.createVerticalStrut(8));</span>
+<span class="nc" id="L324">        outer.add(grupoCaja(&quot;\uD83D\uDCB0  Caja Montos Mayores (MM-XX)&quot;, &quot;Para montos \u2265 Bs 100.000. Tambi\u00e9n atiende general.&quot;, new Color(255, 245, 200), spnMM));</span>
+<span class="nc" id="L325">        outer.add(Box.createVerticalStrut(12));</span>
+<span class="nc" id="L326">        lblTot.setFont(new Font(&quot;SansSerif&quot;, Font.BOLD, 14));</span>
+<span class="nc" id="L327">        lblTot.setForeground(new Color(0, 80, 160));</span>
+<span class="nc" id="L328">        lblTot.setAlignmentX(Component.LEFT_ALIGNMENT);</span>
+<span class="nc" id="L329">        outer.add(lblTot);</span>
+<span class="nc bnc" id="L330" title="All 2 branches missed.">        for (JSpinner s : new JSpinner[]{spnGen, spnPlat, spnMM}) s.addChangeListener(e -&gt; actualizarTotal());</span>
+<span class="nc" id="L331">        JScrollPane sc = new JScrollPane(outer);</span>
+<span class="nc" id="L332">        sc.getVerticalScrollBar().setUnitIncrement(16);</span>
+<span class="nc" id="L333">        sc.setBorder(null);</span>
+<span class="nc" id="L334">        JPanel w = new JPanel(new BorderLayout());</span>
+<span class="nc" id="L335">        w.add(sc, BorderLayout.CENTER);</span>
+<span class="nc" id="L336">        return w;</span>
+    }
+
+    private JPanel grupoCaja(String titulo, String desc, Color color, JSpinner spn) {
+<span class="nc" id="L340">        JPanel p = new JPanel(new BorderLayout(8, 4));</span>
+<span class="nc" id="L341">        p.setBackground(color);</span>
+<span class="nc" id="L342">        p.setOpaque(true);</span>
+<span class="nc" id="L343">        p.setBorder(BorderFactory.createCompoundBorder(</span>
+<span class="nc" id="L344">                BorderFactory.createLineBorder(color.darker(), 1, true),</span>
+<span class="nc" id="L345">                BorderFactory.createEmptyBorder(8, 12, 8, 12)));</span>
+<span class="nc" id="L346">        p.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));</span>
+<span class="nc" id="L347">        p.setAlignmentX(Component.LEFT_ALIGNMENT);</span>
+<span class="nc" id="L348">        JLabel lt = new JLabel(titulo);</span>
+<span class="nc" id="L349">        lt.setFont(new Font(&quot;SansSerif&quot;, Font.BOLD, 13));</span>
+<span class="nc" id="L350">        JLabel ld = new JLabel(&quot;&lt;html&gt;&lt;i&gt;&quot; + desc + &quot;&lt;/i&gt;&lt;/html&gt;&quot;);</span>
+<span class="nc" id="L351">        ld.setFont(new Font(&quot;SansSerif&quot;, Font.PLAIN, 11));</span>
+<span class="nc" id="L352">        ld.setForeground(Color.DARK_GRAY);</span>
+<span class="nc" id="L353">        JPanel iz = new JPanel(new BorderLayout(0, 4));</span>
+<span class="nc" id="L354">        iz.setOpaque(false);</span>
+<span class="nc" id="L355">        iz.add(lt, BorderLayout.NORTH);</span>
+<span class="nc" id="L356">        iz.add(ld, BorderLayout.CENTER);</span>
+<span class="nc" id="L357">        JPanel dr = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));</span>
+<span class="nc" id="L358">        dr.setOpaque(false);</span>
+<span class="nc" id="L359">        dr.add(new JLabel(&quot;Cantidad:&quot;));</span>
+<span class="nc" id="L360">        spn.setPreferredSize(new Dimension(70, 28));</span>
+<span class="nc" id="L361">        dr.add(spn);</span>
+<span class="nc" id="L362">        p.add(iz, BorderLayout.CENTER);</span>
+<span class="nc" id="L363">        p.add(dr, BorderLayout.EAST);</span>
+<span class="nc" id="L364">        return p;</span>
+    }
+
+    private JPanel tabServicios() {
+<span class="nc" id="L368">        JPanel p = new JPanel(new BorderLayout(4, 4));</span>
+<span class="nc" id="L369">        p.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));</span>
+<span class="nc" id="L370">        JTable tabla = new JTable(modeloTabla);</span>
+<span class="nc" id="L371">        tabla.setRowHeight(22);</span>
+<span class="nc" id="L372">        tabla.getColumnModel().getColumn(0).setMaxWidth(80);</span>
+<span class="nc" id="L373">        tabla.getColumnModel().getColumn(2).setMaxWidth(55);</span>
+<span class="nc" id="L374">        tabla.getColumnModel().getColumn(8).setMaxWidth(55);</span>
+<span class="nc" id="L375">        JComboBox&lt;String&gt; combo = new JComboBox&lt;&gt;(new String[]{&quot;C&quot;, &quot;A&quot;, &quot;S&quot;, &quot;F&quot;, &quot;P&quot;, &quot;R&quot;, &quot;PC&quot;, &quot;PS&quot;, &quot;PA&quot;, &quot;PP&quot;});</span>
+<span class="nc" id="L376">        tabla.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(combo));</span>
+<span class="nc" id="L377">        JScrollPane scrollTabla = new JScrollPane(tabla);</span>
+<span class="nc" id="L378">        scrollTabla.getVerticalScrollBar().setUnitIncrement(20);</span>
+<span class="nc" id="L379">        scrollTabla.getHorizontalScrollBar().setUnitIncrement(20);</span>
+
+<span class="nc" id="L381">        JButton add = new JButton(&quot;+ Agregar&quot;);</span>
+<span class="nc" id="L382">        JButton del = new JButton(&quot;- Eliminar&quot;);</span>
+<span class="nc" id="L383">        JButton importar = new JButton(&quot;\uD83D\uDCC5 Importar desde Excel (Historial)&quot;);</span>
+<span class="nc" id="L384">        importar.setFont(new Font(&quot;SansSerif&quot;, Font.BOLD, 11));</span>
+
+<span class="nc" id="L386">        add.addActionListener(e -&gt; {</span>
+<span class="nc" id="L387">            String nuevoCodigo = &quot;NUEVO&quot;;</span>
+<span class="nc" id="L388">            modeloTabla.addRow(new Object[]{&quot;SVC-&quot; + (modeloTabla.getRowCount() + 1), &quot;Nuevo&quot;, nuevoCodigo, 2, 10, 0.0, 500.0, 0.0, true});</span>
+<span class="nc" id="L389">            config.agregarCodigoNuevo(nuevoCodigo);</span>
+<span class="nc" id="L390">            reconstruirSliders();</span>
+<span class="nc" id="L391">        });</span>
+<span class="nc" id="L392">        del.addActionListener(e -&gt; {</span>
+<span class="nc" id="L393">            int r = tabla.getSelectedRow();</span>
+<span class="nc bnc" id="L394" title="All 2 branches missed.">            if (r &gt;= 0) {</span>
+<span class="nc" id="L395">                String codigo = (String) modeloTabla.getValueAt(r, 2);</span>
+<span class="nc" id="L396">                modeloTabla.removeRow(r);</span>
+<span class="nc" id="L397">                boolean existe = false;</span>
+<span class="nc bnc" id="L398" title="All 2 branches missed.">                for (int i = 0; i &lt; modeloTabla.getRowCount(); i++) {</span>
+<span class="nc bnc" id="L399" title="All 2 branches missed.">                    if (codigo.equals(modeloTabla.getValueAt(i, 2))) {</span>
+<span class="nc" id="L400">                        existe = true;</span>
+<span class="nc" id="L401">                        break;</span>
+                    }
+                }
+<span class="nc bnc" id="L404" title="All 2 branches missed.">                if (!existe) {</span>
+<span class="nc" id="L405">                    config.eliminarProbCodigo(codigo);</span>
+<span class="nc" id="L406">                    reconstruirSliders();</span>
+                }
+            }
+<span class="nc" id="L409">        });</span>
+<span class="nc" id="L410">        importar.addActionListener(e -&gt; importarHistorial());</span>
+
+<span class="nc" id="L412">        JPanel bar = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 4));</span>
+<span class="nc" id="L413">        bar.add(add);</span>
+<span class="nc" id="L414">        bar.add(del);</span>
+<span class="nc" id="L415">        bar.add(new JLabel(&quot;  El c\u00f3digo determina el ticket y la caja destino.&quot;));</span>
+<span class="nc" id="L416">        JPanel barImport = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 4));</span>
+<span class="nc" id="L417">        barImport.add(importar);</span>
+
+<span class="nc" id="L419">        JPanel sur = new JPanel(new BorderLayout());</span>
+<span class="nc" id="L420">        sur.add(bar, BorderLayout.WEST);</span>
+<span class="nc" id="L421">        sur.add(barImport, BorderLayout.EAST);</span>
+
+<span class="nc" id="L423">        p.add(scrollTabla, BorderLayout.CENTER);</span>
+<span class="nc" id="L424">        p.add(sur, BorderLayout.SOUTH);</span>
+<span class="nc" id="L425">        return p;</span>
+    }
+
+    private void importarHistorial() {
+<span class="nc" id="L429">        JFileChooser chooser = new JFileChooser();</span>
+<span class="nc" id="L430">        chooser.setDialogTitle(&quot;Importar historial de atenciones&quot;);</span>
+<span class="nc" id="L431">        chooser.setFileFilter(new FileNameExtensionFilter(&quot;Excel (*.xlsx)&quot;, &quot;xlsx&quot;));</span>
+<span class="nc" id="L432">        int result = chooser.showOpenDialog(this);</span>
+<span class="nc bnc" id="L433" title="All 2 branches missed.">        if (result != JFileChooser.APPROVE_OPTION) return;</span>
+
+<span class="nc" id="L435">        File archivo = chooser.getSelectedFile();</span>
+<span class="nc" id="L436">        CalibrarConfiguracionUseCase useCase =</span>
+                new CalibrarConfiguracionUseCase(new HistorialImportadorAdapter());
+
+        try {
+<span class="nc" id="L440">            CalibracionMensual cal = useCase.ejecutar(archivo);</span>
+<span class="nc" id="L441">            ultimaCalibracion = cal;</span>
+<span class="nc" id="L442">            System.out.println(&quot;&gt;&gt;&gt; [Dialogo] Calibraci\u00f3n guardada: &quot; + cal.getRegistros().size() + &quot; registros.&quot;);</span>
+
+<span class="nc bnc" id="L444" title="All 2 branches missed.">            for (ServicioFinanciero s : cal.getServicios()) {</span>
+<span class="nc" id="L445">                int filaExistente = -1;</span>
+<span class="nc bnc" id="L446" title="All 2 branches missed.">                for (int i = 0; i &lt; modeloTabla.getRowCount(); i++) {</span>
+<span class="nc bnc" id="L447" title="All 2 branches missed.">                    if (s.getTipoCajaRequerido().equals(modeloTabla.getValueAt(i, 2))) {</span>
+<span class="nc" id="L448">                        filaExistente = i;</span>
+<span class="nc" id="L449">                        break;</span>
+                    }
+                }
+<span class="nc" id="L452">                Object[] fila = {</span>
+<span class="nc" id="L453">                        s.getId(), s.getNombre(), s.getTipoCajaRequerido(),</span>
+<span class="nc" id="L454">                        s.getDuracionMinima(), s.getDuracionMaxima(),</span>
+<span class="nc" id="L455">                        s.getMontoMinimo(), s.getMontoMaximo(), s.getTasaInteres(), s.isActivo()</span>
+                };
+<span class="nc bnc" id="L457" title="All 2 branches missed.">                if (filaExistente &gt;= 0) {</span>
+<span class="nc bnc" id="L458" title="All 2 branches missed.">                    for (int col = 0; col &lt; fila.length; col++) modeloTabla.setValueAt(fila[col], filaExistente, col);</span>
+                } else {
+<span class="nc" id="L460">                    modeloTabla.addRow(fila);</span>
+                }
+<span class="nc" id="L462">            }</span>
+
+<span class="nc bnc" id="L464" title="All 2 branches missed.">            for (Map.Entry&lt;String, Double&gt; e : cal.getProbabilidades().entrySet()) {</span>
+<span class="nc" id="L465">                config.setProbCodigo(e.getKey(), e.getValue());</span>
+<span class="nc" id="L466">            }</span>
+<span class="nc" id="L467">            reconstruirSliders();</span>
+
+<span class="nc" id="L469">            boolean calibracionCompleta = false;</span>
+<span class="nc bnc" id="L470" title="All 2 branches missed.">            if (cal.isTieneFechas()) {</span>
+<span class="nc" id="L471">                Map&lt;LocalDate, Boolean&gt; nuevoEstado = new LinkedHashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L472" title="All 2 branches missed.">                for (LocalDate d : cal.getDiasLaborables()) nuevoEstado.put(d, true);</span>
+<span class="nc" id="L473">                panelCalendario.setEstadoDias(nuevoEstado);</span>
+                // Actualizar también la configuración
+<span class="nc" id="L475">                config.setDiasLaborables(new LinkedHashMap&lt;&gt;(nuevoEstado));</span>
+<span class="nc" id="L476">                config.setDiasASimular(nuevoEstado.size());</span>
+
+<span class="nc" id="L478">                spnMaxSoc.setValue(Math.max(10, cal.getMaxSociosDia()));</span>
+<span class="nc" id="L479">                double intervaloCalculado = Math.max(0.1,</span>
+<span class="nc" id="L480">                        Math.round(cal.getIntervaloPromedioLlegada() * 10) / 10.0);</span>
+<span class="nc" id="L481">                spnIntv.setValue(Math.min(10.0, intervaloCalculado));</span>
+<span class="nc" id="L482">                System.out.println(&quot;&gt;&gt;&gt; [Calibracion] Intervalo aplicado: &quot; + intervaloCalculado</span>
+<span class="nc" id="L483">                        + &quot; min (calculado del historial: &quot; + cal.getIntervaloPromedioLlegada() + &quot;)&quot;);</span>
+<span class="nc" id="L484">                calibracionCompleta = true;</span>
+            }
+<span class="nc" id="L486">            aplicarModo();</span>
+<span class="nc" id="L487">            actualizarDiasLabel();</span>
+
+<span class="nc" id="L489">            StringBuilder msg = new StringBuilder();</span>
+<span class="nc" id="L490">            msg.append(&quot;Calibraci\u00f3n completada.\n&quot;);</span>
+<span class="nc" id="L491">            msg.append(&quot;Fichas procesadas: &quot;).append(cal.getTotalFichasProcesadas()).append(&quot;\n&quot;);</span>
+<span class="nc" id="L492">            msg.append(&quot;Filas ignoradas: &quot;).append(cal.getFilasIgnoradas()).append(&quot;\n&quot;);</span>
+<span class="nc" id="L493">            msg.append(&quot;Tipos de servicio calibrados: &quot;).append(cal.getServicios().size()).append(&quot;\n&quot;);</span>
+<span class="nc bnc" id="L494" title="All 2 branches missed.">            if (rbCalibrado.isSelected()) {</span>
+<span class="nc bnc" id="L495" title="All 2 branches missed.">                if (calibracionCompleta) {</span>
+<span class="nc" id="L496">                    msg.append(&quot;\nModo Calibrado: tambi\u00e9n se configuraron &quot;)</span>
+<span class="nc" id="L497">                            .append(cal.getDiasLaborables().size()).append(&quot; d\u00edas laborables, &quot;)</span>
+<span class="nc" id="L498">                            .append(&quot;m\u00e1ximo de socios/d\u00eda (&quot;).append(cal.getMaxSociosDia()).append(&quot;) &quot;)</span>
+<span class="nc" id="L499">                            .append(&quot;e intervalo de llegada promedio.&quot;);</span>
+                } else {
+<span class="nc" id="L501">                    msg.append(&quot;\nAVISO: no se encontr\u00f3 la columna 'fecha_creacion' en el archivo, &quot;)</span>
+<span class="nc" id="L502">                            .append(&quot;as\u00ed que NO se pudo calibrar calendario/m\u00e1x.socios/intervalo. &quot;)</span>
+<span class="nc" id="L503">                            .append(&quot;Solo se calibraron servicios y probabilidades.&quot;);</span>
+                }
+            }
+
+            // Si hay fechas, activar automáticamente el modo calibrado
+<span class="nc bnc" id="L508" title="All 4 branches missed.">            if (cal.isTieneFechas() &amp;&amp; !rbCalibrado.isSelected()) {</span>
+<span class="nc" id="L509">                rbCalibrado.setSelected(true);</span>
+<span class="nc" id="L510">                aplicarModo();</span>
+<span class="nc" id="L511">                System.out.println(&quot;&gt;&gt;&gt; [Dialogo] Modo Calibrado activado autom\u00e1ticamente.&quot;);</span>
+            }
+
+<span class="nc" id="L514">            JOptionPane.showMessageDialog(this, msg.toString(),</span>
+                    &quot;Importaci\u00f3n completada&quot;, JOptionPane.INFORMATION_MESSAGE);
+
+<span class="nc" id="L517">        } catch (IOException ex) {</span>
+<span class="nc" id="L518">            JOptionPane.showMessageDialog(this,</span>
+<span class="nc" id="L519">                    &quot;No se pudo importar el historial:\n&quot; + ex.getMessage(),</span>
+                    &quot;Error de importaci\u00f3n&quot;, JOptionPane.ERROR_MESSAGE);
+<span class="nc" id="L521">        }</span>
+<span class="nc" id="L522">    }</span>
+
+    private void guardarPreset() {
+<span class="nc" id="L525">        File dirPresets = new File(&quot;config/presets&quot;);</span>
+<span class="nc bnc" id="L526" title="All 2 branches missed.">        if (!dirPresets.exists()) dirPresets.mkdirs();</span>
+
+<span class="nc" id="L528">        JFileChooser chooser = new JFileChooser(dirPresets);</span>
+<span class="nc" id="L529">        chooser.setDialogTitle(&quot;Guardar configuraci\u00f3n (preset)&quot;);</span>
+<span class="nc" id="L530">        chooser.setFileFilter(new FileNameExtensionFilter(&quot;Preset (*.properties)&quot;, &quot;properties&quot;));</span>
+<span class="nc" id="L531">        int result = chooser.showSaveDialog(this);</span>
+<span class="nc bnc" id="L532" title="All 2 branches missed.">        if (result != JFileChooser.APPROVE_OPTION) return;</span>
+
+<span class="nc" id="L534">        String path = chooser.getSelectedFile().getAbsolutePath();</span>
+<span class="nc bnc" id="L535" title="All 2 branches missed.">        if (!path.toLowerCase().endsWith(&quot;.properties&quot;)) path += &quot;.properties&quot;;</span>
+<span class="nc" id="L536">        File archivo = new File(path);</span>
+
+<span class="nc" id="L538">        Properties p = new Properties();</span>
+<span class="nc bnc" id="L539" title="All 2 branches missed.">        p.setProperty(&quot;modo&quot;, rbCalibrado.isSelected() ? &quot;CALIBRADO&quot; : &quot;LIBRE&quot;);</span>
+<span class="nc" id="L540">        p.setProperty(&quot;horasJornadaDia&quot;, String.valueOf(spnHoras.getValue()));</span>
+<span class="nc" id="L541">        p.setProperty(&quot;duracionRealSeg&quot;, String.valueOf(spnReal.getValue()));</span>
+<span class="nc" id="L542">        p.setProperty(&quot;maxSociosDia&quot;, String.valueOf(spnMaxSoc.getValue()));</span>
+<span class="nc" id="L543">        p.setProperty(&quot;intervaloMinutos&quot;, String.valueOf(spnIntv.getValue()));</span>
+<span class="nc" id="L544">        p.setProperty(&quot;horaInicio&quot;, String.valueOf(spnHIni.getValue()));</span>
+<span class="nc" id="L545">        p.setProperty(&quot;horaAlmuerzoFin&quot;, String.valueOf(spnHAlmFin.getValue()));</span>
+<span class="nc" id="L546">        p.setProperty(&quot;horaReanudacion&quot;, String.valueOf(spnHRean.getValue()));</span>
+<span class="nc" id="L547">        p.setProperty(&quot;horaFin&quot;, String.valueOf(spnHFin.getValue()));</span>
+<span class="nc" id="L548">        p.setProperty(&quot;jornadaPartida&quot;, String.valueOf(chkPartida.isSelected()));</span>
+<span class="nc" id="L549">        p.setProperty(&quot;cajasGenerales&quot;, String.valueOf(spnGen.getValue()));</span>
+<span class="nc" id="L550">        p.setProperty(&quot;cajasPlataforma&quot;, String.valueOf(spnPlat.getValue()));</span>
+<span class="nc" id="L551">        p.setProperty(&quot;cajasMM&quot;, String.valueOf(spnMM.getValue()));</span>
+
+<span class="nc" id="L553">        StringBuilder labs = new StringBuilder();</span>
+<span class="nc" id="L554">        StringBuilder nolabs = new StringBuilder();</span>
+<span class="nc bnc" id="L555" title="All 2 branches missed.">        for (Map.Entry&lt;LocalDate, Boolean&gt; e : panelCalendario.getEstadoDias().entrySet()) {</span>
+<span class="nc bnc" id="L556" title="All 2 branches missed.">            if (Boolean.TRUE.equals(e.getValue())) {</span>
+<span class="nc bnc" id="L557" title="All 2 branches missed.">                if (labs.length() &gt; 0) labs.append(&quot;,&quot;);</span>
+<span class="nc" id="L558">                labs.append(e.getKey());</span>
+            } else {
+<span class="nc bnc" id="L560" title="All 2 branches missed.">                if (nolabs.length() &gt; 0) nolabs.append(&quot;,&quot;);</span>
+<span class="nc" id="L561">                nolabs.append(e.getKey());</span>
+            }
+<span class="nc" id="L563">        }</span>
+<span class="nc" id="L564">        p.setProperty(&quot;diasLaborables&quot;, labs.toString());</span>
+<span class="nc" id="L565">        p.setProperty(&quot;diasNoLaborables&quot;, nolabs.toString());</span>
+
+<span class="nc bnc" id="L567" title="All 2 branches missed.">        for (Map.Entry&lt;String, Object[]&gt; e : slidersPorCodigo.entrySet()) {</span>
+<span class="nc" id="L568">            JSlider sl = (JSlider) e.getValue()[0];</span>
+<span class="nc" id="L569">            p.setProperty(&quot;prob.&quot; + e.getKey(), String.valueOf(sl.getValue()));</span>
+<span class="nc" id="L570">        }</span>
+
+<span class="nc" id="L572">        p.setProperty(&quot;servicios.count&quot;, String.valueOf(modeloTabla.getRowCount()));</span>
+<span class="nc bnc" id="L573" title="All 2 branches missed.">        for (int i = 0; i &lt; modeloTabla.getRowCount(); i++) {</span>
+<span class="nc" id="L574">            String pre = &quot;servicios.&quot; + i + &quot;.&quot;;</span>
+<span class="nc" id="L575">            p.setProperty(pre + &quot;id&quot;, String.valueOf(modeloTabla.getValueAt(i, 0)));</span>
+<span class="nc" id="L576">            p.setProperty(pre + &quot;nombre&quot;, String.valueOf(modeloTabla.getValueAt(i, 1)));</span>
+<span class="nc" id="L577">            p.setProperty(pre + &quot;codigo&quot;, String.valueOf(modeloTabla.getValueAt(i, 2)));</span>
+<span class="nc" id="L578">            p.setProperty(pre + &quot;durMin&quot;, String.valueOf(modeloTabla.getValueAt(i, 3)));</span>
+<span class="nc" id="L579">            p.setProperty(pre + &quot;durMax&quot;, String.valueOf(modeloTabla.getValueAt(i, 4)));</span>
+<span class="nc" id="L580">            p.setProperty(pre + &quot;montoMin&quot;, String.valueOf(modeloTabla.getValueAt(i, 5)));</span>
+<span class="nc" id="L581">            p.setProperty(pre + &quot;montoMax&quot;, String.valueOf(modeloTabla.getValueAt(i, 6)));</span>
+<span class="nc" id="L582">            p.setProperty(pre + &quot;tasa&quot;, String.valueOf(modeloTabla.getValueAt(i, 7)));</span>
+<span class="nc" id="L583">            p.setProperty(pre + &quot;activo&quot;, String.valueOf(modeloTabla.getValueAt(i, 8)));</span>
+        }
+
+        try {
+<span class="nc" id="L587">            PresetManager.guardar(archivo, p);</span>
+<span class="nc" id="L588">            JOptionPane.showMessageDialog(this,</span>
+<span class="nc" id="L589">                    &quot;Configuraci\u00f3n guardada en:\n&quot; + archivo.getAbsolutePath());</span>
+<span class="nc" id="L590">        } catch (IOException ex) {</span>
+<span class="nc" id="L591">            JOptionPane.showMessageDialog(this,</span>
+<span class="nc" id="L592">                    &quot;Error al guardar: &quot; + ex.getMessage(), &quot;Error&quot;, JOptionPane.ERROR_MESSAGE);</span>
+<span class="nc" id="L593">        }</span>
+<span class="nc" id="L594">    }</span>
+
+    private void cargarPreset() {
+<span class="nc" id="L597">        File dirPresets = new File(&quot;config/presets&quot;);</span>
+<span class="nc bnc" id="L598" title="All 2 branches missed.">        JFileChooser chooser = new JFileChooser(dirPresets.exists() ? dirPresets : new File(&quot;.&quot;));</span>
+<span class="nc" id="L599">        chooser.setDialogTitle(&quot;Cargar configuraci\u00f3n (preset)&quot;);</span>
+<span class="nc" id="L600">        chooser.setFileFilter(new FileNameExtensionFilter(&quot;Preset (*.properties)&quot;, &quot;properties&quot;));</span>
+<span class="nc" id="L601">        int result = chooser.showOpenDialog(this);</span>
+<span class="nc bnc" id="L602" title="All 2 branches missed.">        if (result != JFileChooser.APPROVE_OPTION) return;</span>
+
+        try {
+<span class="nc" id="L605">            Properties p = PresetManager.cargar(chooser.getSelectedFile());</span>
+
+<span class="nc bnc" id="L607" title="All 2 branches missed.">            if (&quot;CALIBRADO&quot;.equals(p.getProperty(&quot;modo&quot;))) rbCalibrado.setSelected(true);</span>
+<span class="nc" id="L608">            else rbLibre.setSelected(true);</span>
+
+<span class="nc" id="L610">            setSpinnerDouble(spnHoras, p.getProperty(&quot;horasJornadaDia&quot;));</span>
+<span class="nc" id="L611">            setSpinnerInt(spnReal, p.getProperty(&quot;duracionRealSeg&quot;));</span>
+<span class="nc" id="L612">            setSpinnerInt(spnMaxSoc, p.getProperty(&quot;maxSociosDia&quot;));</span>
+<span class="nc" id="L613">            setSpinnerDouble(spnIntv, p.getProperty(&quot;intervaloMinutos&quot;));</span>
+<span class="nc" id="L614">            setSpinnerInt(spnHIni, p.getProperty(&quot;horaInicio&quot;));</span>
+<span class="nc" id="L615">            setSpinnerInt(spnHAlmFin, p.getProperty(&quot;horaAlmuerzoFin&quot;));</span>
+<span class="nc" id="L616">            setSpinnerInt(spnHRean, p.getProperty(&quot;horaReanudacion&quot;));</span>
+<span class="nc" id="L617">            setSpinnerInt(spnHFin, p.getProperty(&quot;horaFin&quot;));</span>
+<span class="nc" id="L618">            chkPartida.setSelected(Boolean.parseBoolean(p.getProperty(&quot;jornadaPartida&quot;, &quot;true&quot;)));</span>
+<span class="nc" id="L619">            setSpinnerInt(spnGen, p.getProperty(&quot;cajasGenerales&quot;));</span>
+<span class="nc" id="L620">            setSpinnerInt(spnPlat, p.getProperty(&quot;cajasPlataforma&quot;));</span>
+<span class="nc" id="L621">            setSpinnerInt(spnMM, p.getProperty(&quot;cajasMM&quot;));</span>
+
+<span class="nc" id="L623">            Map&lt;LocalDate, Boolean&gt; estadoDias = new LinkedHashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L624" title="All 2 branches missed.">            for (String s : split(p.getProperty(&quot;diasLaborables&quot;, &quot;&quot;))) {</span>
+                try {
+<span class="nc" id="L626">                    estadoDias.put(LocalDate.parse(s), true);</span>
+<span class="nc" id="L627">                } catch (Exception ignored) {</span>
+<span class="nc" id="L628">                }</span>
+<span class="nc" id="L629">            }</span>
+<span class="nc bnc" id="L630" title="All 2 branches missed.">            for (String s : split(p.getProperty(&quot;diasNoLaborables&quot;, &quot;&quot;))) {</span>
+                try {
+<span class="nc" id="L632">                    estadoDias.put(LocalDate.parse(s), false);</span>
+<span class="nc" id="L633">                } catch (Exception ignored) {</span>
+<span class="nc" id="L634">                }</span>
+<span class="nc" id="L635">            }</span>
+<span class="nc bnc" id="L636" title="All 2 branches missed.">            if (!estadoDias.isEmpty()) panelCalendario.setEstadoDias(estadoDias);</span>
+
+<span class="nc bnc" id="L638" title="All 2 branches missed.">            for (String key : p.stringPropertyNames()) {</span>
+<span class="nc bnc" id="L639" title="All 2 branches missed.">                if (key.startsWith(&quot;prob.&quot;)) {</span>
+<span class="nc" id="L640">                    String codigo = key.substring(&quot;prob.&quot;.length());</span>
+                    try {
+<span class="nc" id="L642">                        double v = Double.parseDouble(p.getProperty(key)) / 100.0;</span>
+<span class="nc" id="L643">                        config.setProbCodigo(codigo, v);</span>
+<span class="nc" id="L644">                    } catch (Exception ignored) {</span>
+<span class="nc" id="L645">                    }</span>
+                }
+<span class="nc" id="L647">            }</span>
+
+<span class="nc" id="L649">            int nServicios = 0;</span>
+            try {
+<span class="nc" id="L651">                nServicios = Integer.parseInt(p.getProperty(&quot;servicios.count&quot;, &quot;0&quot;));</span>
+<span class="nc" id="L652">            } catch (Exception ignored) {</span>
+<span class="nc" id="L653">            }</span>
+<span class="nc bnc" id="L654" title="All 2 branches missed.">            if (nServicios &gt; 0) {</span>
+<span class="nc" id="L655">                modeloTabla.setRowCount(0);</span>
+<span class="nc bnc" id="L656" title="All 2 branches missed.">                for (int i = 0; i &lt; nServicios; i++) {</span>
+<span class="nc" id="L657">                    String pre = &quot;servicios.&quot; + i + &quot;.&quot;;</span>
+                    try {
+<span class="nc" id="L659">                        modeloTabla.addRow(new Object[]{</span>
+<span class="nc" id="L660">                                p.getProperty(pre + &quot;id&quot;, &quot;SVC-&quot; + i),</span>
+<span class="nc" id="L661">                                p.getProperty(pre + &quot;nombre&quot;, &quot;&quot;),</span>
+<span class="nc" id="L662">                                p.getProperty(pre + &quot;codigo&quot;, &quot;C&quot;),</span>
+<span class="nc" id="L663">                                Integer.parseInt(p.getProperty(pre + &quot;durMin&quot;, &quot;2&quot;)),</span>
+<span class="nc" id="L664">                                Integer.parseInt(p.getProperty(pre + &quot;durMax&quot;, &quot;10&quot;)),</span>
+<span class="nc" id="L665">                                Double.parseDouble(p.getProperty(pre + &quot;montoMin&quot;, &quot;0&quot;)),</span>
+<span class="nc" id="L666">                                Double.parseDouble(p.getProperty(pre + &quot;montoMax&quot;, &quot;500&quot;)),</span>
+<span class="nc" id="L667">                                Double.parseDouble(p.getProperty(pre + &quot;tasa&quot;, &quot;0.1&quot;)),</span>
+<span class="nc" id="L668">                                Boolean.parseBoolean(p.getProperty(pre + &quot;activo&quot;, &quot;true&quot;))</span>
+                        });
+<span class="nc" id="L670">                    } catch (Exception ignored) {</span>
+<span class="nc" id="L671">                    }</span>
+                }
+            }
+
+<span class="nc" id="L675">            reconstruirSliders();</span>
+<span class="nc" id="L676">            actualizarEscala();</span>
+<span class="nc" id="L677">            actualizarHorario();</span>
+<span class="nc" id="L678">            actualizarTotal();</span>
+<span class="nc" id="L679">            actualizarDiasLabel();</span>
+<span class="nc" id="L680">            aplicarModo();</span>
+
+<span class="nc" id="L682">            JOptionPane.showMessageDialog(this, &quot;Configuraci\u00f3n cargada correctamente.&quot;);</span>
+
+<span class="nc" id="L684">        } catch (IOException ex) {</span>
+<span class="nc" id="L685">            JOptionPane.showMessageDialog(this,</span>
+<span class="nc" id="L686">                    &quot;Error al cargar: &quot; + ex.getMessage(), &quot;Error&quot;, JOptionPane.ERROR_MESSAGE);</span>
+<span class="nc" id="L687">        }</span>
+<span class="nc" id="L688">    }</span>
+
+    private void setSpinnerDouble(JSpinner spn, String valor) {
+<span class="nc bnc" id="L691" title="All 2 branches missed.">        if (valor == null) return;</span>
+        try {
+<span class="nc" id="L693">            spn.setValue(Double.parseDouble(valor));</span>
+<span class="nc" id="L694">        } catch (Exception ignored) {</span>
+<span class="nc" id="L695">        }</span>
+<span class="nc" id="L696">    }</span>
+
+    private void setSpinnerInt(JSpinner spn, String valor) {
+<span class="nc bnc" id="L699" title="All 2 branches missed.">        if (valor == null) return;</span>
+        try {
+<span class="nc" id="L701">            spn.setValue((int) Double.parseDouble(valor));</span>
+<span class="nc" id="L702">        } catch (Exception ignored) {</span>
+<span class="nc" id="L703">        }</span>
+<span class="nc" id="L704">    }</span>
+
+    private List&lt;String&gt; split(String csv) {
+<span class="nc" id="L707">        List&lt;String&gt; out = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L708" title="All 4 branches missed.">        if (csv == null || csv.isBlank()) return out;</span>
+<span class="nc bnc" id="L709" title="All 2 branches missed.">        for (String s : csv.split(&quot;,&quot;)) {</span>
+<span class="nc" id="L710">            s = s.trim();</span>
+<span class="nc bnc" id="L711" title="All 2 branches missed.">            if (!s.isEmpty()) out.add(s);</span>
+        }
+<span class="nc" id="L713">        return out;</span>
+    }
+
+    private void cargar() {
+<span class="nc" id="L717">        spnHoras.setValue(config.getHorasJornadaDia());</span>
+<span class="nc" id="L718">        int minDia = (int) (config.getHorasJornadaDia() * 60);</span>
+<span class="nc" id="L719">        long ms = config.getMsPorMinuto();</span>
+<span class="nc bnc" id="L720" title="All 2 branches missed.">        int seg = minDia &gt; 0 ? (int) (ms * minDia / 1000L) : 30;</span>
+<span class="nc" id="L721">        spnReal.setValue(Math.max(5, Math.min(seg, 600)));</span>
+<span class="nc" id="L722">        spnMaxSoc.setValue(config.getMaxSociosDia());</span>
+<span class="nc" id="L723">        spnIntv.setValue(config.getIntervaloMinutos());</span>
+<span class="nc" id="L724">        spnHIni.setValue(config.getHoraInicio());</span>
+<span class="nc" id="L725">        spnHAlmFin.setValue(config.getHoraAlmuerzoFin());</span>
+<span class="nc" id="L726">        spnHRean.setValue(config.getHoraReanudacion());</span>
+<span class="nc" id="L727">        spnHFin.setValue(config.getHoraFin());</span>
+<span class="nc" id="L728">        chkPartida.setSelected(config.isJornadaPartida());</span>
+<span class="nc" id="L729">        spnGen.setValue(config.getCajasGenerales());</span>
+<span class="nc" id="L730">        spnPlat.setValue(config.getCajasPlataforma());</span>
+<span class="nc" id="L731">        spnMM.setValue(config.getCajasMM());</span>
+
+<span class="nc" id="L733">        Map&lt;LocalDate, Boolean&gt; dias = config.getDiasLaborables();</span>
+<span class="nc bnc" id="L734" title="All 4 branches missed.">        if (dias != null &amp;&amp; !dias.isEmpty()) panelCalendario.setEstadoDias(dias);</span>
+
+<span class="nc" id="L736">        modeloTabla.setRowCount(0);</span>
+<span class="nc bnc" id="L737" title="All 2 branches missed.">        for (ServicioFinanciero s : servicios)</span>
+<span class="nc" id="L738">            modeloTabla.addRow(new Object[]{s.getId(), s.getNombre(), s.getTipoCajaRequerido(),</span>
+<span class="nc" id="L739">                    s.getDuracionMinima(), s.getDuracionMaxima(),</span>
+<span class="nc" id="L740">                    s.getMontoMinimo(), s.getMontoMaximo(), s.getTasaInteres(), s.isActivo()});</span>
+
+<span class="nc" id="L742">        reconstruirSliders();</span>
+<span class="nc" id="L743">        actualizarDiasLabel();</span>
+<span class="nc" id="L744">    }</span>
+
+    private void guardar() {
+<span class="nc" id="L747">        double horas = (double) spnHoras.getValue();</span>
+<span class="nc" id="L748">        int real = (int) spnReal.getValue();</span>
+<span class="nc" id="L749">        int minDia = (int) (horas * 60);</span>
+<span class="nc bnc" id="L750" title="All 4 branches missed.">        msPorMin = (minDia &gt; 0 &amp;&amp; real &gt; 0) ? Math.max(1L, (long) real * 1000L / minDia) : 62L;</span>
+
+<span class="nc" id="L752">        config.setHorasJornadaDia(horas);</span>
+<span class="nc" id="L753">        config.setMsPorMinuto(msPorMin);</span>
+<span class="nc" id="L754">        config.setMaxSociosDia((int) spnMaxSoc.getValue());</span>
+<span class="nc" id="L755">        config.setIntervaloMinutos((double) spnIntv.getValue());</span>
+<span class="nc" id="L756">        config.setHoraInicio((int) spnHIni.getValue());</span>
+<span class="nc" id="L757">        config.setHoraAlmuerzoFin((int) spnHAlmFin.getValue());</span>
+<span class="nc" id="L758">        config.setHoraReanudacion((int) spnHRean.getValue());</span>
+<span class="nc" id="L759">        config.setHoraFin((int) spnHFin.getValue());</span>
+<span class="nc" id="L760">        config.setJornadaPartida(chkPartida.isSelected());</span>
+<span class="nc" id="L761">        config.setCajasGenerales((int) spnGen.getValue());</span>
+<span class="nc" id="L762">        config.setCajasPlataforma((int) spnPlat.getValue());</span>
+<span class="nc" id="L763">        config.setCajasMM((int) spnMM.getValue());</span>
+
+<span class="nc bnc" id="L765" title="All 2 branches missed.">        for (Map.Entry&lt;String, Object[]&gt; entry : slidersPorCodigo.entrySet()) {</span>
+<span class="nc" id="L766">            JSlider sl = (JSlider) entry.getValue()[0];</span>
+<span class="nc" id="L767">            double prob = sl.getValue() / 100.0;</span>
+<span class="nc" id="L768">            config.setProbCodigo(entry.getKey(), prob);</span>
+<span class="nc" id="L769">        }</span>
+<span class="nc" id="L770">        config.normalizarProbabilidades();</span>
+
+<span class="nc" id="L772">        config.setDiasLaborables(new LinkedHashMap&lt;&gt;(panelCalendario.getEstadoDias()));</span>
+<span class="nc" id="L773">        config.setDiasASimular(Math.max(1, panelCalendario.getDiasLaborables()));</span>
+
+<span class="nc" id="L775">        servicios.clear();</span>
+<span class="nc bnc" id="L776" title="All 2 branches missed.">        for (int i = 0; i &lt; modeloTabla.getRowCount(); i++) {</span>
+<span class="nc" id="L777">            ServicioFinanciero s = new ServicioFinanciero();</span>
+<span class="nc" id="L778">            s.setId((String) modeloTabla.getValueAt(i, 0));</span>
+<span class="nc" id="L779">            s.setNombre((String) modeloTabla.getValueAt(i, 1));</span>
+<span class="nc" id="L780">            s.setTipoCajaRequerido((String) modeloTabla.getValueAt(i, 2));</span>
+<span class="nc" id="L781">            s.setDuracionMinima((Integer) modeloTabla.getValueAt(i, 3));</span>
+<span class="nc" id="L782">            s.setDuracionMaxima((Integer) modeloTabla.getValueAt(i, 4));</span>
+<span class="nc" id="L783">            s.setMontoMinimo((Double) modeloTabla.getValueAt(i, 5));</span>
+<span class="nc" id="L784">            s.setMontoMaximo((Double) modeloTabla.getValueAt(i, 6));</span>
+<span class="nc" id="L785">            s.setTasaInteres((Double) modeloTabla.getValueAt(i, 7));</span>
+<span class="nc" id="L786">            s.setActivo((Boolean) modeloTabla.getValueAt(i, 8));</span>
+<span class="nc" id="L787">            servicios.add(s);</span>
+        }
+<span class="nc" id="L789">        configMulti = new ConfiguracionMultiServicio(0.25, 4, 3);</span>
+<span class="nc" id="L790">        config.guardar();</span>
+<span class="nc" id="L791">        confirmado = true;</span>
+<span class="nc" id="L792">        modoCalibradoGuardado = rbCalibrado.isSelected();</span>
+<span class="nc" id="L793">    }</span>
+
+    private void actualizarEscala() {
+<span class="nc" id="L796">        double h = (double) spnHoras.getValue();</span>
+<span class="nc" id="L797">        int r = (int) spnReal.getValue();</span>
+<span class="nc" id="L798">        int m = (int) (h * 60);</span>
+<span class="nc bnc" id="L799" title="All 4 branches missed.">        long ms = m &gt; 0 &amp;&amp; r &gt; 0 ? Math.max(1L, (long) r * 1000L / m) : 62L;</span>
+<span class="nc" id="L800">        lblEscala.setText(ms + &quot; ms/min \u2192 &quot; + h + &quot;h en &quot; + r + &quot; seg reales&quot;);</span>
+<span class="nc bnc" id="L801" title="All 2 branches missed.">        lblEscala.setForeground(ms &lt; 20 ? Color.RED : new Color(0, 110, 0));</span>
+<span class="nc" id="L802">        actualizarDiasLabel();</span>
+<span class="nc" id="L803">    }</span>
+
+    private void actualizarDiasLabel() {
+<span class="nc" id="L806">        int d = panelCalendario.getDiasLaborables();</span>
+<span class="nc" id="L807">        lblDias.setText(d + &quot; d\u00edas seleccionados&quot;);</span>
+<span class="nc bnc" id="L808" title="All 2 branches missed.">        lblDias.setForeground(d == 0 ? Color.RED : new Color(0, 100, 0));</span>
+<span class="nc" id="L809">    }</span>
+
+    private void actualizarHorario() {
+<span class="nc" id="L812">        int ini = (int) spnHIni.getValue(), af = (int) spnHAlmFin.getValue();</span>
+<span class="nc" id="L813">        int re = (int) spnHRean.getValue(), fin = (int) spnHFin.getValue();</span>
+<span class="nc" id="L814">        boolean pt = chkPartida.isSelected();</span>
+<span class="nc bnc" id="L815" title="All 2 branches missed.">        lblHorario.setText(pt ? String.format(&quot;%02d:%02d\u2013%02d:%02d \u2615 %02d:%02d\u2013%02d:%02d | %d min&quot;,</span>
+<span class="nc" id="L816">                ini / 60, ini % 60, af / 60, af % 60, re / 60, re % 60, fin / 60, fin % 60, (af - ini) + (fin - re))</span>
+<span class="nc" id="L817">                : String.format(&quot;%02d:%02d\u2013%02d:%02d | %d min&quot;, ini / 60, ini % 60, fin / 60, fin % 60, fin - ini));</span>
+<span class="nc" id="L818">        lblHorario.setForeground(new Color(0, 100, 0));</span>
+<span class="nc" id="L819">    }</span>
+
+    private void actualizarTotal() {
+<span class="nc" id="L822">        int t = (int) spnGen.getValue() + (int) spnPlat.getValue() + (int) spnMM.getValue();</span>
+<span class="nc" id="L823">        lblTot.setText(&quot;Total de cajas: &quot; + t);</span>
+<span class="nc" id="L824">    }</span>
+
+    private List&lt;ServicioFinanciero&gt; crearServiciosPorDefecto() {
+<span class="nc" id="L827">        List&lt;ServicioFinanciero&gt; l = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L828">        l.add(svc(&quot;SVC-C1&quot;, &quot;Socios Ahorro/Cr\u00e9dito&quot;, &quot;C&quot;, 3, 15, 500, 200000, 0.0));</span>
+<span class="nc" id="L829">        l.add(svc(&quot;SVC-A1&quot;, &quot;Socios Semapa (Agua)&quot;, &quot;A&quot;, 2, 12, 30, 200, 0.0));</span>
+<span class="nc" id="L830">        l.add(svc(&quot;SVC-S1&quot;, &quot;Socios Elfec-Comteco-Semapa&quot;, &quot;S&quot;, 2, 15, 20, 300, 0.0));</span>
+<span class="nc" id="L831">        l.add(svc(&quot;SVC-F1&quot;, &quot;Socios Fraccionamiento&quot;, &quot;F&quot;, 4, 30, 200, 5000, 0.0));</span>
+<span class="nc" id="L832">        l.add(svc(&quot;SVC-P1&quot;, &quot;Socios Plataforma&quot;, &quot;P&quot;, 1, 10, 50, 500, 0.0));</span>
+<span class="nc" id="L833">        l.add(svc(&quot;SVC-R1&quot;, &quot;Renta Dignidad&quot;, &quot;R&quot;, 2, 15, 250, 250, 0.0));</span>
+<span class="nc" id="L834">        l.add(svc(&quot;SVC-PC1&quot;, &quot;Preferente Ahorro-Cr\u00e9dito&quot;, &quot;PC&quot;, 1, 8, 500, 200000, 0.0));</span>
+<span class="nc" id="L835">        l.add(svc(&quot;SVC-PS1&quot;, &quot;Preferente Elfec-Comteco-Semapa&quot;, &quot;PS&quot;, 1, 8, 20, 300, 0.0));</span>
+<span class="nc" id="L836">        l.add(svc(&quot;SVC-PA1&quot;, &quot;Preferente Semapa&quot;, &quot;PA&quot;, 1, 8, 30, 200, 0.0));</span>
+<span class="nc" id="L837">        l.add(svc(&quot;SVC-PP1&quot;, &quot;Preferente Plataforma&quot;, &quot;PP&quot;, 1, 8, 50, 500, 0.0));</span>
+<span class="nc" id="L838">        l.forEach(s -&gt; s.setActivo(true));</span>
+<span class="nc" id="L839">        return l;</span>
+    }
+
+    private ServicioFinanciero svc(String id, String n, String t, int dm, int dx, double mm, double mx, double ta) {
+<span class="nc" id="L843">        return new ServicioFinanciero(id, n, t, dm, dx, mm, mx, ta, 0.1);</span>
+    }
+
+    public boolean isConfirmado() {
+<span class="nc" id="L847">        return confirmado;</span>
+    }
+
+    public long getMsPorMinuto() {
+<span class="nc" id="L851">        return msPorMin;</span>
+    }
+
+    public ConfiguracionMultiServicio getConfigMulti() {
+<span class="nc" id="L855">        return configMulti;</span>
+    }
+
+    public List&lt;ServicioFinanciero&gt; getServicios() {
+<span class="nc" id="L859">        return servicios;</span>
+    }
+
+    public ConfiguracionCooperativa getConfig() {
+<span class="nc" id="L863">        return config;</span>
+    }
+
+    public PanelCalendario getCalendario() {
+<span class="nc" id="L867">        return panelCalendario;</span>
+    }
+
+    public CalibracionMensual getUltimaCalibracion() {
+<span class="nc" id="L871">        System.out.println(&quot;&gt;&gt;&gt; [Dialogo] getUltimaCalibracion() -&gt; &quot; +</span>
+<span class="nc bnc" id="L872" title="All 2 branches missed.">                (ultimaCalibracion != null ? ultimaCalibracion.getRegistros().size() + &quot; registros&quot; : &quot;null&quot;));</span>
+<span class="nc" id="L873">        return ultimaCalibracion;</span>
+    }
+
+    public boolean isModoCalibradoGuardado() {
+<span class="nc" id="L877">        return modoCalibradoGuardado;</span>
+    }
+
+    public List&lt;JornadaLaboral&gt; getJornadas() {
+<span class="nc" id="L881">        return panelCalendario.generarJornadas(</span>
+<span class="nc" id="L882">                (int) spnHIni.getValue(), (int) spnHAlmFin.getValue(),</span>
+<span class="nc" id="L883">                (int) spnHRean.getValue(), (int) spnHFin.getValue(),</span>
+<span class="nc" id="L884">                chkPartida.isSelected());</span>
+    }
+
+    private static JPanel gbp() {
+<span class="nc" id="L888">        JPanel p = new JPanel(new GridBagLayout());</span>
+<span class="nc" id="L889">        p.setBorder(BorderFactory.createEmptyBorder(12, 20, 12, 20));</span>
+<span class="nc" id="L890">        return p;</span>
+    }
+
+    private static GridBagConstraints gbc() {
+<span class="nc" id="L894">        GridBagConstraints c = new GridBagConstraints();</span>
+<span class="nc" id="L895">        c.insets = new Insets(5, 6, 5, 6);</span>
+<span class="nc" id="L896">        c.anchor = GridBagConstraints.WEST;</span>
+<span class="nc" id="L897">        c.fill = GridBagConstraints.HORIZONTAL;</span>
+<span class="nc" id="L898">        return c;</span>
+    }
+
+    private static void fila(JPanel p, GridBagConstraints c, int r, String l, JComponent comp, String tip) {
+<span class="nc" id="L902">        c.gridx = 0;</span>
+<span class="nc" id="L903">        c.gridy = r;</span>
+<span class="nc" id="L904">        c.weightx = 0.42;</span>
+<span class="nc" id="L905">        p.add(new JLabel(l), c);</span>
+<span class="nc" id="L906">        c.gridx = 1;</span>
+<span class="nc" id="L907">        c.weightx = 0.58;</span>
+<span class="nc" id="L908">        comp.setToolTipText(tip);</span>
+<span class="nc" id="L909">        p.add(comp, c);</span>
+<span class="nc" id="L910">    }</span>
+
+    private static JSpinner spnMin(int v) {
+<span class="nc" id="L913">        return new JSpinner(new SpinnerNumberModel(v, 0, 1439, 30));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

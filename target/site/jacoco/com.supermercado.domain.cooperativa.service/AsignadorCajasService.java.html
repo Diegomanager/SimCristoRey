@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AsignadorCajasService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.domain.cooperativa.service</a> &gt; <span class="el_source">AsignadorCajasService.java</span></div><h1>AsignadorCajasService.java</h1><pre class="source lang-java linenums">package com.supermercado.domain.cooperativa.service;
+
+import com.supermercado.domain.cooperativa.model.Caja;
+import com.supermercado.domain.cooperativa.model.EstadoCaja;
+import com.supermercado.domain.cooperativa.model.Socio;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+<span class="nc" id="L12">public class AsignadorCajasService {</span>
+
+    public Optional&lt;Caja&gt; asignar(Socio socio, List&lt;Caja&gt; cajas) {
+<span class="nc bnc" id="L15" title="All 6 branches missed.">        if (socio == null || cajas == null || cajas.isEmpty()) return Optional.empty();</span>
+<span class="nc bnc" id="L16" title="All 2 branches missed.">        String dest = socio.getTipoCajaDestino() != null ? socio.getTipoCajaDestino() : &quot;GENERAL&quot;;</span>
+
+<span class="nc bnc" id="L18" title="All 3 branches missed.">        return switch (dest) {</span>
+<span class="nc" id="L19">            case &quot;PLATAFORMA&quot; -&gt; buscarCaja(cajas, &quot;PLATAFORMA&quot;);</span>
+            case &quot;MM&quot; -&gt; {
+<span class="nc" id="L21">                Optional&lt;Caja&gt; mm = buscarCaja(cajas, &quot;MM&quot;);</span>
+<span class="nc bnc" id="L22" title="All 2 branches missed.">                yield mm.isPresent() ? mm : buscarCaja(cajas, &quot;GENERAL&quot;);</span>
+            }
+<span class="nc" id="L24">            default -&gt; cajas.stream()</span>
+<span class="nc bnc" id="L25" title="All 4 branches missed.">                    .filter(c -&gt; c.isActiva() &amp;&amp; c.getEstado() == EstadoCaja.LIBRE</span>
+<span class="nc bnc" id="L26" title="All 4 branches missed.">                            &amp;&amp; (tipoCaja(c).equals(&quot;GENERAL&quot;) || tipoCaja(c).equals(&quot;MM&quot;)))</span>
+<span class="nc" id="L27">                    .min(Comparator.comparingInt(Caja::getTotalAtendidos));</span>
+        };
+    }
+
+    private Optional&lt;Caja&gt; buscarCaja(List&lt;Caja&gt; cajas, String tipo) {
+<span class="nc" id="L32">        return cajas.stream()</span>
+<span class="nc bnc" id="L33" title="All 4 branches missed.">                .filter(c -&gt; c.isActiva() &amp;&amp; c.getEstado() == EstadoCaja.LIBRE</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">                        &amp;&amp; tipoCaja(c).equals(tipo))</span>
+<span class="nc" id="L35">                .min(Comparator.comparingInt(Caja::getTotalAtendidos));</span>
+    }
+
+    private String tipoCaja(Caja c) {
+<span class="nc bnc" id="L39" title="All 2 branches missed.">        if (c.getTipo() == null) return &quot;GENERAL&quot;;</span>
+<span class="nc" id="L40">        return c.getTipo().getId().toUpperCase();</span>
+    }
+
+    public boolean confirmarAsignacion(Socio socio, Caja caja, long tiempoActual) {
+<span class="nc bnc" id="L44" title="All 6 branches missed.">        if (socio == null || caja == null || caja.getEstado() != EstadoCaja.LIBRE) return false;</span>
+<span class="nc" id="L45">        caja.asignarSocio(socio, tiempoActual);</span>
+<span class="nc" id="L46">        socio.setTiempoInicioAtencion(tiempoActual);</span>
+<span class="nc" id="L47">        return true;</span>
+    }
+
+    public List&lt;Caja&gt; cajasDisponibles(List&lt;Caja&gt; cajas) {
+<span class="nc" id="L51">        return cajas.stream()</span>
+<span class="nc bnc" id="L52" title="All 4 branches missed.">                .filter(c -&gt; c.isActiva() &amp;&amp; c.getEstado() == EstadoCaja.LIBRE)</span>
+<span class="nc" id="L53">                .sorted(Comparator.comparingInt(Caja::getTotalAtendidos))</span>
+<span class="nc" id="L54">                .collect(Collectors.toList());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

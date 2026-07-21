@@ -31,23 +31,31 @@ public class HistorialImportadorAdapter implements IHistorialImportador {
     };
 
     private static final Map<String, String> MAPA_CODIGOS = new HashMap<>();
+
     static {
-        MAPA_CODIGOS.put("1-0", "C");  MAPA_CODIGOS.put("1-1", "PC");
-        MAPA_CODIGOS.put("2-0", "P");  MAPA_CODIGOS.put("2-1", "PP");
-        MAPA_CODIGOS.put("3-0", "S");  MAPA_CODIGOS.put("3-1", "PS");
-        MAPA_CODIGOS.put("4-0", "A");  MAPA_CODIGOS.put("4-1", "PA");
-        MAPA_CODIGOS.put("5-0", "F");  MAPA_CODIGOS.put("5-1", "F");
-        MAPA_CODIGOS.put("6-0", "R");  MAPA_CODIGOS.put("6-1", "R");
+        MAPA_CODIGOS.put("1-0", "C");
+        MAPA_CODIGOS.put("1-1", "PC");
+        MAPA_CODIGOS.put("2-0", "P");
+        MAPA_CODIGOS.put("2-1", "PP");
+        MAPA_CODIGOS.put("3-0", "S");
+        MAPA_CODIGOS.put("3-1", "PS");
+        MAPA_CODIGOS.put("4-0", "A");
+        MAPA_CODIGOS.put("4-1", "PA");
+        MAPA_CODIGOS.put("5-0", "F");
+        MAPA_CODIGOS.put("5-1", "F");
+        MAPA_CODIGOS.put("6-0", "R");
+        MAPA_CODIGOS.put("6-1", "R");
     }
 
     private static final Map<String, String> NOMBRES = new LinkedHashMap<>();
+
     static {
-        NOMBRES.put("C",  "Socios Ahorro/Credito");
-        NOMBRES.put("A",  "Socios Semapa (Agua)");
-        NOMBRES.put("S",  "Socios Elfec-Comteco-Semapa");
-        NOMBRES.put("F",  "Socios Fraccionamiento");
-        NOMBRES.put("P",  "Socios Plataforma");
-        NOMBRES.put("R",  "Renta Dignidad");
+        NOMBRES.put("C", "Socios Ahorro/Credito");
+        NOMBRES.put("A", "Socios Semapa (Agua)");
+        NOMBRES.put("S", "Socios Elfec-Comteco-Semapa");
+        NOMBRES.put("F", "Socios Fraccionamiento");
+        NOMBRES.put("P", "Socios Plataforma");
+        NOMBRES.put("R", "Renta Dignidad");
         NOMBRES.put("PC", "Preferente Ahorro-Credito");
         NOMBRES.put("PS", "Preferente Elfec-Comteco-Semapa");
         NOMBRES.put("PA", "Preferente Semapa");
@@ -55,17 +63,18 @@ public class HistorialImportadorAdapter implements IHistorialImportador {
     }
 
     private static final Map<String, double[]> MONTOS_DEFECTO = new HashMap<>();
+
     static {
-        MONTOS_DEFECTO.put("C",  new double[]{500,    200000});
-        MONTOS_DEFECTO.put("A",  new double[]{30,     200});
-        MONTOS_DEFECTO.put("S",  new double[]{20,     300});
-        MONTOS_DEFECTO.put("F",  new double[]{200,    5000});
-        MONTOS_DEFECTO.put("P",  new double[]{50,     500});
-        MONTOS_DEFECTO.put("R",  new double[]{250,    250});
-        MONTOS_DEFECTO.put("PC", new double[]{500,    200000});
-        MONTOS_DEFECTO.put("PS", new double[]{20,     300});
-        MONTOS_DEFECTO.put("PA", new double[]{30,     200});
-        MONTOS_DEFECTO.put("PP", new double[]{50,     500});
+        MONTOS_DEFECTO.put("C", new double[]{500, 200000});
+        MONTOS_DEFECTO.put("A", new double[]{30, 200});
+        MONTOS_DEFECTO.put("S", new double[]{20, 300});
+        MONTOS_DEFECTO.put("F", new double[]{200, 5000});
+        MONTOS_DEFECTO.put("P", new double[]{50, 500});
+        MONTOS_DEFECTO.put("R", new double[]{250, 250});
+        MONTOS_DEFECTO.put("PC", new double[]{500, 200000});
+        MONTOS_DEFECTO.put("PS", new double[]{20, 300});
+        MONTOS_DEFECTO.put("PA", new double[]{30, 200});
+        MONTOS_DEFECTO.put("PP", new double[]{50, 500});
     }
 
     @Override
@@ -88,11 +97,11 @@ public class HistorialImportadorAdapter implements IHistorialImportador {
             }
 
             Row header = sh.getRow(0);
-            int colId     = indiceColumna(header, "id_tipo_servicio");
-            int colPref   = indiceColumna(header, "es_preferencial");
+            int colId = indiceColumna(header, "id_tipo_servicio");
+            int colPref = indiceColumna(header, "es_preferencial");
             int colInicio = indiceColumna(header, "hora_inicio_atencion");
-            int colFin    = indiceColumna(header, "hora_fin_atencion");
-            int colFecha  = indiceColumna(header, "fecha_creacion");
+            int colFin = indiceColumna(header, "hora_fin_atencion");
+            int colFecha = indiceColumna(header, "fecha_creacion");
             colFechaExiste = colFecha >= 0;
 
             if (colId < 0 || colPref < 0 || colInicio < 0 || colFin < 0) {
@@ -111,10 +120,11 @@ public class HistorialImportadorAdapter implements IHistorialImportador {
                     Integer idTipo = leerEntero(fila.getCell(colId));
                     Integer esPref = leerEntero(fila.getCell(colPref));
                     LocalTime inicio = leerHora(fila.getCell(colInicio));
-                    LocalTime fin    = leerHora(fila.getCell(colFin));
+                    LocalTime fin = leerHora(fila.getCell(colFin));
 
                     if (idTipo == null || esPref == null || inicio == null || fin == null) {
-                        filasIgnoradas++; continue;
+                        filasIgnoradas++;
+                        continue;
                     }
 
                     long minutos = Duration.between(inicio, fin).toMinutes();
@@ -123,7 +133,10 @@ public class HistorialImportadorAdapter implements IHistorialImportador {
 
                     String clave = idTipo + "-" + (esPref != 0 ? "1" : "0");
                     String codigo = MAPA_CODIGOS.get(clave);
-                    if (codigo == null) { filasIgnoradas++; continue; }
+                    if (codigo == null) {
+                        filasIgnoradas++;
+                        continue;
+                    }
 
                     duracionesPorCodigo.computeIfAbsent(codigo, k -> new ArrayList<>()).add((int) minutos);
                     totalFichas++;
@@ -203,7 +216,7 @@ public class HistorialImportadorAdapter implements IHistorialImportador {
             }
         }
 
-        // Ordenar registros por fecha y hora, para que el replay procese en orden real
+        // Ordenar registros por fecha y hora
         registros.sort(Comparator.comparing(RegistroAtencion::getFecha)
                 .thenComparing(RegistroAtencion::getHoraLlegada));
 
@@ -212,6 +225,12 @@ public class HistorialImportadorAdapter implements IHistorialImportador {
                 + " | MaxSocios/dia: " + maxSociosDia
                 + " | Intervalo: " + String.format(Locale.ROOT, "%.2f", intervaloPromedio) + " min"
                 + " | Registros para replay: " + registros.size());
+
+        // Mostrar conteo por día para depuración
+        System.out.println(">>> [Importar] Registros por d\u00eda:");
+        for (Map.Entry<LocalDate, Integer> entry : sociosPorDia.entrySet()) {
+            System.out.println("    " + entry.getKey() + ": " + entry.getValue());
+        }
 
         return new CalibracionMensual(servicios, probabilidades, totalFichas, filasIgnoradas,
                 colFechaExiste && !instantesPorDia.isEmpty(),
@@ -234,7 +253,8 @@ public class HistorialImportadorAdapter implements IHistorialImportador {
         try {
             if (c.getCellType() == CellType.NUMERIC) return (int) c.getNumericCellValue();
             if (c.getCellType() == CellType.STRING) return Integer.parseInt(c.getStringCellValue().trim());
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         return null;
     }
 
@@ -247,10 +267,14 @@ public class HistorialImportadorAdapter implements IHistorialImportador {
             if (c.getCellType() == CellType.STRING) {
                 String texto = c.getStringCellValue().trim();
                 for (DateTimeFormatter f : FORMATOS_HORA) {
-                    try { return LocalTime.parse(texto, f); } catch (Exception ignored) {}
+                    try {
+                        return LocalTime.parse(texto, f);
+                    } catch (Exception ignored) {
+                    }
                 }
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         return null;
     }
 
@@ -263,10 +287,14 @@ public class HistorialImportadorAdapter implements IHistorialImportador {
             if (c.getCellType() == CellType.STRING) {
                 String texto = c.getStringCellValue().trim();
                 for (DateTimeFormatter f : FORMATOS_FECHA_HORA) {
-                    try { return LocalDateTime.parse(texto, f); } catch (Exception ignored) {}
+                    try {
+                        return LocalDateTime.parse(texto, f);
+                    } catch (Exception ignored) {
+                    }
                 }
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         return null;
     }
 }

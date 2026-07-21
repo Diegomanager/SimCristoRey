@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TeoriaColasService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.domain.supermercado.service</a> &gt; <span class="el_source">TeoriaColasService.java</span></div><h1>TeoriaColasService.java</h1><pre class="source lang-java linenums">package com.supermercado.domain.supermercado.service;
+
+import com.supermercado.domain.supermercado.model.Recomendacion;
+
+<span class="fc" id="L5">public class TeoriaColasService {</span>
+    
+<span class="fc" id="L7">    public static class MetricasColas {</span>
+        public double lambda;
+        public double mu;
+        public int c;
+        public double rho;
+        public double L;
+        public double Lq;
+        public double W;
+        public double Wq;
+        public double p0;
+        
+        @Override
+        public String toString() {
+<span class="pc bpc" id="L20" title="1 of 2 branches missed.">            String estado = rho &gt;= 1 ? &quot;SATURADO&quot; : &quot;ESTABLE&quot;;</span>
+<span class="fc" id="L21">            return String.format(</span>
+                &quot;METRICAS DE TEORIA DE COLAS (M/M/%d):\n&quot; +
+                &quot;  lambda (llegada): %.2f clientes/hora\n&quot; +
+                &quot;  mu (servicio): %.2f clientes/hora\n&quot; +
+                &quot;  rho (utilizacion): %.2f%% (%s)\n&quot; +
+                &quot;  L (en sistema): %.2f clientes\n&quot; +
+                &quot;  Lq (en cola): %.2f clientes\n&quot; +
+                &quot;  W (en sistema): %.2f min\n&quot; +
+                &quot;  Wq (en cola): %.2f min\n&quot; +
+                &quot;  P0 (sistema vacio): %.2f%%&quot;,
+<span class="fc" id="L31">                c, lambda, mu, rho * 100, estado,</span>
+<span class="fc" id="L32">                L, Lq, W * 60, Wq * 60, p0 * 100</span>
+            );
+        }
+    }
+    
+    public MetricasColas calcularMetricas(double lambda, double mu, int c) {
+<span class="fc" id="L38">        MetricasColas metrics = new MetricasColas();</span>
+<span class="fc" id="L39">        metrics.lambda = lambda;</span>
+<span class="fc" id="L40">        metrics.mu = mu;</span>
+<span class="fc" id="L41">        metrics.c = c;</span>
+<span class="fc" id="L42">        metrics.rho = lambda / (c * mu);</span>
+        
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        if (metrics.rho &gt;= 1) {</span>
+<span class="fc" id="L45">            metrics.L = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L46">            metrics.Lq = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L47">            metrics.W = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L48">            metrics.Wq = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L49">            metrics.p0 = 0;</span>
+<span class="fc" id="L50">            return metrics;</span>
+        }
+        
+<span class="fc" id="L53">        double sum = 0;</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        for (int i = 0; i &lt; c; i++) {</span>
+<span class="fc" id="L55">            sum += Math.pow(lambda/mu, i) / factorial(i);</span>
+        }
+<span class="fc" id="L57">        sum += Math.pow(lambda/mu, c) / (factorial(c) * (1 - metrics.rho));</span>
+<span class="fc" id="L58">        metrics.p0 = 1 / sum;</span>
+        
+<span class="fc" id="L60">        metrics.Lq = (metrics.p0 * Math.pow(lambda/mu, c) * metrics.rho) /</span>
+<span class="fc" id="L61">                    (factorial(c) * Math.pow(1 - metrics.rho, 2));</span>
+<span class="fc" id="L62">        metrics.L = metrics.Lq + metrics.rho;</span>
+<span class="fc" id="L63">        metrics.Wq = metrics.Lq / lambda;</span>
+<span class="fc" id="L64">        metrics.W = metrics.Wq + (1 / mu);</span>
+        
+<span class="fc" id="L66">        return metrics;</span>
+    }
+    
+    private long factorial(int n) {
+<span class="fc" id="L70">        long result = 1;</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        for (int i = 2; i &lt;= n; i++) {</span>
+<span class="fc" id="L72">            result *= i;</span>
+        }
+<span class="fc" id="L74">        return result;</span>
+    }
+    
+    public Recomendacion generarRecomendacionTeoriaColas(MetricasColas metrics) {
+        String mensaje;
+        String prioridad;
+        String configSugerida;
+<span class="fc" id="L81">        double mejora = 0;</span>
+        
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        if (metrics.rho &gt;= 1) {</span>
+<span class="fc" id="L84">            prioridad = &quot;CRITICO&quot;;</span>
+<span class="fc" id="L85">            mensaje = String.format(</span>
+                &quot;EL SISTEMA ESTA SATURADO!\n&quot; +
+                &quot;  Factor de utilizacion: %.1f%% (DEBE ser &lt; 100%%)\n&quot; +
+                &quot;  Se necesitan mas cajas urgentemente\n&quot; +
+                &quot;  Recomendacion: Aumentar a %d cajas totales&quot;,
+<span class="fc" id="L90">                metrics.rho * 100,</span>
+<span class="fc" id="L91">                (int)(Math.ceil(metrics.lambda / metrics.mu) + 1)</span>
+            );
+<span class="fc" id="L93">            configSugerida = &quot;Aumentar cajas a &quot; + </span>
+<span class="fc" id="L94">                (int)(Math.ceil(metrics.lambda / metrics.mu) + 1);</span>
+<span class="fc" id="L95">            mejora = 30;</span>
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">        } else if (metrics.rho &gt; 0.8) {</span>
+<span class="nc" id="L97">            prioridad = &quot;ALTO&quot;;</span>
+<span class="nc" id="L98">            mensaje = String.format(</span>
+                &quot;SISTEMA CERCA DE SATURACION!\n&quot; +
+                &quot;  Factor de utilizacion: %.1f%%\n&quot; +
+                &quot;  Cola promedio: %.1f clientes\n&quot; +
+                &quot;  Tiempo espera: %.1f min\n&quot; +
+                &quot;  Recomendacion: Considerar aumentar cajas&quot;,
+<span class="nc" id="L104">                metrics.rho * 100,</span>
+<span class="nc" id="L105">                metrics.Lq,</span>
+<span class="nc" id="L106">                metrics.Wq * 60</span>
+            );
+<span class="nc" id="L108">            configSugerida = &quot;Considerar agregar 1 caja&quot;;</span>
+<span class="nc" id="L109">            mejora = 15;</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">        } else if (metrics.rho &lt; 0.5) {</span>
+<span class="nc" id="L111">            prioridad = &quot;MEDIO&quot;;</span>
+<span class="nc" id="L112">            mensaje = String.format(</span>
+                &quot;SISTEMA SUBUTILIZADO\n&quot; +
+                &quot;  Factor de utilizacion: %.1f%%\n&quot; +
+                &quot;  Cola promedio: %.1f clientes\n&quot; +
+                &quot;  Tiempo espera: %.1f min\n&quot; +
+                &quot;  Recomendacion: Reducir cajas para optimizar costos&quot;,
+<span class="nc" id="L118">                metrics.rho * 100,</span>
+<span class="nc" id="L119">                metrics.Lq,</span>
+<span class="nc" id="L120">                metrics.Wq * 60</span>
+            );
+<span class="nc" id="L122">            configSugerida = &quot;Reducir cajas en 1 unidad&quot;;</span>
+<span class="nc" id="L123">            mejora = 5;</span>
+        } else {
+<span class="fc" id="L125">            prioridad = &quot;NORMAL&quot;;</span>
+<span class="fc" id="L126">            mensaje = String.format(</span>
+                &quot;SISTEMA OPTIMO!\n&quot; +
+                &quot;  Factor de utilizacion: %.1f%% (rango ideal)\n&quot; +
+                &quot;  Cola promedio: %.1f clientes\n&quot; +
+                &quot;  Tiempo espera: %.1f min\n&quot; +
+                &quot;  Mantener configuracion actual&quot;,
+<span class="fc" id="L132">                metrics.rho * 100,</span>
+<span class="fc" id="L133">                metrics.Lq,</span>
+<span class="fc" id="L134">                metrics.Wq * 60</span>
+            );
+<span class="fc" id="L136">            configSugerida = &quot;Mantener configuracion actual&quot;;</span>
+<span class="fc" id="L137">            mejora = 0;</span>
+        }
+        
+<span class="fc" id="L140">        return new Recomendacion(mensaje, prioridad, configSugerida, mejora, false);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

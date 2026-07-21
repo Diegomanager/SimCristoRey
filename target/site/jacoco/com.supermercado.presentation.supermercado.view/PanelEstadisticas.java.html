@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PanelEstadisticas.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.presentation.supermercado.view</a> &gt; <span class="el_source">PanelEstadisticas.java</span></div><h1>PanelEstadisticas.java</h1><pre class="source lang-java linenums">package com.supermercado.presentation.supermercado.view;
+
+import javax.swing.*;
+import javax.swing.border.*;
+import java.awt.*;
+
+public class PanelEstadisticas extends JPanel {
+
+    private static final long serialVersionUID = 1L;
+
+    private JLabel lblHora;
+    private JLabel lblAtendidos;
+    private JLabel lblEnCola;
+    private JLabel lblGenerados;
+    private JLabel lblArticulos;
+    private JLabel lblPromedio;
+    private JLabel lblCajeroEstrella;
+
+<span class="nc" id="L19">    private static final Font F_LABEL = new Font(&quot;Segoe UI&quot;, Font.PLAIN, 12);</span>
+<span class="nc" id="L20">    private static final Font F_VALOR = new Font(&quot;Segoe UI&quot;, Font.BOLD,  12);</span>
+<span class="nc" id="L21">    private static final Font F_SEC   = new Font(&quot;Segoe UI&quot;, Font.BOLD,  11);</span>
+<span class="nc" id="L22">    private static final Color C_LABEL = new Color(80,  80,  80);</span>
+<span class="nc" id="L23">    private static final Color C_VALOR = new Color(25,  25,  25);</span>
+<span class="nc" id="L24">    private static final Color C_SEC   = new Color(41,  98, 155);</span>
+
+<span class="nc" id="L26">    public PanelEstadisticas() {</span>
+<span class="nc" id="L27">        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));</span>
+<span class="nc" id="L28">        setBackground(Color.WHITE);</span>
+<span class="nc" id="L29">        setOpaque(true);</span>
+<span class="nc" id="L30">        setBorder(BorderFactory.createEmptyBorder(12, 16, 12, 16));</span>
+<span class="nc" id="L31">        construir();</span>
+<span class="nc" id="L32">    }</span>
+
+    private void construir() {
+<span class="nc" id="L35">        add(crearEncabezadoSeccion(&quot;Tiempo&quot;));</span>
+<span class="nc" id="L36">        add(crearFila(&quot;Hora simulada:&quot;, lblHora = crearValor(&quot;08:00&quot;)));</span>
+<span class="nc" id="L37">        add(Box.createVerticalStrut(10));</span>
+
+<span class="nc" id="L39">        add(crearEncabezadoSeccion(&quot;Clientes&quot;));</span>
+<span class="nc" id="L40">        add(crearFila(&quot;Atendidos:&quot;,     lblAtendidos = crearValor(&quot;0&quot;)));</span>
+<span class="nc" id="L41">        add(crearFila(&quot;En cola ahora:&quot;, lblEnCola    = crearValor(&quot;0&quot;)));</span>
+<span class="nc" id="L42">        add(crearFila(&quot;Generados:&quot;,     lblGenerados = crearValor(&quot;0&quot;)));</span>
+<span class="nc" id="L43">        add(Box.createVerticalStrut(10));</span>
+
+<span class="nc" id="L45">        add(crearEncabezadoSeccion(&quot;Ventas&quot;));</span>
+<span class="nc" id="L46">        add(crearFila(&quot;Articulos vendidos:&quot;, lblArticulos = crearValor(&quot;0&quot;)));</span>
+<span class="nc" id="L47">        add(crearFila(&quot;Prom. atencion:&quot;,     lblPromedio  = crearValor(&quot;0.0 min&quot;)));</span>
+<span class="nc" id="L48">        add(Box.createVerticalStrut(10));</span>
+
+<span class="nc" id="L50">        add(crearEncabezadoSeccion(&quot;Rendimiento&quot;));</span>
+<span class="nc" id="L51">        add(crearFila(&quot;Cajero estrella:&quot;, lblCajeroEstrella = crearValor(&quot;-&quot;)));</span>
+<span class="nc" id="L52">    }</span>
+
+    private JPanel crearEncabezadoSeccion(String texto) {
+<span class="nc" id="L55">        JPanel p = new JPanel(new BorderLayout(6, 0));</span>
+<span class="nc" id="L56">        p.setBackground(Color.WHITE);</span>
+<span class="nc" id="L57">        p.setAlignmentX(Component.LEFT_ALIGNMENT);</span>
+<span class="nc" id="L58">        p.setMaximumSize(new Dimension(Integer.MAX_VALUE, 20));</span>
+<span class="nc" id="L59">        p.setBorder(BorderFactory.createEmptyBorder(2, 0, 4, 0));</span>
+<span class="nc" id="L60">        JLabel lbl = new JLabel(texto.toUpperCase());</span>
+<span class="nc" id="L61">        lbl.setFont(F_SEC);</span>
+<span class="nc" id="L62">        lbl.setForeground(C_SEC);</span>
+<span class="nc" id="L63">        p.add(lbl, BorderLayout.WEST);</span>
+<span class="nc" id="L64">        JSeparator sep = new JSeparator();</span>
+<span class="nc" id="L65">        sep.setForeground(new Color(210, 218, 230));</span>
+<span class="nc" id="L66">        p.add(sep, BorderLayout.CENTER);</span>
+<span class="nc" id="L67">        return p;</span>
+    }
+
+    private JPanel crearFila(String labelTxt, JLabel valorLbl) {
+<span class="nc" id="L71">        JPanel fila = new JPanel(new BorderLayout());</span>
+<span class="nc" id="L72">        fila.setBackground(Color.WHITE);</span>
+<span class="nc" id="L73">        fila.setAlignmentX(Component.LEFT_ALIGNMENT);</span>
+<span class="nc" id="L74">        fila.setMaximumSize(new Dimension(Integer.MAX_VALUE, 26));</span>
+<span class="nc" id="L75">        fila.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));</span>
+<span class="nc" id="L76">        JLabel lbl = new JLabel(labelTxt);</span>
+<span class="nc" id="L77">        lbl.setFont(F_LABEL);</span>
+<span class="nc" id="L78">        lbl.setForeground(C_LABEL);</span>
+<span class="nc" id="L79">        fila.add(lbl,     BorderLayout.WEST);</span>
+<span class="nc" id="L80">        fila.add(valorLbl, BorderLayout.EAST);</span>
+<span class="nc" id="L81">        return fila;</span>
+    }
+
+    private JLabel crearValor(String texto) {
+<span class="nc" id="L85">        JLabel lbl = new JLabel(texto);</span>
+<span class="nc" id="L86">        lbl.setFont(F_VALOR);</span>
+<span class="nc" id="L87">        lbl.setForeground(C_VALOR);</span>
+<span class="nc" id="L88">        lbl.setHorizontalAlignment(SwingConstants.RIGHT);</span>
+<span class="nc" id="L89">        return lbl;</span>
+    }
+
+    /**
+     * Normaliza una cadena de hora &quot;HH:mm&quot; para que nunca supere 23:59.
+     * Si el servicio manda &quot;31:57&quot; la convierte a &quot;07:57&quot; (31 mod 24 = 7).
+     */
+    private String normalizarHora(String hora) {
+<span class="nc bnc" id="L97" title="All 4 branches missed.">        if (hora == null || hora.isEmpty()) return &quot;08:00&quot;;</span>
+        try {
+<span class="nc" id="L99">            String[] partes = hora.split(&quot;:&quot;);</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">            if (partes.length != 2) return hora;</span>
+<span class="nc" id="L101">            int h = Integer.parseInt(partes[0]);</span>
+<span class="nc" id="L102">            int m = Integer.parseInt(partes[1]);</span>
+<span class="nc" id="L103">            h = h % 24;</span>
+<span class="nc" id="L104">            return String.format(&quot;%02d:%02d&quot;, h, m);</span>
+<span class="nc" id="L105">        } catch (NumberFormatException e) {</span>
+<span class="nc" id="L106">            return hora;</span>
+        }
+    }
+
+    public void actualizarEstadisticasAvanzadas(
+            String hora, int atendidos, int articulos, int enCola,
+            int generados, double promedio, String cajeroEstrella) {
+
+<span class="nc" id="L114">        SwingUtilities.invokeLater(() -&gt; {</span>
+<span class="nc" id="L115">            lblHora.setText(normalizarHora(hora));</span>
+<span class="nc" id="L116">            lblAtendidos.setText(String.valueOf(atendidos));</span>
+<span class="nc" id="L117">            lblArticulos.setText(String.valueOf(articulos));</span>
+<span class="nc" id="L118">            lblEnCola.setText(String.valueOf(enCola));</span>
+<span class="nc" id="L119">            lblGenerados.setText(String.valueOf(generados));</span>
+<span class="nc" id="L120">            lblPromedio.setText(String.format(&quot;%.1f min&quot;, promedio));</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">            lblCajeroEstrella.setText(cajeroEstrella != null ? cajeroEstrella : &quot;-&quot;);</span>
+
+<span class="nc bnc" id="L123" title="All 2 branches missed.">            lblEnCola.setForeground(enCola &gt; 20 ? Theme.ALERT_RED</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">                : enCola &gt; 10 ? Theme.WARNING_YELLOW</span>
+<span class="nc" id="L125">                : new Color(25, 25, 25));</span>
+
+<span class="nc" id="L127">            revalidate(); repaint();</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">            if (getParent() != null) {</span>
+<span class="nc" id="L129">                getParent().revalidate();</span>
+<span class="nc" id="L130">                getParent().repaint();</span>
+            }
+<span class="nc" id="L132">        });</span>
+<span class="nc" id="L133">    }</span>
+
+    public void reiniciar() {
+<span class="nc" id="L136">        actualizarEstadisticasAvanzadas(&quot;08:00&quot;, 0, 0, 0, 0, 0.0, &quot;-&quot;);</span>
+<span class="nc" id="L137">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

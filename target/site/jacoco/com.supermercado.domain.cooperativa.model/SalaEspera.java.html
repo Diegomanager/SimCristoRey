@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SalaEspera.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.domain.cooperativa.model</a> &gt; <span class="el_source">SalaEspera.java</span></div><h1>SalaEspera.java</h1><pre class="source lang-java linenums">package com.supermercado.domain.cooperativa.model;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
+<span class="nc" id="L8">public class SalaEspera {</span>
+<span class="nc" id="L9">    private final Queue&lt;Socio&gt; colaPreferentes = new LinkedList&lt;&gt;();</span>
+<span class="nc" id="L10">    private final Queue&lt;Socio&gt; colaNormales    = new LinkedList&lt;&gt;();</span>
+<span class="nc" id="L11">    private int totalAtendidos = 0;</span>
+
+    public void agregarSocio(Socio s) {
+<span class="nc bnc" id="L14" title="All 2 branches missed.">        if (s == null) return;</span>
+<span class="nc bnc" id="L15" title="All 2 branches missed.">        if (s.isEsPreferente()) colaPreferentes.offer(s);</span>
+<span class="nc" id="L16">        else                    colaNormales.offer(s);</span>
+<span class="nc" id="L17">    }</span>
+
+    public Socio verSiguiente() {
+<span class="nc bnc" id="L20" title="All 2 branches missed.">        if (!colaPreferentes.isEmpty()) return colaPreferentes.peek();</span>
+<span class="nc" id="L21">        return colaNormales.peek();</span>
+    }
+
+    public Socio siguienteSocio() {
+<span class="nc bnc" id="L25" title="All 2 branches missed.">        if (!colaPreferentes.isEmpty()) return colaPreferentes.poll();</span>
+<span class="nc" id="L26">        return colaNormales.poll();</span>
+    }
+
+<span class="nc bnc" id="L29" title="All 4 branches missed.">    public boolean isEmpty() { return colaPreferentes.isEmpty() &amp;&amp; colaNormales.isEmpty(); }</span>
+<span class="nc" id="L30">    public int getTotalEsperando() { return colaPreferentes.size() + colaNormales.size(); }</span>
+<span class="nc" id="L31">    public int getTotalPreferentesEsperando() { return colaPreferentes.size(); }</span>
+<span class="nc" id="L32">    public int getTotalNormalesEsperando()     { return colaNormales.size(); }</span>
+
+<span class="nc" id="L34">    public void incrementarAtendidos() { totalAtendidos++; }</span>
+<span class="nc" id="L35">    public int  getTotalAtendidos()    { return totalAtendidos; }</span>
+
+    public void reiniciar() {
+<span class="nc" id="L38">        colaPreferentes.clear(); colaNormales.clear(); totalAtendidos = 0;</span>
+<span class="nc" id="L39">    }</span>
+
+    public List&lt;Socio&gt; getSocios() {
+<span class="nc" id="L42">        List&lt;Socio&gt; lista = new ArrayList&lt;&gt;(colaPreferentes);</span>
+<span class="nc" id="L43">        lista.addAll(colaNormales);</span>
+<span class="nc" id="L44">        return lista;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

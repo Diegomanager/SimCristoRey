@@ -1,5 +1,6 @@
 package com.supermercado.presentation.cooperativa.view;
 
+import com.supermercado.application.cooperativa.dto.CalibracionMensual;
 import com.supermercado.application.cooperativa.port.IReporteExportador;
 import com.supermercado.application.cooperativa.usecase.ExportarReporteUseCase;
 import com.supermercado.domain.cooperativa.config.ConfiguracionCooperativa;
@@ -57,6 +58,11 @@ public class SimuladorCooperativaFrame extends JFrame {
     private int contadorDiaLaboral      = 0;
     private String fechaActual          = "";
 
+    // NUEVO: cuando esta en true, fecha/hora/progreso se toman directo del
+    // replay (mensual.getFechaEnCurso()/getTotalDiasReplay()), sin pasar por
+    // jornadasActuales. El modo Manual NO usa este flag, sigue igual que siempre.
+    private boolean modoReplayActivo = false;
+
     private final Timer timerUI = new Timer(400, e -> refrescarUI());
 
     public SimuladorCooperativaFrame() {
@@ -70,6 +76,7 @@ public class SimuladorCooperativaFrame extends JFrame {
         mensual.setPreguntarRezagadosHabilitado(true);
         configurarVentana();
         timerUI.start();
+        actualizarBarraProgreso();
     }
 
     private void initUI() {
@@ -138,8 +145,10 @@ public class SimuladorCooperativaFrame extends JFrame {
                 case SIMULACION_INICIADA -> {
                     lblEstado.setText("Corriendo");
                     lblEstado.setForeground(new Color(0, 130, 0));
-                    btnIniciar.setEnabled(false); btnPausar.setEnabled(true);
-                    btnDetener.setEnabled(true);  btnReiniciar.setEnabled(false);
+                    btnIniciar.setEnabled(false);
+                    btnPausar.setEnabled(true);
+                    btnDetener.setEnabled(true);
+                    btnReiniciar.setEnabled(false);
                     btnExportar.setEnabled(false);
                 }
 
@@ -167,28 +176,34 @@ public class SimuladorCooperativaFrame extends JFrame {
                 }
 
                 case DIA_INICIADO -> {
-                    int diaDelMes = mensual.getDiaEnCurso();
-                    boolean esLaborable = jornadasActuales.stream()
-                            .anyMatch(j -> j.getDia() == diaDelMes && j.isLaborable());
-                    if (esLaborable) {
+                    if (modoReplayActivo) {
+                        // NUEVO: fecha/progreso REALES del replay, sin pasar por jornadasActuales
                         contadorDiaLaboral++;
-                        for (JornadaLaboral j : jornadasActuales) {
-                            if (j.getDia() == diaDelMes && j.isLaborable()) {
-                                String nombreCompleto = j.getNombreCompleto();
-                                if (nombreCompleto.contains("(") && nombreCompleto.contains(")")) {
-                                    fechaActual = nombreCompleto.substring(nombreCompleto.indexOf("(") + 1,
-                                            nombreCompleto.indexOf(")"));
-                                } else {
-                                    fechaActual = nombreCompleto;
+                        java.time.LocalDate f = mensual.getFechaEnCurso();
+                        fechaActual = f != null ? f.toString() : "";
+                        totalDiasLaborables = mensual.getTotalDiasReplay();
+                    } else {
+                        // ==================== MODO MANUAL (sin cambios) ====================
+                        int diaDelMes = mensual.getDiaEnCurso();
+                        boolean esLaborable = jornadasActuales.stream()
+                                .anyMatch(j -> j.getDia() == diaDelMes && j.isLaborable());
+                        if (esLaborable) {
+                            contadorDiaLaboral++;
+                            for (JornadaLaboral j : jornadasActuales) {
+                                if (j.getDia() == diaDelMes && j.isLaborable()) {
+                                    String nombreCompleto = j.getNombreCompleto();
+                                    if (nombreCompleto.contains("(") && nombreCompleto.contains(")")) {
+                                        fechaActual = nombreCompleto.substring(nombreCompleto.indexOf("(") + 1,
+                                                nombreCompleto.indexOf(")"));
+                                    } else {
+                                        fechaActual = nombreCompleto;
+                                    }
+                                    break;
                                 }
-                                break;
                             }
                         }
                     }
-                    progDia.setMaximum(Math.max(1, totalDiasLaborables));
-                    progDia.setValue(contadorDiaLaboral);
-                    progDia.setString(contadorDiaLaboral + "/" + totalDiasLaborables);
-
+                    actualizarBarraProgreso();
                     lblEstado.setText("D\u00eda " + contadorDiaLaboral);
                     lblEstado.setForeground(new Color(0, 130, 0));
                     panelStats.limpiarResumen();
@@ -205,11 +220,12 @@ public class SimuladorCooperativaFrame extends JFrame {
                     finalizado = true;
                     lblEstado.setText("Finalizado");
                     lblEstado.setForeground(new Color(0, 0, 180));
-                    btnIniciar.setEnabled(false); btnPausar.setEnabled(false);
-                    btnDetener.setEnabled(false); btnReiniciar.setEnabled(true);
+                    btnIniciar.setEnabled(false);
+                    btnPausar.setEnabled(false);
+                    btnDetener.setEnabled(false);
+                    btnReiniciar.setEnabled(true);
                     btnExportar.setEnabled(true);
-                    progDia.setValue(totalDiasLaborables);
-                    progDia.setString(totalDiasLaborables + "/" + totalDiasLaborables);
+                    actualizarBarraProgreso();
                     panelEvol.mostrarTotalesYRefrescar();
                     panelStats.mostrarResumenFinal(motor, minutosSimTotales);
                     javax.swing.SwingUtilities.invokeLater(() -> panelEvol.reconstruirTabla());
@@ -220,8 +236,10 @@ public class SimuladorCooperativaFrame extends JFrame {
                     lblEstado.setForeground(Color.DARK_GRAY);
                     if (!finalizado && motor.getGenerador().getTotalGenerados() > 0)
                         panelStats.mostrarResumenFinal(motor, minutosSimTotales);
-                    btnIniciar.setEnabled(true); btnPausar.setEnabled(false);
-                    btnPausar.setText("Pausar"); btnDetener.setEnabled(false);
+                    btnIniciar.setEnabled(false);
+                    btnPausar.setEnabled(false);
+                    btnPausar.setText("Pausar");
+                    btnDetener.setEnabled(false);
                     btnReiniciar.setEnabled(true);
                     boolean hayDatos = !motor.getEstadisticas().getResumenesDiarios().isEmpty();
                     btnExportar.setEnabled(hayDatos);
@@ -230,10 +248,13 @@ public class SimuladorCooperativaFrame extends JFrame {
                 case SIMULACION_REINICIADA -> {
                     lblEstado.setText("Reiniciado");
                     lblEstado.setForeground(Color.DARK_GRAY);
-                    btnIniciar.setEnabled(true); btnPausar.setEnabled(false);
-                    btnPausar.setText("Pausar"); btnDetener.setEnabled(false);
+                    btnIniciar.setEnabled(true);
+                    btnPausar.setEnabled(false);
+                    btnPausar.setText("Pausar");
+                    btnDetener.setEnabled(false);
                     btnReiniciar.setEnabled(false);
                     btnExportar.setEnabled(false);
+                    actualizarBarraProgreso();
                 }
 
                 default -> {}
@@ -246,7 +267,6 @@ public class SimuladorCooperativaFrame extends JFrame {
         boolean activo = motor.isCorriendo() || motor.isFasePrincipalFinalizada() || mensual.isCorriendo();
         if (!activo) return;
 
-        // Obtener hora directamente desde getTiempoReloj() (minutos desde 00:00)
         long minutos = motor.getTiempoReloj();
         int h = (int)(minutos / 60);
         int m = (int)(minutos % 60);
@@ -263,13 +283,32 @@ public class SimuladorCooperativaFrame extends JFrame {
         lblInfo.setText("D\u00eda " + contadorDiaLaboral + ", Hora: " + horaFormateada + ", " + real + ", " + fecha);
 
         if (motor.isCorriendo() || motor.isFasePrincipalFinalizada()) {
-            progDia.setValue(contadorDiaLaboral);
-            progDia.setString(contadorDiaLaboral + "/" + totalDiasLaborables);
+            actualizarBarraProgreso();
         }
 
         if (motor.getSalaEspera() != null) panelSala.actualizar(motor.getSalaEspera());
         if (motor.getCajas() != null)      panelVentanillas.actualizar(motor.getCajas(), motor.getTiempoReloj());
         panelStats.actualizar(motor.getEstadisticas(), motor.getGenerador().getTotalGenerados());
+    }
+
+    private void actualizarBarraProgreso() {
+        if (modoReplayActivo) {
+            // NUEVO: total real de dias del replay (calculado del historial)
+            totalDiasLaborables = mensual.getTotalDiasReplay();
+        } else {
+            totalDiasLaborables = (int) jornadasActuales.stream()
+                    .filter(JornadaLaboral::isLaborable).count();
+        }
+        if (totalDiasLaborables > 0) {
+            progDia.setMaximum(totalDiasLaborables);
+            progDia.setValue(Math.min(contadorDiaLaboral, totalDiasLaborables));
+            progDia.setString(contadorDiaLaboral + "/" + totalDiasLaborables);
+        } else {
+            progDia.setMaximum(1);
+            progDia.setValue(0);
+            progDia.setString("0/0");
+        }
+        progDia.repaint();
     }
 
     private void iniciarSimulacion() {
@@ -283,17 +322,21 @@ public class SimuladorCooperativaFrame extends JFrame {
         panelStats.limpiarResumen(); panelEvol.reiniciar();
         motor.getEstadisticas().reiniciarCompleto();
 
-        cajasActuales    = crearCajasDesdeConfig();
-        jornadasActuales = config.generarJornadas();
-        panelVentanillas.setCajas(cajasActuales);
+        // Solo recalcular el calendario MANUAL si no estamos en modo replay
+        // (en modo replay, el calendario del dialogo se uso para calibrar,
+        // pero las jornadas reales las arma SimuladorMensualService por dentro).
+        if (!modoReplayActivo) {
+            cajasActuales    = crearCajasDesdeConfig();
+            jornadasActuales = config.generarJornadas();
+            panelVentanillas.setCajas(cajasActuales);
+        } else {
+            cajasActuales = crearCajasDesdeConfig();
+            panelVentanillas.setCajas(cajasActuales);
+        }
 
-        totalDiasLaborables = (int) jornadasActuales.stream()
-                .filter(JornadaLaboral::isLaborable).count();
-        progDia.setMaximum(Math.max(1, totalDiasLaborables));
-        progDia.setValue(0);
-        progDia.setString("0/" + totalDiasLaborables);
+        actualizarBarraProgreso();
 
-        mensual.setPreguntarRezagadosHabilitado(totalDiasLaborables <= 1);
+        mensual.setPreguntarRezagadosHabilitado(false);
 
         motor.configurar(config.getMsPorMinuto(), config.getMaxSociosDia(),
                 config.getIntervaloMinutos(), serviciosActuales, cajasActuales,
@@ -328,14 +371,20 @@ public class SimuladorCooperativaFrame extends JFrame {
         finalizado = false; minutosSimTotales = 0;
         contadorDiaLaboral = 0; totalDiasLaborables = 0;
         fechaActual = "";
-        btnIniciar.setEnabled(true); btnPausar.setEnabled(false);
-        btnPausar.setText("Pausar"); btnDetener.setEnabled(false);
+        btnIniciar.setEnabled(true);
+        btnPausar.setEnabled(false);
+        btnPausar.setText("Pausar");
+        btnDetener.setEnabled(false);
         btnReiniciar.setEnabled(false);
         btnExportar.setEnabled(false);
-        lblEstado.setText("En espera"); lblEstado.setForeground(Color.DARK_GRAY);
+        lblEstado.setText("En espera");
+        lblEstado.setForeground(Color.DARK_GRAY);
         lblInfo.setText("D\u00eda 1, Hora: 08:30 am, Tiempo real: 0s, --");
         progDia.setValue(0); progDia.setString("-");
         panelStats.actualizar(motor.getEstadisticas(), 0);
+        motor.getEstadisticas().reiniciarCompleto();
+        motor.setSociosPredefinidos(null);
+        actualizarBarraProgreso();
     }
 
     private void abrirConfiguracion() {
@@ -356,12 +405,41 @@ public class SimuladorCooperativaFrame extends JFrame {
             panelVentanillas.setCajas(cajasActuales);
             panelLog.limpiar(); panelSala.limpiar();
             panelStats.limpiarResumen(); panelEvol.reiniciar();
+
+            finalizado = false;
+            contadorDiaLaboral = 0;
+            fechaActual = "";
+            minutosSimTotales = 0;
+            btnIniciar.setEnabled(true);
+            btnPausar.setEnabled(false);
+            btnPausar.setText("Pausar");
+            btnDetener.setEnabled(false);
+            btnReiniciar.setEnabled(false);
+            btnExportar.setEnabled(false);
+            motor.getEstadisticas().reiniciarCompleto();
+            motor.setSociosPredefinidos(null);
+
+            CalibracionMensual calib = dlg.getUltimaCalibracion();
+            boolean modoCalibrado = dlg.isModoCalibradoGuardado();
+            modoReplayActivo = modoCalibrado && calib != null;
+
+            if (modoReplayActivo) {
+                System.out.println(">>> [Frame] Modo Calibrado activo. Usando replay con " +
+                        calib.getRegistros().size() + " registros.");
+                mensual.setCalibracion(calib);
+            } else {
+                System.out.println(">>> [Frame] Modo Manual o sin calibraci\u00f3n. Se usar\u00e1 generador determinista.");
+                mensual.setCalibracion(null);
+            }
+
+            actualizarBarraProgreso();
+
             long labs = jornadasActuales.stream().filter(JornadaLaboral::isLaborable).count();
-            lblEstado.setText("Configurado - " + labs + " d\u00edas laborables");
+            String modoTexto = modoReplayActivo ? " (modo Calibrado/Replay)" : "";
+            lblEstado.setText("Configurado - " + labs + " d\u00edas laborables" + modoTexto);
         }
     }
 
-    // ── Exportacion unificada (Excel / PDF / TXT en un solo boton) ─────────────
     private void exportar() {
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("Exportar reporte");
@@ -434,7 +512,6 @@ public class SimuladorCooperativaFrame extends JFrame {
         }.execute();
     }
 
-    // Datos por defecto
     private List<ServicioFinanciero> crearServiciosFijos() {
         List<ServicioFinanciero> l = new ArrayList<>();
         l.add(svc("SVC-C1",  "Socios Ahorro/Cr\u00e9dito",           "C",  3,15,500,200000,0.0));

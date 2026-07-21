@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RecomendarMejoraUseCase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.application.supermercado.usecase</a> &gt; <span class="el_source">RecomendarMejoraUseCase.java</span></div><h1>RecomendarMejoraUseCase.java</h1><pre class="source lang-java linenums">package com.supermercado.application.supermercado.usecase;
+
+import com.supermercado.domain.supermercado.model.Caja;
+import com.supermercado.domain.supermercado.model.Configuracion;
+import com.supermercado.domain.supermercado.model.Recomendacion;
+import com.supermercado.domain.supermercado.service.DiagnosticoService;
+import com.supermercado.domain.supermercado.service.OptimizadorService;
+import com.supermercado.application.supermercado.dto.RecomendacionDTO;
+import java.util.List;
+
+public class RecomendarMejoraUseCase {
+    
+    private final DiagnosticoService diagnosticoService;
+    private final OptimizadorService optimizadorService;
+    
+<span class="fc" id="L16">    public RecomendarMejoraUseCase() {</span>
+<span class="fc" id="L17">        this.diagnosticoService = new DiagnosticoService();</span>
+<span class="fc" id="L18">        this.optimizadorService = new OptimizadorService();</span>
+<span class="fc" id="L19">    }</span>
+    
+    public RecomendacionDTO ejecutar(List&lt;Caja&gt; cajas, Configuracion configuracion) {
+        // 1. Diagnosticar
+<span class="fc" id="L23">        List&lt;DiagnosticoService.Diagnostico&gt; diagnosticos = </span>
+<span class="fc" id="L24">            diagnosticoService.diagnosticar(cajas);</span>
+        
+        // 2. Generar recomendación general
+<span class="fc" id="L27">        Recomendacion recomendacionGeneral = </span>
+<span class="fc" id="L28">            diagnosticoService.generarRecomendacionGeneral(diagnosticos);</span>
+        
+        // 3. Contar críticos
+<span class="fc" id="L31">        long criticos = diagnosticos.stream()</span>
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">            .filter(d -&gt; d.getNivel() == DiagnosticoService.NivelAlerta.CRITICO)</span>
+<span class="fc" id="L33">            .count();</span>
+        
+        // 4. Si hay críticos, optimizar
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">        if (criticos &gt; 0) {</span>
+<span class="nc" id="L37">            List&lt;OptimizadorService.ResultadoOptimizacion&gt; resultados = </span>
+<span class="nc" id="L38">                optimizadorService.optimizar(configuracion, 10, 5);</span>
+            
+<span class="nc bnc" id="L40" title="All 2 branches missed.">            if (!resultados.isEmpty()) {</span>
+<span class="nc" id="L41">                OptimizadorService.ResultadoOptimizacion mejor = resultados.get(0);</span>
+                
+<span class="nc" id="L43">                String mensaje = recomendacionGeneral.getMensaje() + &quot;\n\n&quot; +</span>
+                    &quot;CONFIGURACION RECOMENDADA:\n&quot; +
+<span class="nc" id="L45">                    &quot;  Normales: &quot; + mejor.getNumCajasNormales() + &quot;\n&quot; +</span>
+<span class="nc" id="L46">                    &quot;  Rapidas: &quot; + mejor.getNumCajasRapidas() + &quot;\n&quot; +</span>
+<span class="nc" id="L47">                    &quot;  Mejora estimada: &quot; + String.format(&quot;%.1f&quot;, mejor.getMejoraPorcentaje()) + &quot;%&quot;;</span>
+                
+<span class="nc" id="L49">                return new RecomendacionDTO(</span>
+                    mensaje,
+                    &quot;CRITICO&quot;,
+<span class="nc" id="L52">                    mejor.getNumCajasNormales() + &quot; normales + &quot; + </span>
+<span class="nc" id="L53">                    mejor.getNumCajasRapidas() + &quot; rapidas&quot;,</span>
+<span class="nc" id="L54">                    mejor.getMejoraPorcentaje(),</span>
+                    false
+                );
+            }
+        }
+        
+        // 5. Sin críticos, devolver la recomendación general
+<span class="fc" id="L61">        return new RecomendacionDTO(</span>
+<span class="fc" id="L62">            recomendacionGeneral.getMensaje(),</span>
+<span class="fc" id="L63">            recomendacionGeneral.getPrioridad(),</span>
+<span class="fc" id="L64">            recomendacionGeneral.getConfiguracionSugerida(),</span>
+<span class="fc" id="L65">            recomendacionGeneral.getMejoraEstimada(),</span>
+            false
+        );
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

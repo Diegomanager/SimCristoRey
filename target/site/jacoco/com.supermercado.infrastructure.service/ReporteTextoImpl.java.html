@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReporteTextoImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.infrastructure.service</a> &gt; <span class="el_source">ReporteTextoImpl.java</span></div><h1>ReporteTextoImpl.java</h1><pre class="source lang-java linenums">package com.supermercado.infrastructure.service;
+
+import com.supermercado.application.supermercado.dto.EstadisticasDTO;
+import com.supermercado.application.supermercado.port.IReporteExportador;
+import com.supermercado.application.supermercado.port.ILogService;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+/**
+ * Adaptador de infraestructura: exporta estadisticas a un archivo de texto plano.
+ *
+ * Responsabilidad unica: serializar las estadisticas de simulacion
+ * a formato texto y persistirlas en el sistema de archivos.
+ *
+ * NOTA: El nombre anterior &quot;ReporteExcelImpl&quot; era enganoso porque
+ * la implementacion genera texto plano, no un archivo Excel (.xlsx).
+ * Se renombra a ReporteTextoImpl para reflejar la realidad.
+ */
+public class ReporteTextoImpl implements IReporteExportador {
+
+<span class="nc" id="L25">    private static final DateTimeFormatter FORMATO_FECHA =</span>
+<span class="nc" id="L26">        DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd HH:mm:ss&quot;);</span>
+
+    private final ILogService logService;
+
+<span class="nc" id="L30">    public ReporteTextoImpl(ILogService logService) {</span>
+<span class="nc" id="L31">        this.logService = logService;</span>
+<span class="nc" id="L32">    }</span>
+
+    @Override
+    public void exportar(EstadisticasDTO estadisticas, String rutaArchivo) {
+<span class="nc" id="L36">        validarParametros(estadisticas, rutaArchivo);</span>
+<span class="nc" id="L37">        escribirReporte(estadisticas, rutaArchivo);</span>
+<span class="nc" id="L38">    }</span>
+
+    private void validarParametros(EstadisticasDTO estadisticas, String rutaArchivo) {
+<span class="nc bnc" id="L41" title="All 2 branches missed.">        if (estadisticas == null) {</span>
+<span class="nc" id="L42">            throw new IllegalArgumentException(&quot;Las estadisticas no pueden ser nulas&quot;);</span>
+        }
+<span class="nc bnc" id="L44" title="All 4 branches missed.">        if (rutaArchivo == null || rutaArchivo.isBlank()) {</span>
+<span class="nc" id="L45">            throw new IllegalArgumentException(&quot;La ruta del archivo no puede estar vacia&quot;);</span>
+        }
+<span class="nc" id="L47">    }</span>
+
+    private void escribirReporte(EstadisticasDTO estadisticas, String rutaArchivo) {
+<span class="nc" id="L50">        try (PrintWriter writer = new PrintWriter(new FileWriter(rutaArchivo))) {</span>
+<span class="nc" id="L51">            writer.println(&quot;=== REPORTE DE SIMULACION ===&quot;);</span>
+<span class="nc" id="L52">            writer.println(&quot;Fecha: &quot; + LocalDateTime.now().format(FORMATO_FECHA));</span>
+<span class="nc" id="L53">            writer.println();</span>
+<span class="nc" id="L54">            writer.println(&quot;ESTADISTICAS GENERALES&quot;);</span>
+<span class="nc" id="L55">            writer.println(&quot;----------------------------------------&quot;);</span>
+<span class="nc" id="L56">            writer.println(&quot;Total clientes atendidos : &quot; + estadisticas.getTotalClientesAtendidos());</span>
+<span class="nc" id="L57">            writer.println(&quot;Total articulos vendidos : &quot; + estadisticas.getTotalArticulosVendidos());</span>
+<span class="nc" id="L58">            writer.println(&quot;Total minutos de atencion: &quot; + estadisticas.getTotalMinutosAtencion());</span>
+<span class="nc" id="L59">            writer.println(&quot;Clientes en cola         : &quot; + estadisticas.getClientesEnCola());</span>
+<span class="nc" id="L60">            writer.println(&quot;Cajero Estrella          : &quot; + estadisticas.getCajeroEstrella());</span>
+<span class="nc" id="L61">            writer.println(String.format(&quot;Tiempo promedio atencion : %.2f min&quot;,</span>
+<span class="nc" id="L62">                estadisticas.getTiempoPromedioAtencion()));</span>
+<span class="nc" id="L63">            writer.println(String.format(&quot;Articulos promedio       : %.2f&quot;,</span>
+<span class="nc" id="L64">                estadisticas.getArticulosPromedio()));</span>
+<span class="nc" id="L65">            writer.println(&quot;----------------------------------------&quot;);</span>
+
+<span class="nc" id="L67">            logService.info(&quot;Reporte exportado a: &quot; + rutaArchivo);</span>
+
+<span class="nc" id="L69">        } catch (IOException e) {</span>
+<span class="nc" id="L70">            logService.error(&quot;Error al exportar reporte a &quot; + rutaArchivo, e);</span>
+<span class="nc" id="L71">        }</span>
+<span class="nc" id="L72">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

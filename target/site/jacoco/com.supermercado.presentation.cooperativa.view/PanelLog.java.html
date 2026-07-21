@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PanelLog.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.presentation.cooperativa.view</a> &gt; <span class="el_source">PanelLog.java</span></div><h1>PanelLog.java</h1><pre class="source lang-java linenums">package com.supermercado.presentation.cooperativa.view;
+
+import com.supermercado.domain.cooperativa.event.EventoSimulacion;
+import com.supermercado.domain.cooperativa.event.TipoEvento;
+
+import javax.swing.*;
+import javax.swing.text.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+
+public class PanelLog extends JPanel {
+
+<span class="nc" id="L16">    private final List&lt;EventoSimulacion&gt; historial = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L17">    private final JTextPane  pane = new JTextPane();</span>
+    private final StyledDocument doc;
+<span class="nc" id="L19">    private final JLabel lblTotal = new JLabel(&quot;Eventos: 0&quot;);</span>
+
+<span class="nc" id="L21">    private static final Map&lt;TipoEvento, Color&gt; COLORES = new EnumMap&lt;&gt;(TipoEvento.class);</span>
+    static {
+<span class="nc" id="L23">        COLORES.put(TipoEvento.SOCIO_GENERADO,              new Color(30,100,200));</span>
+<span class="nc" id="L24">        COLORES.put(TipoEvento.SOCIO_ASIGNADO,              new Color(0,140,60));</span>
+<span class="nc" id="L25">        COLORES.put(TipoEvento.SOCIO_ATENDIDO,              new Color(0,170,80));</span>
+<span class="nc" id="L26">        COLORES.put(TipoEvento.SIMULACION_FINALIZADA,       new Color(200,0,0));</span>
+<span class="nc" id="L27">        COLORES.put(TipoEvento.FASE_REZAGADOS_INICIADA,     new Color(180,100,0));</span>
+<span class="nc" id="L28">        COLORES.put(TipoEvento.FASE_PRINCIPAL_FINALIZADA,   new Color(0,0,200));</span>
+<span class="nc" id="L29">        COLORES.put(TipoEvento.DIA_INICIADO,                new Color(120,0,180));</span>
+<span class="nc" id="L30">        COLORES.put(TipoEvento.DIA_FINALIZADO,              new Color(150,0,200));</span>
+<span class="nc" id="L31">        COLORES.put(TipoEvento.SIMULACION_MENSUAL_FINALIZADA, new Color(200,0,100));</span>
+<span class="nc" id="L32">        COLORES.put(TipoEvento.SIMULACION_PAUSADA,          Color.DARK_GRAY);</span>
+<span class="nc" id="L33">        COLORES.put(TipoEvento.SIMULACION_DETENIDA,         Color.DARK_GRAY);</span>
+<span class="nc" id="L34">        COLORES.put(TipoEvento.SIMULACION_INICIADA,         new Color(0,80,160));</span>
+<span class="nc" id="L35">        COLORES.put(TipoEvento.SIMULACION_REANUDADA,        new Color(0,80,160));</span>
+<span class="nc" id="L36">        COLORES.put(TipoEvento.SIMULACION_REINICIADA,       new Color(100,0,150));</span>
+<span class="nc" id="L37">    }</span>
+
+<span class="nc" id="L39">    public PanelLog() {</span>
+<span class="nc" id="L40">        setLayout(new BorderLayout(4,4));</span>
+<span class="nc" id="L41">        setBorder(BorderFactory.createTitledBorder(&quot;\uD83D\uDCCB Log de Eventos (Hora Simulada)&quot;));</span>
+
+<span class="nc" id="L43">        pane.setEditable(false);</span>
+<span class="nc" id="L44">        pane.setBackground(new Color(18,20,30));</span>
+<span class="nc" id="L45">        pane.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));</span>
+<span class="nc" id="L46">        doc = pane.getStyledDocument();</span>
+
+<span class="nc" id="L48">        JScrollPane scroll = new JScrollPane(pane);</span>
+<span class="nc" id="L49">        scroll.getVerticalScrollBar().setUnitIncrement(16);</span>
+<span class="nc" id="L50">        scroll.getVerticalScrollBar().setBlockIncrement(80);</span>
+<span class="nc" id="L51">        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);</span>
+
+<span class="nc" id="L53">        JButton btnLimpiar  = new JButton(&quot;Limpiar&quot;);</span>
+<span class="nc" id="L54">        JButton btnVerTodo  = new JButton(&quot;\u2193 Ir al final&quot;);</span>
+<span class="nc" id="L55">        JButton btnIrInicio = new JButton(&quot;\u2191 Ir al inicio&quot;);</span>
+<span class="nc" id="L56">        btnLimpiar.addActionListener(e -&gt; limpiar());</span>
+<span class="nc" id="L57">        btnVerTodo.addActionListener(e -&gt; pane.setCaretPosition(doc.getLength()));</span>
+<span class="nc" id="L58">        btnIrInicio.addActionListener(e -&gt; pane.setCaretPosition(0));</span>
+
+<span class="nc" id="L60">        lblTotal.setFont(new Font(&quot;SansSerif&quot;, Font.PLAIN, 11));</span>
+
+<span class="nc" id="L62">        JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 2));</span>
+<span class="nc" id="L63">        top.add(lblTotal);</span>
+<span class="nc" id="L64">        top.add(btnIrInicio);</span>
+<span class="nc" id="L65">        top.add(btnVerTodo);</span>
+<span class="nc" id="L66">        top.add(btnLimpiar);</span>
+
+<span class="nc" id="L68">        add(top,    BorderLayout.NORTH);</span>
+<span class="nc" id="L69">        add(scroll, BorderLayout.CENTER);</span>
+<span class="nc" id="L70">    }</span>
+
+    public void addEvento(EventoSimulacion ev) {
+<span class="nc" id="L73">        synchronized (historial) { historial.add(ev); }</span>
+
+<span class="nc" id="L75">        SwingUtilities.invokeLater(() -&gt; {</span>
+            try {
+<span class="nc" id="L77">                Color color = COLORES.getOrDefault(ev.getTipo(), Color.LIGHT_GRAY);</span>
+<span class="nc" id="L78">                SimpleAttributeSet a = new SimpleAttributeSet();</span>
+<span class="nc" id="L79">                StyleConstants.setForeground(a, color);</span>
+<span class="nc" id="L80">                StyleConstants.setFontFamily(a, Font.MONOSPACED);</span>
+<span class="nc" id="L81">                StyleConstants.setFontSize(a, 11);</span>
+
+<span class="nc bnc" id="L83" title="All 2 branches missed.">                boolean bold = switch (ev.getTipo()) {</span>
+                    case SIMULACION_FINALIZADA, FASE_PRINCIPAL_FINALIZADA,
+                         FASE_REZAGADOS_INICIADA, DIA_FINALIZADO,
+<span class="nc" id="L86">                         SIMULACION_MENSUAL_FINALIZADA, DIA_INICIADO -&gt; true;</span>
+<span class="nc" id="L87">                    default -&gt; false;</span>
+                };
+<span class="nc" id="L89">                StyleConstants.setBold(a, bold);</span>
+
+<span class="nc" id="L91">                doc.insertString(doc.getLength(), ev.toString() + &quot;\n&quot;, a);</span>
+
+                int total;
+<span class="nc" id="L94">                synchronized (historial) { total = historial.size(); }</span>
+<span class="nc" id="L95">                lblTotal.setText(&quot;Eventos: &quot; + total);</span>
+
+<span class="nc" id="L97">                JScrollBar bar = ((JScrollPane) getComponent(1)).getVerticalScrollBar();</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">                if (bar.getValue() &gt;= bar.getMaximum() - bar.getVisibleAmount() - 40) {</span>
+<span class="nc" id="L99">                    pane.setCaretPosition(doc.getLength());</span>
+                }
+<span class="nc" id="L101">            } catch (BadLocationException ignored) {}</span>
+<span class="nc" id="L102">        });</span>
+<span class="nc" id="L103">    }</span>
+
+    public void limpiar() {
+<span class="nc" id="L106">        SwingUtilities.invokeLater(() -&gt; {</span>
+            try {
+<span class="nc" id="L108">                doc.remove(0, doc.getLength());</span>
+<span class="nc" id="L109">                synchronized (historial) { historial.clear(); }</span>
+<span class="nc" id="L110">                lblTotal.setText(&quot;Eventos: 0&quot;);</span>
+<span class="nc" id="L111">            } catch (BadLocationException ignored) {}</span>
+<span class="nc" id="L112">        });</span>
+<span class="nc" id="L113">    }</span>
+
+    public int getTotalEventos() {
+<span class="nc" id="L116">        synchronized (historial) { return historial.size(); }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

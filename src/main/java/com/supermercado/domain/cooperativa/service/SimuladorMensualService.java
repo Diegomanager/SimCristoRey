@@ -29,8 +29,16 @@ public class SimuladorMensualService {
 
     private volatile boolean corriendo = false;
     private int diaEnCurso = 0;
+    private int contadorLaborable = 0;
 
-    private boolean       preguntarRezagadosHabilitado = false;
+    // NUEVO: informacion real del replay, para que el Frame no dependa de
+    // jornadasActuales (que es la lista del calendario MANUAL y puede
+    // desalinearse si algun dia del historial no tiene socios).
+    private volatile LocalDate fechaEnCurso = null;
+    private volatile int totalDiasReplay = 0;
+    private volatile boolean modoReplayActivo = false;
+
+    private boolean preguntarRezagadosHabilitado = false;
     private BooleanSupplier preguntaRezagados = () -> true;
 
     public SimuladorMensualService(SimuladorCooperativaService motor) {
@@ -41,38 +49,107 @@ public class SimuladorMensualService {
     public void configurar(ConfiguracionCooperativa cfg, List<JornadaLaboral> jornadas,
                            List<Caja> cajas, List<ServicioFinanciero> servicios,
                            ConfiguracionMultiServicio multi) {
-        this.config=cfg; this.jornadas=jornadas; this.cajas=cajas;
-        this.servicios=servicios; this.configMulti=multi;
+        this.config = cfg;
+        this.jornadas = jornadas;
+        this.cajas = cajas;
+        this.servicios = servicios;
+        this.configMulti = multi;
     }
 
-    public void setCalibracion(CalibracionMensual cal) { this.calibracion = cal; }
+    public void setCalibracion(CalibracionMensual cal) {
+        this.calibracion = cal;
+        // Actualizar flag de modo replay para que el Frame pueda consultarlo sin iniciar
+        this.modoReplayActivo = cal != null
+                && cal.isTieneFechas()
+                && cal.getRegistros() != null
+                && !cal.getRegistros().isEmpty();
+        System.out.println(">>> [Mensual] setCalibracion - modoReplayActivo=" + modoReplayActivo);
+    }
 
-    public void setPreguntaRezagados(BooleanSupplier fn)       { preguntaRezagados=fn; }
-    public void setPreguntarRezagadosHabilitado(boolean v)     { preguntarRezagadosHabilitado=v; }
+    public void setPreguntaRezagados(BooleanSupplier fn) { preguntaRezagados = fn; }
+    public void setPreguntarRezagadosHabilitado(boolean v) { preguntarRezagadosHabilitado = v; }
+
+    // NUEVO: getters para que el Frame refleje fecha/progreso reales del replay
+    public LocalDate getFechaEnCurso()   { return fechaEnCurso; }
+    public int        getTotalDiasReplay() { return totalDiasReplay; }
+    public boolean     isModoReplayActivo() { return modoReplayActivo; }
 
     public void iniciar() {
         if (corriendo) return;
-        corriendo=true; resumenes.clear();
-        Thread h=new Thread(this::bucle,"Motor-Mensual");
-        h.setDaemon(true); h.start();
+        corriendo = true;
+        resumenes.clear();
+        fechaEnCurso = null;
+        Thread h = new Thread(this::bucle, "Motor-Mensual");
+        h.setDaemon(true);
+        h.start();
     }
 
-    public void pausar()  { motor.pausar(); }
-    public void reanudar(){ motor.reanudar(); }
-
+    public void pausar() { motor.pausar(); }
+    public void reanudar() { motor.reanudar(); }
     public void detener() {
-        corriendo=false; motor.detener();
-        propagar(new EventoSimulacion(TipoEvento.SIMULACION_DETENIDA,"Detenida",""));
+        corriendo = false;
+        motor.detener();
+        propagar(new EventoSimulacion(TipoEvento.SIMULACION_DETENIDA, "Detenida", ""));
     }
 
     private void bucle() {
-        int contadorLaborable = 0;
-        int idxFechaCalibrada = 0;
+        contadorLaborable = 0;
+        fechaEnCurso = null;
+
         boolean hayReplay = calibracion != null
                 && calibracion.isTieneFechas()
                 && calibracion.getRegistros() != null
                 && !calibracion.getRegistros().isEmpty();
 
+        modoReplayActivo = hayReplay;
+
+        if (hayReplay && calibracion.getDiasLaborables() != null) {
+            totalDiasReplay = calibracion.getDiasLaborables().size();
+            System.out.println(">>> [Replay] Iniciando modo replay con " + totalDiasReplay + " dias.");
+
+            JornadaLaboral plantilla = jornadas.stream()
+                    .filter(JornadaLaboral::isLaborable)
+                    .findFirst()
+                    .orElse(null);
+
+            if (plantilla == null) {
+                System.err.println(">>> [Replay] ERROR: No hay jornadas laborables en el calendario (horario base).");
+                corriendo = false;
+                return;
+            }
+
+            int idxDia = 0;
+            for (LocalDate fechaReal : calibracion.getDiasLaborables()) {
+                if (!corriendo) break;
+
+                List<Socio> sociosDelDia = construirSociosDelDia(fechaReal);
+                if (sociosDelDia == null || sociosDelDia.isEmpty()) {
+                    System.out.println(">>> [Replay] Sin socios para " + fechaReal + ". Saltando.");
+                    continue;
+                }
+
+                System.out.println(">>> [Replay] Procesando " + fechaReal + " con " + sociosDelDia.size() + " socios.");
+
+                JornadaLaboral jornadaReal = new JornadaLaboral();
+                jornadaReal.setDia(++idxDia);
+                jornadaReal.setFechaReal(fechaReal);
+                jornadaReal.setLaborable(true);
+                for (BloqueHorario bh : plantilla.getBloques()) {
+                    jornadaReal.agregarBloque(new BloqueHorario(bh.getInicio(), bh.getFin()));
+                }
+
+                ejecutarDiaConSocios(jornadaReal, sociosDelDia, fechaReal);
+            }
+
+            System.out.println(">>> [Replay] Todos los dias del historial procesados.");
+            corriendo = false;
+            propagar(new EventoSimulacion(TipoEvento.SIMULACION_MENSUAL_FINALIZADA,
+                    "Replay completado - " + resumenes.size() + " dias procesados", ""));
+            return;
+        }
+
+        // ==================== MODO MANUAL (sin cambios) ====================
+        totalDiasReplay = 0;
         for (JornadaLaboral jornada : jornadas) {
             if (!corriendo) break;
             diaEnCurso = jornada.getDia();
@@ -84,77 +161,109 @@ public class SimuladorMensualService {
 
             contadorLaborable++;
             motor.setDiaSimulado(contadorLaborable);
-
             cajas.forEach(Caja::reiniciar);
             motor.configurar(config.getMsPorMinuto(), config.getMaxSociosDia(),
                     config.getIntervaloMinutos(), servicios, cajas, configMulti, config);
-
-            LocalDate fechaReal = null;
-            List<Socio> sociosPredefinidos = null;
-            if (hayReplay && idxFechaCalibrada < calibracion.getDiasLaborables().size()) {
-                fechaReal = calibracion.getDiasLaborables().get(idxFechaCalibrada);
-                idxFechaCalibrada++;
-                sociosPredefinidos = construirSociosDelDia(fechaReal);
-        System.out.println(">>> [Replay] Socios predefinidos para " + fechaReal + ": " + (sociosPredefinidos != null ? sociosPredefinidos.size() : 0));
-            }
-            motor.setSociosPredefinidos(sociosPredefinidos);
+            motor.setSociosPredefinidos(null);
 
             propagar(new EventoSimulacion(TipoEvento.DIA_INICIADO,
-                    "=== Dia " + contadorLaborable + " iniciado"
-                    + (fechaReal != null ? " (" + fechaReal + ")" : "") + " ===",
+                    "=== Dia " + contadorLaborable + " iniciado ===",
                     "Dia " + contadorLaborable));
 
             motor.iniciar(jornada, diaEnCurso);
             esperarCondicion(() -> motor.isFasePrincipalFinalizada());
             if (!corriendo) break;
 
-            int enSala = motor.getSalaEspera()!=null ? motor.getSalaEspera().getTotalEsperando():0;
-            int cajasOc= motor.getCajas()!=null
-                    ? (int)motor.getCajas().stream().filter(c->c.getEstado()==EstadoCaja.OCUPADA).count():0;
-            boolean hayRez = enSala>0 || cajasOc>0;
+            int enSala = motor.getSalaEspera() != null ? motor.getSalaEspera().getTotalEsperando() : 0;
+            int cajasOc = motor.getCajas() != null
+                    ? (int) motor.getCajas().stream().filter(c -> c.getEstado() == EstadoCaja.OCUPADA).count()
+                    : 0;
+            boolean hayRez = enSala > 0 || cajasOc > 0;
 
             if (hayRez) {
-                boolean iniciar = preguntarRezagadosHabilitado
-                        ? preguntaRezagados.getAsBoolean() : true;
+                boolean iniciar = preguntarRezagadosHabilitado ? preguntaRezagados.getAsBoolean() : true;
                 if (iniciar) {
                     motor.iniciarFaseRezagados();
                     esperarCondicion(() -> !motor.isCorriendo());
                 } else {
                     propagar(new EventoSimulacion(TipoEvento.SIMULACION_FINALIZADA,
-                            "Rezagados omitidos: " + enSala + " socios",
-                            motor.horaSimulada()));
+                            "Rezagados omitidos: " + enSala + " socios", motor.horaSimulada()));
                 }
             } else {
                 propagar(new EventoSimulacion(TipoEvento.SIMULACION_FINALIZADA,
-                        "Dia " + contadorLaborable + " finalizado (sin rezagados)",
-                        motor.horaSimulada()));
+                        "Dia " + contadorLaborable + " finalizado (sin rezagados)", motor.horaSimulada()));
             }
             if (!corriendo) break;
 
             ResumenDiario resumen = motor.construirResumenDia();
-            resumen.setFecha(fechaReal);
             resumenes.add(resumen);
             motor.getEstadisticas().registrarResumenDiario(resumen);
 
             propagar(new EventoSimulacion(TipoEvento.DIA_FINALIZADO,
-                    "Dia " + contadorLaborable
-                    + (fechaReal != null ? " (" + fechaReal + ")" : "")
-                    + " completo | Gen:" + resumen.getGenerados()
-                    + " | Atend:" + resumen.getTotalAtendidos()
-                    + " | Bs " + String.format("%.0f",resumen.getMontoTotal()),
+                    "Dia " + contadorLaborable + " completo | Gen:" + resumen.getGenerados()
+                            + " | Atend:" + resumen.getTotalAtendidos()
+                            + " | Bs " + String.format("%.0f", resumen.getMontoTotal()),
                     "Dia " + contadorLaborable));
 
             try { Thread.sleep(500); } catch (InterruptedException e) { break; }
         }
 
         if (corriendo) {
-            corriendo=false;
-            long labs  = resumenes.stream().filter(ResumenDiario::isLaborable).count();
-            int  atend = resumenes.stream().mapToInt(ResumenDiario::getTotalAtendidos).sum();
+            corriendo = false;
+            long labs = resumenes.stream().filter(ResumenDiario::isLaborable).count();
+            int atend = resumenes.stream().mapToInt(ResumenDiario::getTotalAtendidos).sum();
             propagar(new EventoSimulacion(TipoEvento.SIMULACION_MENSUAL_FINALIZADA,
-                    "Finalizado | " + labs + " dias laborables | Total: " + atend + " atendidos",
-                    ""));
+                    "Finalizado | " + labs + " dias laborables | Total: " + atend + " atendidos", ""));
         }
+    }
+
+    private void ejecutarDiaConSocios(JornadaLaboral jornada, List<Socio> socios, LocalDate fechaReal) {
+        diaEnCurso = jornada.getDia();
+        contadorLaborable++;
+        fechaEnCurso = fechaReal; // NUEVO: el Frame lee esto directamente
+        motor.setDiaSimulado(contadorLaborable);
+        cajas.forEach(Caja::reiniciar);
+        motor.configurar(config.getMsPorMinuto(), config.getMaxSociosDia(),
+                config.getIntervaloMinutos(), servicios, cajas, configMulti, config);
+        motor.setSociosPredefinidos(socios);
+
+        propagar(new EventoSimulacion(TipoEvento.DIA_INICIADO,
+                "=== Dia " + contadorLaborable + " (" + fechaReal + ") iniciado ===",
+                "Dia " + contadorLaborable));
+
+        motor.iniciar(jornada, diaEnCurso);
+        esperarCondicion(() -> motor.isFasePrincipalFinalizada());
+        if (!corriendo) return;
+
+        int enSala = motor.getSalaEspera() != null ? motor.getSalaEspera().getTotalEsperando() : 0;
+        boolean hayRez = enSala > 0 || motor.getCajas().stream().anyMatch(c -> c.getEstado() == EstadoCaja.OCUPADA);
+
+        if (hayRez) {
+            boolean iniciar = preguntarRezagadosHabilitado ? preguntaRezagados.getAsBoolean() : true;
+            if (iniciar) {
+                motor.iniciarFaseRezagados();
+                esperarCondicion(() -> !motor.isCorriendo());
+            } else {
+                propagar(new EventoSimulacion(TipoEvento.SIMULACION_FINALIZADA,
+                        "Rezagados omitidos: " + enSala + " socios", motor.horaSimulada()));
+            }
+        } else {
+            propagar(new EventoSimulacion(TipoEvento.SIMULACION_FINALIZADA,
+                    "Dia " + contadorLaborable + " finalizado (sin rezagados)", motor.horaSimulada()));
+        }
+        if (!corriendo) return;
+
+        ResumenDiario resumen = motor.construirResumenDia();
+        resumen.setFecha(fechaReal);
+        resumenes.add(resumen);
+        motor.getEstadisticas().registrarResumenDiario(resumen);
+
+        propagar(new EventoSimulacion(TipoEvento.DIA_FINALIZADO,
+                "Dia " + contadorLaborable + " (" + fechaReal + ") completo | Gen:" +
+                        resumen.getGenerados() + " | Atend:" + resumen.getTotalAtendidos(),
+                "Dia " + contadorLaborable));
+
+        try { Thread.sleep(300); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
     }
 
     private List<Socio> construirSociosDelDia(LocalDate fecha) {
@@ -195,21 +304,23 @@ public class SimuladorMensualService {
     }
 
     private void esperarCondicion(java.util.function.BooleanSupplier cond) {
-        int t=0;
+        int t = 0;
         while (corriendo && !cond.getAsBoolean()) {
-            try{Thread.sleep(50);}catch(InterruptedException e){return;}
-            if(++t>60000) break;
+            try { Thread.sleep(50); } catch (InterruptedException e) { return; }
+            if (++t > 60000) break;
         }
     }
 
     private void propagar(EventoSimulacion ev) {
-        for (var l:listeners){try{l.accept(ev);}catch(Exception ignored){}}
+        for (var l : listeners) {
+            try { l.accept(ev); } catch (Exception ignored) {}
+        }
     }
 
-    public void addListener(Consumer<EventoSimulacion> l)    { listeners.add(l); }
+    public void addListener(Consumer<EventoSimulacion> l) { listeners.add(l); }
     public void removeListener(Consumer<EventoSimulacion> l) { listeners.remove(l); }
-    public boolean isCorriendo()      { return corriendo; }
-    public int     getDiaEnCurso()    { return diaEnCurso; }
+    public boolean isCorriendo() { return corriendo; }
+    public int getDiaEnCurso() { return diaEnCurso; }
     public List<ResumenDiario> getResumenes() { return Collections.unmodifiableList(resumenes); }
     public SimuladorCooperativaService getMotor() { return motor; }
 }

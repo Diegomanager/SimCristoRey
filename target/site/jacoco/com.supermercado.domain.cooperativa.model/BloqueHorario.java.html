@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BloqueHorario.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Bottleneck Buster</a> &gt; <a href="index.source.html" class="el_package">com.supermercado.domain.cooperativa.model</a> &gt; <span class="el_source">BloqueHorario.java</span></div><h1>BloqueHorario.java</h1><pre class="source lang-java linenums">package com.supermercado.domain.cooperativa.model;
+
+/**
+ * Bloque horario dentro de una jornada.
+ * inicio y fin en minutos desde 00:00 (ej. 8:30 = 510, 12:00 = 720).
+ */
+public class BloqueHorario {
+    private int inicio; // minutos desde 00:00
+    private int fin;
+
+<span class="nc" id="L11">    public BloqueHorario() {}</span>
+<span class="fc" id="L12">    public BloqueHorario(int inicio, int fin) {</span>
+<span class="pc bpc" id="L13" title="1 of 2 branches missed.">        if (inicio &gt;= fin) throw new IllegalArgumentException(&quot;inicio debe ser menor que fin&quot;);</span>
+<span class="fc" id="L14">        this.inicio = inicio;</span>
+<span class="fc" id="L15">        this.fin    = fin;</span>
+<span class="fc" id="L16">    }</span>
+
+<span class="nc" id="L18">    public int getDuracion() { return fin - inicio; }</span>
+
+    public boolean estaActivo(int minutosDesdeMedanoche) {
+<span class="nc bnc" id="L21" title="All 4 branches missed.">        return minutosDesdeMedanoche &gt;= inicio &amp;&amp; minutosDesdeMedanoche &lt; fin;</span>
+    }
+
+    public String toHHMM(int minutos) {
+<span class="nc" id="L25">        return String.format(&quot;%02d:%02d&quot;, minutos / 60, minutos % 60);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L30">        return toHHMM(inicio) + &quot;–&quot; + toHHMM(fin) + &quot; (&quot; + getDuracion() + &quot; min)&quot;;</span>
+    }
+
+<span class="nc" id="L33">    public int getInicio() { return inicio; }</span>
+<span class="nc" id="L34">    public void setInicio(int v){ this.inicio = v; }</span>
+<span class="nc" id="L35">    public int getFin()    { return fin; }</span>
+<span class="nc" id="L36">    public void setFin(int v)  { this.fin = v; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

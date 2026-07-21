@@ -4,6 +4,7 @@ com\supermercado\domain\supermercado\service\EstadisticasServiceTest.class
 com\supermercado\domain\supermercado\service\OptimizadorServiceTest.class
 com\supermercado\infrastructure\service\LogServiceImplTest.class
 com\supermercado\application\supermercado\usecase\ConfigurarSimulacionUseCaseTest$1.class
+com\supermercado\domain\cooperativa\service\EstadisticasFaseTest.class
 com\supermercado\regression\SimulacionRegressionTest.class
 com\supermercado\application\supermercado\usecase\PausarSimulacionUseCaseTest.class
 com\supermercado\application\supermercado\usecase\AsignarClienteUseCaseTest.class
@@ -16,6 +17,7 @@ com\supermercado\application\supermercado\dto\ConfiguracionDTOTest.class
 com\supermercado\application\supermercado\usecase\CompararConfiguracionesUseCaseTest.class
 com\supermercado\domain\supermercado\service\RelojSimulacionServiceTest.class
 com\supermercado\application\supermercado\usecase\GenerarClienteUseCaseTest.class
+com\supermercado\domain\cooperativa\service\SimuladorMensualServiceTest.class
 com\supermercado\application\supermercado\dto\DiagnosticoDTOTest.class
 com\supermercado\application\supermercado\usecase\ExportarReporteUseCaseTest.class
 com\supermercado\application\supermercado\usecase\DiagnosticarConfiguracionUseCaseTest.class
@@ -26,10 +28,13 @@ com\supermercado\domain\supermercado\model\ClienteTest.class
 com\supermercado\application\supermercado\usecase\ConfigurarSimulacionUseCaseTest$2.class
 com\supermercado\application\supermercado\usecase\DetenerSimulacionUseCaseTest.class
 com\supermercado\application\supermercado\usecase\RecomendarMejoraUseCaseTest.class
+com\supermercado\infrastructure\adapter\export\HistorialImportadorAdapterTest.class
+com\supermercado\application\cooperativa\dto\CalibracionMensualTest.class
 com\supermercado\application\supermercado\usecase\ObtenerColaMaximaUseCaseTest.class
 com\supermercado\application\supermercado\usecase\OptimizarCajasUseCaseTest.class
 com\supermercado\application\supermercado\usecase\ReiniciarSimulacionUseCaseTest.class
 com\supermercado\infrastructure\repository\ConfiguracionRepositorioTest$1.class
+com\supermercado\application\cooperativa\dto\RegistroAtencionTest.class
 com\supermercado\domain\supermercado\model\CajaTest.class
 com\supermercado\domain\supermercado\model\ConfiguracionTest.class
 com\supermercado\application\supermercado\usecase\ReanudarSimulacionUseCaseTest.class

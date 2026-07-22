@@ -37,93 +37,93 @@ public class SimulacionEngine {
     private int                minSimulados;
     private volatile long      minutosSimuladosTranscurridos;
 
-<span class="fc" id="L40">    public SimulacionEngine(ILogService logService, IEventPublisher eventPublisher) {</span>
-<span class="fc" id="L41">        this.logService          = logService;</span>
-<span class="fc" id="L42">        this.eventPublisher      = eventPublisher;</span>
-<span class="fc" id="L43">        this.reloj               = new RelojSimulacionService();</span>
-<span class="fc" id="L44">        this.simuladorService    = new SimuladorService(reloj);</span>
-<span class="fc" id="L45">        this.estadisticasService = new EstadisticasService();</span>
-<span class="fc" id="L46">        this.random              = new Random();</span>
-<span class="fc" id="L47">        this.cajas               = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L48">        this.hilosCajas          = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L49">        this.ejecutando          = false;</span>
-<span class="fc" id="L50">        this.pausado             = false;</span>
-<span class="fc" id="L51">        this.clientesGenerados   = 0;</span>
-<span class="fc" id="L52">        this.minutosSimuladosTranscurridos = 0;</span>
-<span class="fc" id="L53">        this.tiempoPausaInicio   = 0;</span>
-<span class="fc" id="L54">    }</span>
+<span class="nc" id="L40">    public SimulacionEngine(ILogService logService, IEventPublisher eventPublisher) {</span>
+<span class="nc" id="L41">        this.logService          = logService;</span>
+<span class="nc" id="L42">        this.eventPublisher      = eventPublisher;</span>
+<span class="nc" id="L43">        this.reloj               = new RelojSimulacionService();</span>
+<span class="nc" id="L44">        this.simuladorService    = new SimuladorService(reloj);</span>
+<span class="nc" id="L45">        this.estadisticasService = new EstadisticasService();</span>
+<span class="nc" id="L46">        this.random              = new Random();</span>
+<span class="nc" id="L47">        this.cajas               = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L48">        this.hilosCajas          = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L49">        this.ejecutando          = false;</span>
+<span class="nc" id="L50">        this.pausado             = false;</span>
+<span class="nc" id="L51">        this.clientesGenerados   = 0;</span>
+<span class="nc" id="L52">        this.minutosSimuladosTranscurridos = 0;</span>
+<span class="nc" id="L53">        this.tiempoPausaInicio   = 0;</span>
+<span class="nc" id="L54">    }</span>
 
     public void iniciar(ConfiguracionDTO config) throws InterruptedException {
-<span class="pc bpc" id="L57" title="1 of 2 branches missed.">        if (ejecutando) {</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        if (ejecutando) {</span>
 <span class="nc" id="L58">            throw new IllegalStateException(&quot;La simulacion ya esta en ejecucion&quot;);</span>
         }
-<span class="fc" id="L60">        this.config                        = config;</span>
-<span class="fc" id="L61">        this.ejecutando                    = true;</span>
-<span class="fc" id="L62">        this.pausado                       = false;</span>
-<span class="fc" id="L63">        this.clientesGenerados             = 0;</span>
-<span class="fc" id="L64">        this.minutosSimuladosTranscurridos = 0;</span>
-<span class="fc" id="L65">        this.cajas.clear();</span>
-<span class="fc" id="L66">        this.hilosCajas.clear();</span>
+<span class="nc" id="L60">        this.config                        = config;</span>
+<span class="nc" id="L61">        this.ejecutando                    = true;</span>
+<span class="nc" id="L62">        this.pausado                       = false;</span>
+<span class="nc" id="L63">        this.clientesGenerados             = 0;</span>
+<span class="nc" id="L64">        this.minutosSimuladosTranscurridos = 0;</span>
+<span class="nc" id="L65">        this.cajas.clear();</span>
+<span class="nc" id="L66">        this.hilosCajas.clear();</span>
 
-<span class="fc" id="L68">        log(&quot;=== INICIANDO SIMULACION ===&quot;);</span>
-<span class="fc" id="L69">        log(&quot;Horario: 08:00 - &quot; + (HORA_APERTURA + config.getHorasSimuladas()) +</span>
-<span class="fc" id="L70">            &quot;:00 (&quot; + config.getHorasSimuladas() + &quot; horas)&quot;);</span>
-<span class="fc" id="L71">        log(&quot;Duracion real: &quot; + config.getDuracionRealSegundos() +</span>
-<span class="fc" id="L72">            &quot;s | Tiempo simulado: &quot; + config.getHorasSimuladas() + &quot;h&quot;);</span>
-<span class="fc" id="L73">        log(&quot;Cajas Normales: &quot; + config.getNumCajasNormales() +</span>
-<span class="fc" id="L74">            &quot; | Cajas Rapidas: &quot; + config.getNumCajasRapidas());</span>
+<span class="nc" id="L68">        log(&quot;=== INICIANDO SIMULACION ===&quot;);</span>
+<span class="nc" id="L69">        log(&quot;Horario: 08:00 - &quot; + (HORA_APERTURA + config.getHorasSimuladas()) +</span>
+<span class="nc" id="L70">            &quot;:00 (&quot; + config.getHorasSimuladas() + &quot; horas)&quot;);</span>
+<span class="nc" id="L71">        log(&quot;Duracion real: &quot; + config.getDuracionRealSegundos() +</span>
+<span class="nc" id="L72">            &quot;s | Tiempo simulado: &quot; + config.getHorasSimuladas() + &quot;h&quot;);</span>
+<span class="nc" id="L73">        log(&quot;Cajas Normales: &quot; + config.getNumCajasNormales() +</span>
+<span class="nc" id="L74">            &quot; | Cajas Rapidas: &quot; + config.getNumCajasRapidas());</span>
 
-<span class="fc" id="L76">        inicializarCajas();</span>
-<span class="fc" id="L77">        iniciarHilosCajas();</span>
-<span class="fc" id="L78">        publicarEstadisticas();</span>
-<span class="fc" id="L79">        ejecutarCicloPrincipal();</span>
+<span class="nc" id="L76">        inicializarCajas();</span>
+<span class="nc" id="L77">        iniciarHilosCajas();</span>
+<span class="nc" id="L78">        publicarEstadisticas();</span>
+<span class="nc" id="L79">        ejecutarCicloPrincipal();</span>
 
         // ----- ESPERAR Y VACIAR COLAS (CON FORZADO) -----
-<span class="fc" id="L82">        esperarYVaciarColas();</span>
+<span class="nc" id="L82">        esperarYVaciarColas();</span>
 
-<span class="fc" id="L84">        detenerHilos();</span>
-<span class="fc" id="L85">        mostrarResultados();</span>
+<span class="nc" id="L84">        detenerHilos();</span>
+<span class="nc" id="L85">        mostrarResultados();</span>
 
-<span class="fc" id="L87">        ejecutando = false;</span>
-<span class="fc" id="L88">        log(&quot;=== SIMULACION COMPLETADA ===&quot;);</span>
-<span class="fc" id="L89">    }</span>
+<span class="nc" id="L87">        ejecutando = false;</span>
+<span class="nc" id="L88">        log(&quot;=== SIMULACION COMPLETADA ===&quot;);</span>
+<span class="nc" id="L89">    }</span>
 
     public synchronized void pausar() {
-<span class="pc bpc" id="L92" title="1 of 4 branches missed.">        if (!ejecutando || pausado) return;</span>
-<span class="fc" id="L93">        pausado           = true;</span>
-<span class="fc" id="L94">        tiempoPausaInicio = System.currentTimeMillis();</span>
-<span class="fc" id="L95">        reloj.pausar();</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">        for (Caja caja : cajas) caja.pausar();</span>
-<span class="fc" id="L97">        eventPublisher.publish(new SimulacionPausadaEvent());</span>
-<span class="fc" id="L98">        log(&quot;Simulacion pausada&quot;);</span>
-<span class="fc" id="L99">    }</span>
+<span class="nc bnc" id="L92" title="All 4 branches missed.">        if (!ejecutando || pausado) return;</span>
+<span class="nc" id="L93">        pausado           = true;</span>
+<span class="nc" id="L94">        tiempoPausaInicio = System.currentTimeMillis();</span>
+<span class="nc" id="L95">        reloj.pausar();</span>
+<span class="nc bnc" id="L96" title="All 2 branches missed.">        for (Caja caja : cajas) caja.pausar();</span>
+<span class="nc" id="L97">        eventPublisher.publish(new SimulacionPausadaEvent());</span>
+<span class="nc" id="L98">        log(&quot;Simulacion pausada&quot;);</span>
+<span class="nc" id="L99">    }</span>
 
     public synchronized void reanudar() {
-<span class="pc bpc" id="L102" title="1 of 4 branches missed.">        if (!ejecutando || !pausado) return;</span>
-<span class="fc" id="L103">        tiempoInicio  += (System.currentTimeMillis() - tiempoPausaInicio);</span>
-<span class="fc" id="L104">        tiempoPausaInicio = 0;</span>
-<span class="fc" id="L105">        pausado           = false;</span>
-<span class="fc" id="L106">        reloj.reanudar();</span>
-<span class="fc bfc" id="L107" title="All 2 branches covered.">        for (Caja caja : cajas) caja.reanudar();</span>
-<span class="fc" id="L108">        eventPublisher.publish(new SimulacionReanudadaEvent());</span>
-<span class="fc" id="L109">        log(&quot;Simulacion reanudada&quot;);</span>
-<span class="fc" id="L110">    }</span>
+<span class="nc bnc" id="L102" title="All 4 branches missed.">        if (!ejecutando || !pausado) return;</span>
+<span class="nc" id="L103">        tiempoInicio  += (System.currentTimeMillis() - tiempoPausaInicio);</span>
+<span class="nc" id="L104">        tiempoPausaInicio = 0;</span>
+<span class="nc" id="L105">        pausado           = false;</span>
+<span class="nc" id="L106">        reloj.reanudar();</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        for (Caja caja : cajas) caja.reanudar();</span>
+<span class="nc" id="L108">        eventPublisher.publish(new SimulacionReanudadaEvent());</span>
+<span class="nc" id="L109">        log(&quot;Simulacion reanudada&quot;);</span>
+<span class="nc" id="L110">    }</span>
 
     public synchronized void detener() {
-<span class="fc" id="L113">        ejecutando        = false;</span>
-<span class="fc" id="L114">        pausado           = false;</span>
-<span class="fc" id="L115">        tiempoPausaInicio = 0;</span>
-<span class="fc bfc" id="L116" title="All 2 branches covered.">        for (Caja caja : cajas) caja.detener();</span>
-<span class="fc" id="L117">        reloj.detener();</span>
-<span class="fc" id="L118">        eventPublisher.publish(new SimulacionDetenidaEvent());</span>
-<span class="fc" id="L119">        log(&quot;Simulacion detenida&quot;);</span>
-<span class="fc" id="L120">    }</span>
+<span class="nc" id="L113">        ejecutando        = false;</span>
+<span class="nc" id="L114">        pausado           = false;</span>
+<span class="nc" id="L115">        tiempoPausaInicio = 0;</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">        for (Caja caja : cajas) caja.detener();</span>
+<span class="nc" id="L117">        reloj.detener();</span>
+<span class="nc" id="L118">        eventPublisher.publish(new SimulacionDetenidaEvent());</span>
+<span class="nc" id="L119">        log(&quot;Simulacion detenida&quot;);</span>
+<span class="nc" id="L120">    }</span>
 
-<span class="fc" id="L122">    public boolean isEjecutando() { return ejecutando; }</span>
-<span class="fc" id="L123">    public boolean isPausado()    { return pausado; }</span>
+<span class="nc" id="L122">    public boolean isEjecutando() { return ejecutando; }</span>
+<span class="nc" id="L123">    public boolean isPausado()    { return pausado; }</span>
 
     public EstadisticasDTO obtenerEstadisticas() {
-<span class="fc" id="L126">        return estadisticasService.calcularEstadisticas(cajas);</span>
+<span class="nc" id="L126">        return estadisticasService.calcularEstadisticas(cajas);</span>
     }
 
     // ============================================================
@@ -131,163 +131,163 @@ public class SimulacionEngine {
     // ============================================================
 
     private void inicializarCajas() {
-<span class="fc" id="L134">        int numRapidas  = config.getNumCajasRapidas();</span>
-<span class="fc" id="L135">        int numNormales = config.getNumCajasNormales();</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">        for (int i = 1; i &lt;= numRapidas;  i++) cajas.add(new Caja(i, true));</span>
-<span class="fc bfc" id="L137" title="All 2 branches covered.">        for (int i = 1; i &lt;= numNormales; i++) cajas.add(new Caja(numRapidas + i, false));</span>
-<span class="fc" id="L138">        log(&quot;Total cajas creadas: &quot; + cajas.size());</span>
-<span class="fc" id="L139">    }</span>
+<span class="nc" id="L134">        int numRapidas  = config.getNumCajasRapidas();</span>
+<span class="nc" id="L135">        int numNormales = config.getNumCajasNormales();</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">        for (int i = 1; i &lt;= numRapidas;  i++) cajas.add(new Caja(i, true));</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">        for (int i = 1; i &lt;= numNormales; i++) cajas.add(new Caja(numRapidas + i, false));</span>
+<span class="nc" id="L138">        log(&quot;Total cajas creadas: &quot; + cajas.size());</span>
+<span class="nc" id="L139">    }</span>
 
     private void iniciarHilosCajas() {
-<span class="fc bfc" id="L142" title="All 2 branches covered.">        for (Caja caja : cajas) {</span>
-<span class="fc" id="L143">            Thread hilo = new Thread(() -&gt; ejecutarCaja(caja));</span>
-<span class="fc" id="L144">            hilo.setName(&quot;hilo-caja-&quot; + caja.getId());</span>
-<span class="fc" id="L145">            hilo.start();</span>
-<span class="fc" id="L146">            hilosCajas.add(hilo);</span>
-<span class="fc" id="L147">        }</span>
-<span class="fc" id="L148">    }</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">        for (Caja caja : cajas) {</span>
+<span class="nc" id="L143">            Thread hilo = new Thread(() -&gt; ejecutarCaja(caja));</span>
+<span class="nc" id="L144">            hilo.setName(&quot;hilo-caja-&quot; + caja.getId());</span>
+<span class="nc" id="L145">            hilo.start();</span>
+<span class="nc" id="L146">            hilosCajas.add(hilo);</span>
+<span class="nc" id="L147">        }</span>
+<span class="nc" id="L148">    }</span>
 
     private void ejecutarCaja(Caja caja) {
-<span class="pc bpc" id="L151" title="2 of 4 branches missed.">        while (caja.estaActiva() &amp;&amp; ejecutando) {</span>
+<span class="nc bnc" id="L151" title="All 4 branches missed.">        while (caja.estaActiva() &amp;&amp; ejecutando) {</span>
             try {
-<span class="pc bpc" id="L153" title="1 of 4 branches missed.">                while (pausado &amp;&amp; ejecutando) Thread.sleep(50);</span>
-<span class="pc bpc" id="L154" title="1 of 2 branches missed.">                if (!ejecutando) break;</span>
+<span class="nc bnc" id="L153" title="All 4 branches missed.">                while (pausado &amp;&amp; ejecutando) Thread.sleep(50);</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">                if (!ejecutando) break;</span>
 
-<span class="fc" id="L156">                Cliente cliente = caja.prepararSiguienteCliente();</span>
-<span class="fc bfc" id="L157" title="All 2 branches covered.">                if (cliente == null) {</span>
-<span class="fc" id="L158">                    Thread.sleep(Math.max(10, msPerMinutoSimulado / 2));</span>
-<span class="fc" id="L159">                    continue;</span>
+<span class="nc" id="L156">                Cliente cliente = caja.prepararSiguienteCliente();</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">                if (cliente == null) {</span>
+<span class="nc" id="L158">                    Thread.sleep(Math.max(10, msPerMinutoSimulado / 2));</span>
+<span class="nc" id="L159">                    continue;</span>
                 }
 
-<span class="fc bfc" id="L162" title="All 2 branches covered.">                int tMin = caja.esRapida()</span>
-<span class="fc" id="L163">                    ? config.getTiempoCajaRapidaMin() : config.getTiempoCajaNormalMin();</span>
-<span class="fc bfc" id="L164" title="All 2 branches covered.">                int tMax = caja.esRapida()</span>
-<span class="fc" id="L165">                    ? config.getTiempoCajaRapidaMax() : config.getTiempoCajaNormalMax();</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">                int tMin = caja.esRapida()</span>
+<span class="nc" id="L163">                    ? config.getTiempoCajaRapidaMin() : config.getTiempoCajaNormalMin();</span>
+<span class="nc bnc" id="L164" title="All 2 branches missed.">                int tMax = caja.esRapida()</span>
+<span class="nc" id="L165">                    ? config.getTiempoCajaRapidaMax() : config.getTiempoCajaNormalMax();</span>
 
-<span class="fc" id="L167">                int tiempoAtencion = tMin + random.nextInt(Math.max(1, tMax - tMin + 1));</span>
-<span class="fc" id="L168">                cliente.setTiempoAtencionReal(tiempoAtencion);</span>
+<span class="nc" id="L167">                int tiempoAtencion = tMin + random.nextInt(Math.max(1, tMax - tMin + 1));</span>
+<span class="nc" id="L168">                cliente.setTiempoAtencionReal(tiempoAtencion);</span>
 
-<span class="fc" id="L170">                String hora = calcularHoraSimulada((int) minutosSimuladosTranscurridos);</span>
-<span class="fc" id="L171">                log(&quot;[&quot; + hora + &quot;] Atendiendo: &quot; + cliente.getId() +</span>
-<span class="fc" id="L172">                    &quot; en &quot; + caja.getId() + &quot; (&quot; + tiempoAtencion + &quot; min)&quot;);</span>
+<span class="nc" id="L170">                String hora = calcularHoraSimulada((int) minutosSimuladosTranscurridos);</span>
+<span class="nc" id="L171">                log(&quot;[&quot; + hora + &quot;] Atendiendo: &quot; + cliente.getId() +</span>
+<span class="nc" id="L172">                    &quot; en &quot; + caja.getId() + &quot; (&quot; + tiempoAtencion + &quot; min)&quot;);</span>
 
-<span class="fc" id="L174">                Thread.sleep(Math.max(50, tiempoAtencion * msPerMinutoSimulado));</span>
+<span class="nc" id="L174">                Thread.sleep(Math.max(50, tiempoAtencion * msPerMinutoSimulado));</span>
 
-<span class="fc" id="L176">                cliente.setTiempoSalida(reloj.getTiempoActual());</span>
-<span class="fc" id="L177">                caja.finalizarAtencion();</span>
-<span class="fc" id="L178">                publicarCajaActualizada(caja);</span>
-<span class="fc" id="L179">                log(&quot;Finalizada atencion de &quot; + cliente.getId() + &quot; en &quot; + caja.getId());</span>
+<span class="nc" id="L176">                cliente.setTiempoSalida(reloj.getTiempoActual());</span>
+<span class="nc" id="L177">                caja.finalizarAtencion();</span>
+<span class="nc" id="L178">                publicarCajaActualizada(caja);</span>
+<span class="nc" id="L179">                log(&quot;Finalizada atencion de &quot; + cliente.getId() + &quot; en &quot; + caja.getId());</span>
 
-<span class="fc" id="L181">            } catch (InterruptedException e) {</span>
-<span class="fc" id="L182">                Thread.currentThread().interrupt();</span>
-<span class="fc" id="L183">                break;</span>
-<span class="fc" id="L184">            }</span>
+<span class="nc" id="L181">            } catch (InterruptedException e) {</span>
+<span class="nc" id="L182">                Thread.currentThread().interrupt();</span>
+<span class="nc" id="L183">                break;</span>
+<span class="nc" id="L184">            }</span>
         }
-<span class="fc" id="L186">    }</span>
+<span class="nc" id="L186">    }</span>
 
     private void ejecutarCicloPrincipal() throws InterruptedException {
-<span class="fc" id="L189">        minSimulados        = config.getHorasSimuladas() * 60;</span>
-<span class="fc" id="L190">        int  duracionRealMs = config.getDuracionRealSegundos() * 1000;</span>
-<span class="fc" id="L191">        msPerMinutoSimulado = Math.max(1, duracionRealMs / minSimulados);</span>
-<span class="fc" id="L192">        long tickMs         = Math.max(10, msPerMinutoSimulado / 2);</span>
-<span class="fc" id="L193">        long duracionMs     = config.getDuracionRealSegundos() * 1000L;</span>
-<span class="fc" id="L194">        int  limite         = config.getLimiteClientes();</span>
+<span class="nc" id="L189">        minSimulados        = config.getHorasSimuladas() * 60;</span>
+<span class="nc" id="L190">        int  duracionRealMs = config.getDuracionRealSegundos() * 1000;</span>
+<span class="nc" id="L191">        msPerMinutoSimulado = Math.max(1, duracionRealMs / minSimulados);</span>
+<span class="nc" id="L192">        long tickMs         = Math.max(10, msPerMinutoSimulado / 2);</span>
+<span class="nc" id="L193">        long duracionMs     = config.getDuracionRealSegundos() * 1000L;</span>
+<span class="nc" id="L194">        int  limite         = config.getLimiteClientes();</span>
 
-<span class="fc" id="L196">        log(&quot;Escala: 1 min simulado = &quot; + msPerMinutoSimulado + &quot;ms reales&quot;);</span>
+<span class="nc" id="L196">        log(&quot;Escala: 1 min simulado = &quot; + msPerMinutoSimulado + &quot;ms reales&quot;);</span>
 
-<span class="fc" id="L198">        reloj.iniciar();</span>
-<span class="fc" id="L199">        tiempoInicio = System.currentTimeMillis();</span>
-<span class="fc" id="L200">        long tiempoTranscurrido = 0;</span>
-<span class="fc" id="L201">        int  ticks = 0;</span>
+<span class="nc" id="L198">        reloj.iniciar();</span>
+<span class="nc" id="L199">        tiempoInicio = System.currentTimeMillis();</span>
+<span class="nc" id="L200">        long tiempoTranscurrido = 0;</span>
+<span class="nc" id="L201">        int  ticks = 0;</span>
 
-<span class="pc bpc" id="L203" title="1 of 4 branches missed.">        while (ejecutando &amp;&amp; tiempoTranscurrido &lt; duracionMs) {</span>
-<span class="pc bpc" id="L204" title="1 of 4 branches missed.">            while (pausado &amp;&amp; ejecutando) Thread.sleep(50);</span>
-<span class="pc bpc" id="L205" title="1 of 2 branches missed.">            if (!ejecutando) break;</span>
+<span class="nc bnc" id="L203" title="All 4 branches missed.">        while (ejecutando &amp;&amp; tiempoTranscurrido &lt; duracionMs) {</span>
+<span class="nc bnc" id="L204" title="All 4 branches missed.">            while (pausado &amp;&amp; ejecutando) Thread.sleep(50);</span>
+<span class="nc bnc" id="L205" title="All 2 branches missed.">            if (!ejecutando) break;</span>
 
-<span class="fc" id="L207">            tiempoTranscurrido             = System.currentTimeMillis() - tiempoInicio;</span>
-<span class="fc" id="L208">            minutosSimuladosTranscurridos  = (tiempoTranscurrido * minSimulados) / duracionMs;</span>
-<span class="fc" id="L209">            reloj.setTiempoSimulado(minutosSimuladosTranscurridos);</span>
-<span class="fc" id="L210">            ticks++;</span>
+<span class="nc" id="L207">            tiempoTranscurrido             = System.currentTimeMillis() - tiempoInicio;</span>
+<span class="nc" id="L208">            minutosSimuladosTranscurridos  = (tiempoTranscurrido * minSimulados) / duracionMs;</span>
+<span class="nc" id="L209">            reloj.setTiempoSimulado(minutosSimuladosTranscurridos);</span>
+<span class="nc" id="L210">            ticks++;</span>
 
-<span class="pc bpc" id="L212" title="1 of 2 branches missed.">            if (estaCerrado()) {</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">            if (estaCerrado()) {</span>
 <span class="nc" id="L213">                log(&quot;CIERRE DEL SUPERMERCADO (&quot; +</span>
 <span class="nc" id="L214">                    (HORA_APERTURA + config.getHorasSimuladas()) + &quot;:00)&quot;);</span>
 <span class="nc" id="L215">                break;</span>
             }
-<span class="pc bpc" id="L217" title="1 of 4 branches missed.">            if (limite &gt; 0 &amp;&amp; clientesGenerados &gt;= limite) {</span>
-<span class="fc" id="L218">                log(&quot;Limite de &quot; + limite + &quot; clientes alcanzado.&quot;);</span>
-<span class="fc" id="L219">                break;</span>
+<span class="nc bnc" id="L217" title="All 4 branches missed.">            if (limite &gt; 0 &amp;&amp; clientesGenerados &gt;= limite) {</span>
+<span class="nc" id="L218">                log(&quot;Limite de &quot; + limite + &quot; clientes alcanzado.&quot;);</span>
+<span class="nc" id="L219">                break;</span>
             }
-<span class="fc bfc" id="L221" title="All 2 branches covered.">            if (random.nextInt(100) &lt; config.getProbabilidadLlegadaCliente()) {</span>
-<span class="fc" id="L222">                generarCliente();</span>
+<span class="nc bnc" id="L221" title="All 2 branches missed.">            if (random.nextInt(100) &lt; config.getProbabilidadLlegadaCliente()) {</span>
+<span class="nc" id="L222">                generarCliente();</span>
             }
-<span class="fc bfc" id="L224" title="All 2 branches covered.">            if (ticks % CAJA_UPDATE_INTERVAL  == 0) publicarTodasLasCajas();</span>
-<span class="fc bfc" id="L225" title="All 2 branches covered.">            if (ticks % STATS_UPDATE_INTERVAL == 0) publicarEstadisticas();</span>
+<span class="nc bnc" id="L224" title="All 2 branches missed.">            if (ticks % CAJA_UPDATE_INTERVAL  == 0) publicarTodasLasCajas();</span>
+<span class="nc bnc" id="L225" title="All 2 branches missed.">            if (ticks % STATS_UPDATE_INTERVAL == 0) publicarEstadisticas();</span>
 
-<span class="fc" id="L227">            Thread.sleep(tickMs);</span>
+<span class="nc" id="L227">            Thread.sleep(tickMs);</span>
         }
-<span class="fc" id="L229">    }</span>
+<span class="nc" id="L229">    }</span>
 
     private void generarCliente() {
-<span class="fc" id="L232">        int min       = config.getArticulosClienteMin();</span>
-<span class="fc" id="L233">        int max       = config.getArticulosClienteMax();</span>
-<span class="fc" id="L234">        int articulos = min + random.nextInt(max - min + 1);</span>
-<span class="fc" id="L235">        Cliente cliente = new Cliente(++clientesGenerados, articulos);</span>
-<span class="pc bpc" id="L236" title="1 of 2 branches missed.">        cliente.setRapido(articulos &lt;= config.getLimiteClienteRapido());</span>
-<span class="fc" id="L237">        cliente.setTiempoLlegada(reloj.getTiempoActual());</span>
-<span class="fc" id="L238">        String hora = calcularHoraSimulada((int) minutosSimuladosTranscurridos);</span>
-<span class="fc" id="L239">        log(&quot;[&quot; + hora + &quot;] Cliente-&quot; + cliente.getId() +</span>
+<span class="nc" id="L232">        int min       = config.getArticulosClienteMin();</span>
+<span class="nc" id="L233">        int max       = config.getArticulosClienteMax();</span>
+<span class="nc" id="L234">        int articulos = min + random.nextInt(max - min + 1);</span>
+<span class="nc" id="L235">        Cliente cliente = new Cliente(++clientesGenerados, articulos);</span>
+<span class="nc bnc" id="L236" title="All 2 branches missed.">        cliente.setRapido(articulos &lt;= config.getLimiteClienteRapido());</span>
+<span class="nc" id="L237">        cliente.setTiempoLlegada(reloj.getTiempoActual());</span>
+<span class="nc" id="L238">        String hora = calcularHoraSimulada((int) minutosSimuladosTranscurridos);</span>
+<span class="nc" id="L239">        log(&quot;[&quot; + hora + &quot;] Cliente-&quot; + cliente.getId() +</span>
             &quot; generado | Articulos: &quot; + articulos +
-<span class="pc bpc" id="L241" title="1 of 2 branches missed.">            (cliente.esRapido() ? &quot; (RAPIDO)&quot; : &quot;&quot;));</span>
-<span class="fc" id="L242">        eventPublisher.publish(new ClienteGeneradoEvent(cliente, hora));</span>
-<span class="fc" id="L243">        simuladorService.asignarCliente(cajas, cliente);</span>
-<span class="fc" id="L244">    }</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">            (cliente.esRapido() ? &quot; (RAPIDO)&quot; : &quot;&quot;));</span>
+<span class="nc" id="L242">        eventPublisher.publish(new ClienteGeneradoEvent(cliente, hora));</span>
+<span class="nc" id="L243">        simuladorService.asignarCliente(cajas, cliente);</span>
+<span class="nc" id="L244">    }</span>
 
     private void esperarYVaciarColas() throws InterruptedException {
-<span class="fc" id="L247">        log(&quot;Esperando que terminen atenciones activas...&quot;);</span>
+<span class="nc" id="L247">        log(&quot;Esperando que terminen atenciones activas...&quot;);</span>
 
-<span class="fc" id="L249">        int esperaMax = 10000;</span>
-<span class="fc" id="L250">        int paso = 50;</span>
-<span class="fc" id="L251">        int intentos = esperaMax / paso;</span>
+<span class="nc" id="L249">        int esperaMax = 10000;</span>
+<span class="nc" id="L250">        int paso = 50;</span>
+<span class="nc" id="L251">        int intentos = esperaMax / paso;</span>
 
-<span class="fc bfc" id="L253" title="All 2 branches covered.">        for (int i = 0; i &lt; intentos; i++) {</span>
-<span class="fc" id="L254">            boolean hayOcupadas = false;</span>
-<span class="fc bfc" id="L255" title="All 2 branches covered.">            for (Caja caja : cajas) {</span>
-<span class="fc bfc" id="L256" title="All 2 branches covered.">                if (caja.estaOcupada()) {</span>
-<span class="fc" id="L257">                    hayOcupadas = true;</span>
-<span class="fc" id="L258">                    break;</span>
+<span class="nc bnc" id="L253" title="All 2 branches missed.">        for (int i = 0; i &lt; intentos; i++) {</span>
+<span class="nc" id="L254">            boolean hayOcupadas = false;</span>
+<span class="nc bnc" id="L255" title="All 2 branches missed.">            for (Caja caja : cajas) {</span>
+<span class="nc bnc" id="L256" title="All 2 branches missed.">                if (caja.estaOcupada()) {</span>
+<span class="nc" id="L257">                    hayOcupadas = true;</span>
+<span class="nc" id="L258">                    break;</span>
                 }
-<span class="fc" id="L260">            }</span>
-<span class="fc bfc" id="L261" title="All 2 branches covered.">            if (!hayOcupadas) {</span>
-<span class="fc" id="L262">                log(&quot;Todas las atenciones activas finalizadas naturalmente.&quot;);</span>
-<span class="fc" id="L263">                break;</span>
+<span class="nc" id="L260">            }</span>
+<span class="nc bnc" id="L261" title="All 2 branches missed.">            if (!hayOcupadas) {</span>
+<span class="nc" id="L262">                log(&quot;Todas las atenciones activas finalizadas naturalmente.&quot;);</span>
+<span class="nc" id="L263">                break;</span>
             }
-<span class="fc" id="L265">            Thread.sleep(paso);</span>
+<span class="nc" id="L265">            Thread.sleep(paso);</span>
         }
 
-<span class="fc" id="L268">        int forzadas = 0;</span>
-<span class="fc bfc" id="L269" title="All 2 branches covered.">        for (Caja caja : cajas) {</span>
-<span class="pc bpc" id="L270" title="1 of 4 branches missed.">            if (caja.estaOcupada() &amp;&amp; caja.getClienteActual() != null) {</span>
-<span class="fc" id="L271">                log(&quot;  Forzando finalización de &quot; + caja.getId() +</span>
-<span class="fc" id="L272">                    &quot; (cliente &quot; + caja.getClienteActual().getId() + &quot;)&quot;);</span>
-<span class="fc" id="L273">                caja.finalizarAtencion();</span>
-<span class="fc" id="L274">                forzadas++;</span>
+<span class="nc" id="L268">        int forzadas = 0;</span>
+<span class="nc bnc" id="L269" title="All 2 branches missed.">        for (Caja caja : cajas) {</span>
+<span class="nc bnc" id="L270" title="All 4 branches missed.">            if (caja.estaOcupada() &amp;&amp; caja.getClienteActual() != null) {</span>
+<span class="nc" id="L271">                log(&quot;  Forzando finalización de &quot; + caja.getId() +</span>
+<span class="nc" id="L272">                    &quot; (cliente &quot; + caja.getClienteActual().getId() + &quot;)&quot;);</span>
+<span class="nc" id="L273">                caja.finalizarAtencion();</span>
+<span class="nc" id="L274">                forzadas++;</span>
             }
-<span class="fc" id="L276">        }</span>
-<span class="fc bfc" id="L277" title="All 2 branches covered.">        if (forzadas &gt; 0) {</span>
-<span class="fc" id="L278">            log(&quot;Atendidos forzados: &quot; + forzadas);</span>
+<span class="nc" id="L276">        }</span>
+<span class="nc bnc" id="L277" title="All 2 branches missed.">        if (forzadas &gt; 0) {</span>
+<span class="nc" id="L278">            log(&quot;Atendidos forzados: &quot; + forzadas);</span>
         }
 
-<span class="fc" id="L281">        log(&quot;Vaciando colas manualmente...&quot;);</span>
-<span class="fc" id="L282">        int totalEnCola = 0;</span>
-<span class="fc bfc" id="L283" title="All 2 branches covered.">        for (Caja caja : cajas) {</span>
-<span class="fc" id="L284">            totalEnCola += caja.getClientesEnCola();</span>
-<span class="fc" id="L285">        }</span>
-<span class="fc" id="L286">        log(&quot;Clientes en cola al cierre: &quot; + totalEnCola);</span>
+<span class="nc" id="L281">        log(&quot;Vaciando colas manualmente...&quot;);</span>
+<span class="nc" id="L282">        int totalEnCola = 0;</span>
+<span class="nc bnc" id="L283" title="All 2 branches missed.">        for (Caja caja : cajas) {</span>
+<span class="nc" id="L284">            totalEnCola += caja.getClientesEnCola();</span>
+<span class="nc" id="L285">        }</span>
+<span class="nc" id="L286">        log(&quot;Clientes en cola al cierre: &quot; + totalEnCola);</span>
 
-<span class="fc" id="L288">        int atendidosExtra = 0;</span>
-<span class="fc bfc" id="L289" title="All 2 branches covered.">        for (Caja caja : cajas) {</span>
-<span class="pc bpc" id="L290" title="1 of 4 branches missed.">            while (caja.getClientesEnCola() &gt; 0 &amp;&amp; ejecutando) {</span>
+<span class="nc" id="L288">        int atendidosExtra = 0;</span>
+<span class="nc bnc" id="L289" title="All 2 branches missed.">        for (Caja caja : cajas) {</span>
+<span class="nc bnc" id="L290" title="All 4 branches missed.">            while (caja.getClientesEnCola() &gt; 0 &amp;&amp; ejecutando) {</span>
 <span class="nc" id="L291">                Cliente cliente = caja.prepararSiguienteCliente();</span>
 <span class="nc bnc" id="L292" title="All 2 branches missed.">                if (cliente == null) break;</span>
 <span class="nc" id="L293">                cliente.setTiempoAtencionReal(1);</span>
@@ -296,114 +296,114 @@ public class SimulacionEngine {
 <span class="nc" id="L296">                atendidosExtra++;</span>
 <span class="nc" id="L297">                log(&quot;  Cola de &quot; + caja.getId() + &quot; atendido cliente &quot; + cliente.getId());</span>
 <span class="nc" id="L298">            }</span>
-<span class="fc" id="L299">        }</span>
-<span class="pc bpc" id="L300" title="1 of 2 branches missed.">        if (atendidosExtra &gt; 0) {</span>
+<span class="nc" id="L299">        }</span>
+<span class="nc bnc" id="L300" title="All 2 branches missed.">        if (atendidosExtra &gt; 0) {</span>
 <span class="nc" id="L301">            log(&quot;Atendidos extra en cola: &quot; + atendidosExtra);</span>
         }
 
-<span class="fc" id="L304">        int atendidosTotales = 0;</span>
-<span class="fc bfc" id="L305" title="All 2 branches covered.">        for (Caja caja : cajas) {</span>
-<span class="fc" id="L306">            atendidosTotales += caja.getTotalAtendidos();</span>
-<span class="fc" id="L307">        }</span>
-<span class="fc" id="L308">        int perdidos = clientesGenerados - atendidosTotales - totalEnCola;</span>
-<span class="pc bpc" id="L309" title="1 of 2 branches missed.">        if (perdidos &gt; 0) {</span>
-<span class="fc" id="L310">            log(&quot;ADVERTENCIA: Clientes perdidos: &quot; + perdidos);</span>
+<span class="nc" id="L304">        int atendidosTotales = 0;</span>
+<span class="nc bnc" id="L305" title="All 2 branches missed.">        for (Caja caja : cajas) {</span>
+<span class="nc" id="L306">            atendidosTotales += caja.getTotalAtendidos();</span>
+<span class="nc" id="L307">        }</span>
+<span class="nc" id="L308">        int perdidos = clientesGenerados - atendidosTotales - totalEnCola;</span>
+<span class="nc bnc" id="L309" title="All 2 branches missed.">        if (perdidos &gt; 0) {</span>
+<span class="nc" id="L310">            log(&quot;ADVERTENCIA: Clientes perdidos: &quot; + perdidos);</span>
         } else {
 <span class="nc" id="L312">            log(&quot;Todos los clientes generados fueron contabilizados.&quot;);</span>
         }
-<span class="fc" id="L314">    }</span>
+<span class="nc" id="L314">    }</span>
 
     private void detenerHilos() {
-<span class="fc bfc" id="L317" title="All 2 branches covered.">        for (Caja caja : cajas) caja.detener();</span>
-<span class="fc" id="L318">        reloj.detener();</span>
-<span class="fc" id="L319">        ejecutando = false;</span>
-<span class="fc bfc" id="L320" title="All 2 branches covered.">        for (Thread h : hilosCajas) {</span>
-<span class="pc bpc" id="L321" title="1 of 2 branches missed.">            if (h.isAlive()) h.interrupt();</span>
-<span class="fc" id="L322">        }</span>
-<span class="fc" id="L323">    }</span>
+<span class="nc bnc" id="L317" title="All 2 branches missed.">        for (Caja caja : cajas) caja.detener();</span>
+<span class="nc" id="L318">        reloj.detener();</span>
+<span class="nc" id="L319">        ejecutando = false;</span>
+<span class="nc bnc" id="L320" title="All 2 branches missed.">        for (Thread h : hilosCajas) {</span>
+<span class="nc bnc" id="L321" title="All 2 branches missed.">            if (h.isAlive()) h.interrupt();</span>
+<span class="nc" id="L322">        }</span>
+<span class="nc" id="L323">    }</span>
 
     private void mostrarResultados() {
-<span class="fc" id="L326">        EstadisticasDTO stats = estadisticasService.calcularEstadisticas(cajas);</span>
-<span class="fc" id="L327">        String hora = calcularHoraSimulada((int) minutosSimuladosTranscurridos);</span>
-<span class="fc" id="L328">        EstadisticasDTO completo = new EstadisticasDTO.Builder()</span>
-<span class="fc" id="L329">            .totalClientesAtendidos(stats.getTotalClientesAtendidos())</span>
-<span class="fc" id="L330">            .totalArticulosVendidos(stats.getTotalArticulosVendidos())</span>
-<span class="fc" id="L331">            .totalMinutosAtencion(stats.getTotalMinutosAtencion())</span>
-<span class="fc" id="L332">            .clientesEnCola(stats.getClientesEnCola())</span>
-<span class="fc" id="L333">            .cajeroEstrella(stats.getCajeroEstrella())</span>
-<span class="fc" id="L334">            .tiempoPromedioAtencion(stats.getTiempoPromedioAtencion())</span>
-<span class="fc" id="L335">            .articulosPromedio(stats.getArticulosPromedio())</span>
-<span class="fc" id="L336">            .clientesGenerados(clientesGenerados)</span>
-<span class="fc" id="L337">            .horaSimulada(hora)</span>
-<span class="fc" id="L338">            .build();</span>
+<span class="nc" id="L326">        EstadisticasDTO stats = estadisticasService.calcularEstadisticas(cajas);</span>
+<span class="nc" id="L327">        String hora = calcularHoraSimulada((int) minutosSimuladosTranscurridos);</span>
+<span class="nc" id="L328">        EstadisticasDTO completo = new EstadisticasDTO.Builder()</span>
+<span class="nc" id="L329">            .totalClientesAtendidos(stats.getTotalClientesAtendidos())</span>
+<span class="nc" id="L330">            .totalArticulosVendidos(stats.getTotalArticulosVendidos())</span>
+<span class="nc" id="L331">            .totalMinutosAtencion(stats.getTotalMinutosAtencion())</span>
+<span class="nc" id="L332">            .clientesEnCola(stats.getClientesEnCola())</span>
+<span class="nc" id="L333">            .cajeroEstrella(stats.getCajeroEstrella())</span>
+<span class="nc" id="L334">            .tiempoPromedioAtencion(stats.getTiempoPromedioAtencion())</span>
+<span class="nc" id="L335">            .articulosPromedio(stats.getArticulosPromedio())</span>
+<span class="nc" id="L336">            .clientesGenerados(clientesGenerados)</span>
+<span class="nc" id="L337">            .horaSimulada(hora)</span>
+<span class="nc" id="L338">            .build();</span>
 
-<span class="fc" id="L340">        eventPublisher.publish(new SimulacionFinalizadaEvent(completo));</span>
+<span class="nc" id="L340">        eventPublisher.publish(new SimulacionFinalizadaEvent(completo));</span>
 
-<span class="fc" id="L342">        log(&quot;\n============ ESTADISTICAS FINALES ============&quot;);</span>
-<span class="fc bfc" id="L343" title="All 2 branches covered.">        for (Caja caja : cajas) {</span>
-<span class="fc" id="L344">            log(String.format(&quot;  %s: %d clientes | Cola maxima: %d | %s&quot;,</span>
-<span class="fc" id="L345">                caja.getId(), caja.getTotalAtendidos(), caja.getColaMaxima(),</span>
-<span class="fc bfc" id="L346" title="All 2 branches covered.">                caja.esRapida() ? &quot;RAPIDA&quot; : &quot;NORMAL&quot;));</span>
-<span class="fc" id="L347">        }</span>
-<span class="fc" id="L348">        log(&quot;----------------------------------------------&quot;);</span>
-<span class="fc" id="L349">        log(&quot;  Total clientes atendidos: &quot; + completo.getTotalClientesAtendidos());</span>
-<span class="fc" id="L350">        log(&quot;  Total articulos vendidos: &quot; + completo.getTotalArticulosVendidos());</span>
-<span class="fc" id="L351">        log(&quot;  Total minutos de atencion: &quot; + completo.getTotalMinutosAtencion());</span>
-<span class="fc" id="L352">        log(&quot;  Clientes generados: &quot; + completo.getClientesGenerados());</span>
-<span class="fc" id="L353">        log(String.format(&quot;  Prom. articulos/cliente: %.2f&quot;, completo.getArticulosPromedio()));</span>
-<span class="fc" id="L354">        log(String.format(&quot;  Prom. minutos/cliente: %.2f&quot;, completo.getTiempoPromedioAtencion()));</span>
-<span class="fc" id="L355">        log(&quot;  Cajero Estrella: &quot; + completo.getCajeroEstrella());</span>
-<span class="fc" id="L356">        log(&quot;==============================================\n&quot;);</span>
-<span class="fc" id="L357">    }</span>
+<span class="nc" id="L342">        log(&quot;\n============ ESTADISTICAS FINALES ============&quot;);</span>
+<span class="nc bnc" id="L343" title="All 2 branches missed.">        for (Caja caja : cajas) {</span>
+<span class="nc" id="L344">            log(String.format(&quot;  %s: %d clientes | Cola maxima: %d | %s&quot;,</span>
+<span class="nc" id="L345">                caja.getId(), caja.getTotalAtendidos(), caja.getColaMaxima(),</span>
+<span class="nc bnc" id="L346" title="All 2 branches missed.">                caja.esRapida() ? &quot;RAPIDA&quot; : &quot;NORMAL&quot;));</span>
+<span class="nc" id="L347">        }</span>
+<span class="nc" id="L348">        log(&quot;----------------------------------------------&quot;);</span>
+<span class="nc" id="L349">        log(&quot;  Total clientes atendidos: &quot; + completo.getTotalClientesAtendidos());</span>
+<span class="nc" id="L350">        log(&quot;  Total articulos vendidos: &quot; + completo.getTotalArticulosVendidos());</span>
+<span class="nc" id="L351">        log(&quot;  Total minutos de atencion: &quot; + completo.getTotalMinutosAtencion());</span>
+<span class="nc" id="L352">        log(&quot;  Clientes generados: &quot; + completo.getClientesGenerados());</span>
+<span class="nc" id="L353">        log(String.format(&quot;  Prom. articulos/cliente: %.2f&quot;, completo.getArticulosPromedio()));</span>
+<span class="nc" id="L354">        log(String.format(&quot;  Prom. minutos/cliente: %.2f&quot;, completo.getTiempoPromedioAtencion()));</span>
+<span class="nc" id="L355">        log(&quot;  Cajero Estrella: &quot; + completo.getCajeroEstrella());</span>
+<span class="nc" id="L356">        log(&quot;==============================================\n&quot;);</span>
+<span class="nc" id="L357">    }</span>
 
     private void publicarTodasLasCajas() {
-<span class="fc bfc" id="L360" title="All 2 branches covered.">        for (Caja caja : cajas) publicarCajaActualizada(caja);</span>
-<span class="fc" id="L361">    }</span>
+<span class="nc bnc" id="L360" title="All 2 branches missed.">        for (Caja caja : cajas) publicarCajaActualizada(caja);</span>
+<span class="nc" id="L361">    }</span>
 
     private void publicarCajaActualizada(Caja caja) {
-<span class="fc" id="L364">        String numStr = caja.getId().replaceAll(&quot;\\D+&quot;, &quot;&quot;);</span>
-<span class="pc bpc" id="L365" title="1 of 2 branches missed.">        if (numStr.isEmpty()) return;</span>
-<span class="fc" id="L366">        int    num    = Integer.parseInt(numStr);</span>
-<span class="fc bfc" id="L367" title="All 2 branches covered.">        String estado = caja.estaOcupada() ? &quot;ATENDIENDO&quot; : &quot;LIBRE&quot;;</span>
-<span class="pc bpc" id="L368" title="1 of 2 branches missed.">        if (caja.getEstado().toString().equals(&quot;PAUSADA&quot;)) estado = &quot;PAUSADA&quot;;</span>
-<span class="fc bfc" id="L369" title="All 2 branches covered.">        String clienteInfo = caja.getClienteActual() != null</span>
-<span class="fc" id="L370">            ? caja.getClienteActual().getId() : &quot;&quot;;</span>
-<span class="fc bfc" id="L371" title="All 2 branches covered.">        String tipo = caja.esRapida() ? &quot;R&quot; : &quot;N&quot;;</span>
-<span class="fc" id="L372">        eventPublisher.publish(new CajaActualizadaEvent(</span>
-<span class="fc" id="L373">            num, estado, caja.getClientesEnCola(), clienteInfo, tipo));</span>
-<span class="fc" id="L374">    }</span>
+<span class="nc" id="L364">        String numStr = caja.getId().replaceAll(&quot;\\D+&quot;, &quot;&quot;);</span>
+<span class="nc bnc" id="L365" title="All 2 branches missed.">        if (numStr.isEmpty()) return;</span>
+<span class="nc" id="L366">        int    num    = Integer.parseInt(numStr);</span>
+<span class="nc bnc" id="L367" title="All 2 branches missed.">        String estado = caja.estaOcupada() ? &quot;ATENDIENDO&quot; : &quot;LIBRE&quot;;</span>
+<span class="nc bnc" id="L368" title="All 2 branches missed.">        if (caja.getEstado().toString().equals(&quot;PAUSADA&quot;)) estado = &quot;PAUSADA&quot;;</span>
+<span class="nc bnc" id="L369" title="All 2 branches missed.">        String clienteInfo = caja.getClienteActual() != null</span>
+<span class="nc" id="L370">            ? caja.getClienteActual().getId() : &quot;&quot;;</span>
+<span class="nc bnc" id="L371" title="All 2 branches missed.">        String tipo = caja.esRapida() ? &quot;R&quot; : &quot;N&quot;;</span>
+<span class="nc" id="L372">        eventPublisher.publish(new CajaActualizadaEvent(</span>
+<span class="nc" id="L373">            num, estado, caja.getClientesEnCola(), clienteInfo, tipo));</span>
+<span class="nc" id="L374">    }</span>
 
     private void publicarEstadisticas() {
-<span class="fc" id="L377">        EstadisticasDTO stats = estadisticasService.calcularEstadisticas(cajas);</span>
-<span class="fc" id="L378">        String hora = calcularHoraSimulada((int) minutosSimuladosTranscurridos);</span>
-<span class="fc" id="L379">        EstadisticasDTO completo = new EstadisticasDTO.Builder()</span>
-<span class="fc" id="L380">            .totalClientesAtendidos(stats.getTotalClientesAtendidos())</span>
-<span class="fc" id="L381">            .totalArticulosVendidos(stats.getTotalArticulosVendidos())</span>
-<span class="fc" id="L382">            .totalMinutosAtencion(stats.getTotalMinutosAtencion())</span>
-<span class="fc" id="L383">            .clientesEnCola(stats.getClientesEnCola())</span>
-<span class="fc" id="L384">            .cajeroEstrella(stats.getCajeroEstrella())</span>
-<span class="fc" id="L385">            .tiempoPromedioAtencion(stats.getTiempoPromedioAtencion())</span>
-<span class="fc" id="L386">            .articulosPromedio(stats.getArticulosPromedio())</span>
-<span class="fc" id="L387">            .clientesGenerados(clientesGenerados)</span>
-<span class="fc" id="L388">            .horaSimulada(hora)</span>
-<span class="fc" id="L389">            .build();</span>
-<span class="fc" id="L390">        eventPublisher.publish(new EstadisticasActualizadasEvent(completo));</span>
-<span class="fc" id="L391">    }</span>
+<span class="nc" id="L377">        EstadisticasDTO stats = estadisticasService.calcularEstadisticas(cajas);</span>
+<span class="nc" id="L378">        String hora = calcularHoraSimulada((int) minutosSimuladosTranscurridos);</span>
+<span class="nc" id="L379">        EstadisticasDTO completo = new EstadisticasDTO.Builder()</span>
+<span class="nc" id="L380">            .totalClientesAtendidos(stats.getTotalClientesAtendidos())</span>
+<span class="nc" id="L381">            .totalArticulosVendidos(stats.getTotalArticulosVendidos())</span>
+<span class="nc" id="L382">            .totalMinutosAtencion(stats.getTotalMinutosAtencion())</span>
+<span class="nc" id="L383">            .clientesEnCola(stats.getClientesEnCola())</span>
+<span class="nc" id="L384">            .cajeroEstrella(stats.getCajeroEstrella())</span>
+<span class="nc" id="L385">            .tiempoPromedioAtencion(stats.getTiempoPromedioAtencion())</span>
+<span class="nc" id="L386">            .articulosPromedio(stats.getArticulosPromedio())</span>
+<span class="nc" id="L387">            .clientesGenerados(clientesGenerados)</span>
+<span class="nc" id="L388">            .horaSimulada(hora)</span>
+<span class="nc" id="L389">            .build();</span>
+<span class="nc" id="L390">        eventPublisher.publish(new EstadisticasActualizadasEvent(completo));</span>
+<span class="nc" id="L391">    }</span>
 
     private boolean estaCerrado() {
-<span class="pc bpc" id="L394" title="1 of 2 branches missed.">        return minutosSimuladosTranscurridos &gt;= (long)(config.getHorasSimuladas() * 60);</span>
+<span class="nc bnc" id="L394" title="All 2 branches missed.">        return minutosSimuladosTranscurridos &gt;= (long)(config.getHorasSimuladas() * 60);</span>
     }
 
     private String calcularHoraSimulada(int minutos) {
-<span class="fc" id="L398">        int total = config.getHorasSimuladas() * 60;</span>
-<span class="fc" id="L399">        minutos   = Math.max(0, Math.min(minutos, total));</span>
-<span class="fc" id="L400">        int hora  = (HORA_APERTURA + (minutos / 60)) % 24;</span>
-<span class="fc" id="L401">        int min   = minutos % 60;</span>
-<span class="fc" id="L402">        return String.format(&quot;%02d:%02d&quot;, hora, min);</span>
+<span class="nc" id="L398">        int total = config.getHorasSimuladas() * 60;</span>
+<span class="nc" id="L399">        minutos   = Math.max(0, Math.min(minutos, total));</span>
+<span class="nc" id="L400">        int hora  = (HORA_APERTURA + (minutos / 60)) % 24;</span>
+<span class="nc" id="L401">        int min   = minutos % 60;</span>
+<span class="nc" id="L402">        return String.format(&quot;%02d:%02d&quot;, hora, min);</span>
     }
 
     private void log(String mensaje) {
-<span class="fc" id="L406">        logService.info(mensaje);</span>
-<span class="fc" id="L407">    }</span>
+<span class="nc" id="L406">        logService.info(mensaje);</span>
+<span class="nc" id="L407">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

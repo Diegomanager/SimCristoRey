@@ -5,18 +5,18 @@ public class EventoSimulacion {
     private final String     mensaje;
     private final String     horaSimulada; // &quot;Día 1 – 08:30&quot;
 
-<span class="nc" id="L8">    public EventoSimulacion(TipoEvento tipo, String mensaje, String horaSimulada) {</span>
-<span class="nc" id="L9">        this.tipo         = tipo;</span>
-<span class="nc" id="L10">        this.mensaje      = mensaje;</span>
-<span class="nc" id="L11">        this.horaSimulada = horaSimulada;</span>
-<span class="nc" id="L12">    }</span>
+<span class="fc" id="L8">    public EventoSimulacion(TipoEvento tipo, String mensaje, String horaSimulada) {</span>
+<span class="fc" id="L9">        this.tipo         = tipo;</span>
+<span class="fc" id="L10">        this.mensaje      = mensaje;</span>
+<span class="fc" id="L11">        this.horaSimulada = horaSimulada;</span>
+<span class="fc" id="L12">    }</span>
 
     /** Sobrecarga sin hora simulada (usa cadena vacía). */
     public EventoSimulacion(TipoEvento tipo, String mensaje) {
 <span class="nc" id="L16">        this(tipo, mensaje, &quot;&quot;);</span>
 <span class="nc" id="L17">    }</span>
 
-<span class="nc" id="L19">    public TipoEvento getTipo()        { return tipo; }</span>
+<span class="fc" id="L19">    public TipoEvento getTipo()        { return tipo; }</span>
 <span class="nc" id="L20">    public String     getMensaje()     { return mensaje; }</span>
 <span class="nc" id="L21">    public String     getHoraSimulada(){ return horaSimulada; }</span>
 

@@ -9,22 +9,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-<span class="nc" id="L12">public class AsignadorCajasService {</span>
+<span class="fc" id="L12">public class AsignadorCajasService {</span>
 
     public Optional&lt;Caja&gt; asignar(Socio socio, List&lt;Caja&gt; cajas) {
-<span class="nc bnc" id="L15" title="All 6 branches missed.">        if (socio == null || cajas == null || cajas.isEmpty()) return Optional.empty();</span>
-<span class="nc bnc" id="L16" title="All 2 branches missed.">        String dest = socio.getTipoCajaDestino() != null ? socio.getTipoCajaDestino() : &quot;GENERAL&quot;;</span>
+<span class="pc bpc" id="L15" title="3 of 6 branches missed.">        if (socio == null || cajas == null || cajas.isEmpty()) return Optional.empty();</span>
+<span class="pc bpc" id="L16" title="1 of 2 branches missed.">        String dest = socio.getTipoCajaDestino() != null ? socio.getTipoCajaDestino() : &quot;GENERAL&quot;;</span>
 
-<span class="nc bnc" id="L18" title="All 3 branches missed.">        return switch (dest) {</span>
+<span class="pc bpc" id="L18" title="2 of 3 branches missed.">        return switch (dest) {</span>
 <span class="nc" id="L19">            case &quot;PLATAFORMA&quot; -&gt; buscarCaja(cajas, &quot;PLATAFORMA&quot;);</span>
             case &quot;MM&quot; -&gt; {
 <span class="nc" id="L21">                Optional&lt;Caja&gt; mm = buscarCaja(cajas, &quot;MM&quot;);</span>
 <span class="nc bnc" id="L22" title="All 2 branches missed.">                yield mm.isPresent() ? mm : buscarCaja(cajas, &quot;GENERAL&quot;);</span>
             }
-<span class="nc" id="L24">            default -&gt; cajas.stream()</span>
-<span class="nc bnc" id="L25" title="All 4 branches missed.">                    .filter(c -&gt; c.isActiva() &amp;&amp; c.getEstado() == EstadoCaja.LIBRE</span>
-<span class="nc bnc" id="L26" title="All 4 branches missed.">                            &amp;&amp; (tipoCaja(c).equals(&quot;GENERAL&quot;) || tipoCaja(c).equals(&quot;MM&quot;)))</span>
-<span class="nc" id="L27">                    .min(Comparator.comparingInt(Caja::getTotalAtendidos));</span>
+<span class="fc" id="L24">            default -&gt; cajas.stream()</span>
+<span class="pc bpc" id="L25" title="1 of 4 branches missed.">                    .filter(c -&gt; c.isActiva() &amp;&amp; c.getEstado() == EstadoCaja.LIBRE</span>
+<span class="pc bpc" id="L26" title="3 of 4 branches missed.">                            &amp;&amp; (tipoCaja(c).equals(&quot;GENERAL&quot;) || tipoCaja(c).equals(&quot;MM&quot;)))</span>
+<span class="fc" id="L27">                    .min(Comparator.comparingInt(Caja::getTotalAtendidos));</span>
         };
     }
 
@@ -36,15 +36,15 @@ import java.util.stream.Collectors;
     }
 
     private String tipoCaja(Caja c) {
-<span class="nc bnc" id="L39" title="All 2 branches missed.">        if (c.getTipo() == null) return &quot;GENERAL&quot;;</span>
-<span class="nc" id="L40">        return c.getTipo().getId().toUpperCase();</span>
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">        if (c.getTipo() == null) return &quot;GENERAL&quot;;</span>
+<span class="fc" id="L40">        return c.getTipo().getId().toUpperCase();</span>
     }
 
     public boolean confirmarAsignacion(Socio socio, Caja caja, long tiempoActual) {
-<span class="nc bnc" id="L44" title="All 6 branches missed.">        if (socio == null || caja == null || caja.getEstado() != EstadoCaja.LIBRE) return false;</span>
-<span class="nc" id="L45">        caja.asignarSocio(socio, tiempoActual);</span>
-<span class="nc" id="L46">        socio.setTiempoInicioAtencion(tiempoActual);</span>
-<span class="nc" id="L47">        return true;</span>
+<span class="pc bpc" id="L44" title="3 of 6 branches missed.">        if (socio == null || caja == null || caja.getEstado() != EstadoCaja.LIBRE) return false;</span>
+<span class="fc" id="L45">        caja.asignarSocio(socio, tiempoActual);</span>
+<span class="fc" id="L46">        socio.setTiempoInicioAtencion(tiempoActual);</span>
+<span class="fc" id="L47">        return true;</span>
     }
 
     public List&lt;Caja&gt; cajasDisponibles(List&lt;Caja&gt; cajas) {

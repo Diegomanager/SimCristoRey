@@ -13,27 +13,27 @@ public class RecomendarMejoraUseCase {
     private final DiagnosticoService diagnosticoService;
     private final OptimizadorService optimizadorService;
     
-<span class="fc" id="L16">    public RecomendarMejoraUseCase() {</span>
-<span class="fc" id="L17">        this.diagnosticoService = new DiagnosticoService();</span>
-<span class="fc" id="L18">        this.optimizadorService = new OptimizadorService();</span>
-<span class="fc" id="L19">    }</span>
+<span class="nc" id="L16">    public RecomendarMejoraUseCase() {</span>
+<span class="nc" id="L17">        this.diagnosticoService = new DiagnosticoService();</span>
+<span class="nc" id="L18">        this.optimizadorService = new OptimizadorService();</span>
+<span class="nc" id="L19">    }</span>
     
     public RecomendacionDTO ejecutar(List&lt;Caja&gt; cajas, Configuracion configuracion) {
         // 1. Diagnosticar
-<span class="fc" id="L23">        List&lt;DiagnosticoService.Diagnostico&gt; diagnosticos = </span>
-<span class="fc" id="L24">            diagnosticoService.diagnosticar(cajas);</span>
+<span class="nc" id="L23">        List&lt;DiagnosticoService.Diagnostico&gt; diagnosticos = </span>
+<span class="nc" id="L24">            diagnosticoService.diagnosticar(cajas);</span>
         
         // 2. Generar recomendación general
-<span class="fc" id="L27">        Recomendacion recomendacionGeneral = </span>
-<span class="fc" id="L28">            diagnosticoService.generarRecomendacionGeneral(diagnosticos);</span>
+<span class="nc" id="L27">        Recomendacion recomendacionGeneral = </span>
+<span class="nc" id="L28">            diagnosticoService.generarRecomendacionGeneral(diagnosticos);</span>
         
         // 3. Contar críticos
-<span class="fc" id="L31">        long criticos = diagnosticos.stream()</span>
-<span class="pc bpc" id="L32" title="1 of 2 branches missed.">            .filter(d -&gt; d.getNivel() == DiagnosticoService.NivelAlerta.CRITICO)</span>
-<span class="fc" id="L33">            .count();</span>
+<span class="nc" id="L31">        long criticos = diagnosticos.stream()</span>
+<span class="nc bnc" id="L32" title="All 2 branches missed.">            .filter(d -&gt; d.getNivel() == DiagnosticoService.NivelAlerta.CRITICO)</span>
+<span class="nc" id="L33">            .count();</span>
         
         // 4. Si hay críticos, optimizar
-<span class="pc bpc" id="L36" title="1 of 2 branches missed.">        if (criticos &gt; 0) {</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        if (criticos &gt; 0) {</span>
 <span class="nc" id="L37">            List&lt;OptimizadorService.ResultadoOptimizacion&gt; resultados = </span>
 <span class="nc" id="L38">                optimizadorService.optimizar(configuracion, 10, 5);</span>
             
@@ -58,11 +58,11 @@ public class RecomendarMejoraUseCase {
         }
         
         // 5. Sin críticos, devolver la recomendación general
-<span class="fc" id="L61">        return new RecomendacionDTO(</span>
-<span class="fc" id="L62">            recomendacionGeneral.getMensaje(),</span>
-<span class="fc" id="L63">            recomendacionGeneral.getPrioridad(),</span>
-<span class="fc" id="L64">            recomendacionGeneral.getConfiguracionSugerida(),</span>
-<span class="fc" id="L65">            recomendacionGeneral.getMejoraEstimada(),</span>
+<span class="nc" id="L61">        return new RecomendacionDTO(</span>
+<span class="nc" id="L62">            recomendacionGeneral.getMensaje(),</span>
+<span class="nc" id="L63">            recomendacionGeneral.getPrioridad(),</span>
+<span class="nc" id="L64">            recomendacionGeneral.getConfiguracionSugerida(),</span>
+<span class="nc" id="L65">            recomendacionGeneral.getMejoraEstimada(),</span>
             false
         );
     }

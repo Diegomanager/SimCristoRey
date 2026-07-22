@@ -5,29 +5,29 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-<span class="nc" id="L8">public class SalaEspera {</span>
-<span class="nc" id="L9">    private final Queue&lt;Socio&gt; colaPreferentes = new LinkedList&lt;&gt;();</span>
-<span class="nc" id="L10">    private final Queue&lt;Socio&gt; colaNormales    = new LinkedList&lt;&gt;();</span>
-<span class="nc" id="L11">    private int totalAtendidos = 0;</span>
+<span class="fc" id="L8">public class SalaEspera {</span>
+<span class="fc" id="L9">    private final Queue&lt;Socio&gt; colaPreferentes = new LinkedList&lt;&gt;();</span>
+<span class="fc" id="L10">    private final Queue&lt;Socio&gt; colaNormales    = new LinkedList&lt;&gt;();</span>
+<span class="fc" id="L11">    private int totalAtendidos = 0;</span>
 
     public void agregarSocio(Socio s) {
-<span class="nc bnc" id="L14" title="All 2 branches missed.">        if (s == null) return;</span>
-<span class="nc bnc" id="L15" title="All 2 branches missed.">        if (s.isEsPreferente()) colaPreferentes.offer(s);</span>
-<span class="nc" id="L16">        else                    colaNormales.offer(s);</span>
-<span class="nc" id="L17">    }</span>
+<span class="pc bpc" id="L14" title="1 of 2 branches missed.">        if (s == null) return;</span>
+<span class="fc bfc" id="L15" title="All 2 branches covered.">        if (s.isEsPreferente()) colaPreferentes.offer(s);</span>
+<span class="fc" id="L16">        else                    colaNormales.offer(s);</span>
+<span class="fc" id="L17">    }</span>
 
     public Socio verSiguiente() {
-<span class="nc bnc" id="L20" title="All 2 branches missed.">        if (!colaPreferentes.isEmpty()) return colaPreferentes.peek();</span>
-<span class="nc" id="L21">        return colaNormales.peek();</span>
+<span class="fc bfc" id="L20" title="All 2 branches covered.">        if (!colaPreferentes.isEmpty()) return colaPreferentes.peek();</span>
+<span class="fc" id="L21">        return colaNormales.peek();</span>
     }
 
     public Socio siguienteSocio() {
-<span class="nc bnc" id="L25" title="All 2 branches missed.">        if (!colaPreferentes.isEmpty()) return colaPreferentes.poll();</span>
-<span class="nc" id="L26">        return colaNormales.poll();</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">        if (!colaPreferentes.isEmpty()) return colaPreferentes.poll();</span>
+<span class="fc" id="L26">        return colaNormales.poll();</span>
     }
 
-<span class="nc bnc" id="L29" title="All 4 branches missed.">    public boolean isEmpty() { return colaPreferentes.isEmpty() &amp;&amp; colaNormales.isEmpty(); }</span>
-<span class="nc" id="L30">    public int getTotalEsperando() { return colaPreferentes.size() + colaNormales.size(); }</span>
+<span class="fc bfc" id="L29" title="All 4 branches covered.">    public boolean isEmpty() { return colaPreferentes.isEmpty() &amp;&amp; colaNormales.isEmpty(); }</span>
+<span class="fc" id="L30">    public int getTotalEsperando() { return colaPreferentes.size() + colaNormales.size(); }</span>
 <span class="nc" id="L31">    public int getTotalPreferentesEsperando() { return colaPreferentes.size(); }</span>
 <span class="nc" id="L32">    public int getTotalNormalesEsperando()     { return colaNormales.size(); }</span>
 

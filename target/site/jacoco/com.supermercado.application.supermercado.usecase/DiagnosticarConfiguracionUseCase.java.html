@@ -10,56 +10,56 @@ public class DiagnosticarConfiguracionUseCase {
     
     private final DiagnosticoService diagnosticoService;
     
-<span class="fc" id="L13">    public DiagnosticarConfiguracionUseCase() {</span>
-<span class="fc" id="L14">        this.diagnosticoService = new DiagnosticoService();</span>
-<span class="fc" id="L15">    }</span>
+<span class="nc" id="L13">    public DiagnosticarConfiguracionUseCase() {</span>
+<span class="nc" id="L14">        this.diagnosticoService = new DiagnosticoService();</span>
+<span class="nc" id="L15">    }</span>
     
     public DiagnosticoDTO ejecutar(List&lt;Caja&gt; cajas) {
-<span class="fc" id="L18">        List&lt;DiagnosticoService.Diagnostico&gt; diagnosticos = </span>
-<span class="fc" id="L19">            diagnosticoService.diagnosticar(cajas);</span>
+<span class="nc" id="L18">        List&lt;DiagnosticoService.Diagnostico&gt; diagnosticos = </span>
+<span class="nc" id="L19">            diagnosticoService.diagnosticar(cajas);</span>
         
-<span class="fc" id="L21">        List&lt;DiagnosticoDTO.DiagnosticoItem&gt; items = diagnosticos.stream()</span>
-<span class="fc" id="L22">            .map(d -&gt; new DiagnosticoDTO.DiagnosticoItem(</span>
-<span class="fc" id="L23">                d.getCajaId(),</span>
-<span class="fc" id="L24">                d.getNivel().name(),</span>
-<span class="fc" id="L25">                d.getNivel().icono,</span>
-<span class="fc" id="L26">                d.getMensaje(),</span>
-<span class="fc" id="L27">                d.getSugerencia(),</span>
-<span class="fc" id="L28">                d.getColaActual(),</span>
-<span class="fc" id="L29">                d.getColaMaxima()</span>
+<span class="nc" id="L21">        List&lt;DiagnosticoDTO.DiagnosticoItem&gt; items = diagnosticos.stream()</span>
+<span class="nc" id="L22">            .map(d -&gt; new DiagnosticoDTO.DiagnosticoItem(</span>
+<span class="nc" id="L23">                d.getCajaId(),</span>
+<span class="nc" id="L24">                d.getNivel().name(),</span>
+<span class="nc" id="L25">                d.getNivel().icono,</span>
+<span class="nc" id="L26">                d.getMensaje(),</span>
+<span class="nc" id="L27">                d.getSugerencia(),</span>
+<span class="nc" id="L28">                d.getColaActual(),</span>
+<span class="nc" id="L29">                d.getColaMaxima()</span>
             ))
-<span class="fc" id="L31">            .collect(Collectors.toList());</span>
+<span class="nc" id="L31">            .collect(Collectors.toList());</span>
         
-<span class="fc" id="L33">        long criticos = diagnosticos.stream()</span>
-<span class="fc bfc" id="L34" title="All 2 branches covered.">            .filter(d -&gt; d.getNivel() == DiagnosticoService.NivelAlerta.CRITICO).count();</span>
-<span class="fc" id="L35">        long alertas = diagnosticos.stream()</span>
-<span class="pc bpc" id="L36" title="1 of 2 branches missed.">            .filter(d -&gt; d.getNivel() == DiagnosticoService.NivelAlerta.ALERTA).count();</span>
-<span class="fc" id="L37">        long atencion = diagnosticos.stream()</span>
-<span class="pc bpc" id="L38" title="1 of 2 branches missed.">            .filter(d -&gt; d.getNivel() == DiagnosticoService.NivelAlerta.ATENCION).count();</span>
+<span class="nc" id="L33">        long criticos = diagnosticos.stream()</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">            .filter(d -&gt; d.getNivel() == DiagnosticoService.NivelAlerta.CRITICO).count();</span>
+<span class="nc" id="L35">        long alertas = diagnosticos.stream()</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">            .filter(d -&gt; d.getNivel() == DiagnosticoService.NivelAlerta.ALERTA).count();</span>
+<span class="nc" id="L37">        long atencion = diagnosticos.stream()</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">            .filter(d -&gt; d.getNivel() == DiagnosticoService.NivelAlerta.ATENCION).count();</span>
         
-<span class="fc" id="L40">        String resumen = generarResumen(criticos, alertas, atencion);</span>
+<span class="nc" id="L40">        String resumen = generarResumen(criticos, alertas, atencion);</span>
         
-<span class="fc" id="L42">        return new DiagnosticoDTO(items, criticos, alertas, atencion, resumen);</span>
+<span class="nc" id="L42">        return new DiagnosticoDTO(items, criticos, alertas, atencion, resumen);</span>
     }
     
     private String generarResumen(long criticos, long alertas, long atencion) {
-<span class="fc" id="L46">        StringBuilder sb = new StringBuilder();</span>
-<span class="fc" id="L47">        sb.append(&quot;RESUMEN DEL DIAGNOSTICO:\n&quot;);</span>
-<span class="fc" id="L48">        sb.append(&quot;  Criticos: &quot;).append(criticos).append(&quot;\n&quot;);</span>
-<span class="fc" id="L49">        sb.append(&quot;  Alertas: &quot;).append(alertas).append(&quot;\n&quot;);</span>
-<span class="fc" id="L50">        sb.append(&quot;  Atencion: &quot;).append(atencion).append(&quot;\n&quot;);</span>
+<span class="nc" id="L46">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L47">        sb.append(&quot;RESUMEN DEL DIAGNOSTICO:\n&quot;);</span>
+<span class="nc" id="L48">        sb.append(&quot;  Criticos: &quot;).append(criticos).append(&quot;\n&quot;);</span>
+<span class="nc" id="L49">        sb.append(&quot;  Alertas: &quot;).append(alertas).append(&quot;\n&quot;);</span>
+<span class="nc" id="L50">        sb.append(&quot;  Atencion: &quot;).append(atencion).append(&quot;\n&quot;);</span>
         
-<span class="fc bfc" id="L52" title="All 2 branches covered.">        if (criticos &gt; 0) {</span>
-<span class="fc" id="L53">            sb.append(&quot;  ESTADO: CRITICO - Se requieren cambios urgentes&quot;);</span>
-<span class="pc bpc" id="L54" title="1 of 2 branches missed.">        } else if (alertas &gt; 0) {</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">        if (criticos &gt; 0) {</span>
+<span class="nc" id="L53">            sb.append(&quot;  ESTADO: CRITICO - Se requieren cambios urgentes&quot;);</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        } else if (alertas &gt; 0) {</span>
 <span class="nc" id="L55">            sb.append(&quot;  ESTADO: ALERTA - Se recomienda optimizacion&quot;);</span>
-<span class="pc bpc" id="L56" title="1 of 2 branches missed.">        } else if (atencion &gt; 0) {</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        } else if (atencion &gt; 0) {</span>
 <span class="nc" id="L57">            sb.append(&quot;  ESTADO: ATENCION - Monitorear el sistema&quot;);</span>
         } else {
-<span class="fc" id="L59">            sb.append(&quot;  ESTADO: NORMAL - Sistema funcionando correctamente&quot;);</span>
+<span class="nc" id="L59">            sb.append(&quot;  ESTADO: NORMAL - Sistema funcionando correctamente&quot;);</span>
         }
         
-<span class="fc" id="L62">        return sb.toString();</span>
+<span class="nc" id="L62">        return sb.toString();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

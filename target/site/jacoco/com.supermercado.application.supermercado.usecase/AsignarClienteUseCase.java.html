@@ -11,18 +11,18 @@ public class AsignarClienteUseCase {
     
     private final SimuladorService simuladorService;
     
-<span class="fc" id="L14">    public AsignarClienteUseCase() {</span>
-<span class="fc" id="L15">        this.simuladorService = new SimuladorService(new RelojSimulacionService());</span>
-<span class="fc" id="L16">    }</span>
+<span class="nc" id="L14">    public AsignarClienteUseCase() {</span>
+<span class="nc" id="L15">        this.simuladorService = new SimuladorService(new RelojSimulacionService());</span>
+<span class="nc" id="L16">    }</span>
     
     public void ejecutar(List&lt;Caja&gt; cajas, Cliente cliente) {
-<span class="fc bfc" id="L19" title="All 4 branches covered.">        if (cajas == null || cajas.isEmpty()) {</span>
-<span class="fc" id="L20">            throw new IllegalArgumentException(&quot;La lista de cajas no puede estar vac?a&quot;);</span>
+<span class="nc bnc" id="L19" title="All 4 branches missed.">        if (cajas == null || cajas.isEmpty()) {</span>
+<span class="nc" id="L20">            throw new IllegalArgumentException(&quot;La lista de cajas no puede estar vac?a&quot;);</span>
         }
-<span class="fc bfc" id="L22" title="All 2 branches covered.">        if (cliente == null) {</span>
-<span class="fc" id="L23">            throw new IllegalArgumentException(&quot;El cliente no puede ser nulo&quot;);</span>
+<span class="nc bnc" id="L22" title="All 2 branches missed.">        if (cliente == null) {</span>
+<span class="nc" id="L23">            throw new IllegalArgumentException(&quot;El cliente no puede ser nulo&quot;);</span>
         }
-<span class="fc" id="L25">        simuladorService.asignarCliente(cajas, cliente);</span>
-<span class="fc" id="L26">    }</span>
+<span class="nc" id="L25">        simuladorService.asignarCliente(cajas, cliente);</span>
+<span class="nc" id="L26">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

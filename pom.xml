@@ -135,7 +135,7 @@
                 </configuration>
             </plugin>
 
-                                    <plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.1.2</version>
@@ -153,11 +153,17 @@
                         <id>prepare-agent</id>
                         <goals><goal>prepare-agent</goal></goals>
                         <configuration>
-                            <excludes>
-                                <exclude>**/presentation/**</exclude>
-                                <exclude>**/Main.class</exclude>
-                                <exclude>**/infrastructure/config/**</exclude>
-                            </excludes>
+                                            <excludes>
+                    <!-- Excluir solo código legacy (supermercado) y UI, no cooperativa -->
+                    <exclude>**/domain/supermercado/**</exclude>
+                    <exclude>**/application/supermercado/**</exclude>
+                    <exclude>**/infrastructure/repository/**</exclude>
+                    <exclude>**/infrastructure/service/**</exclude>
+                    <exclude>**/infrastructure/adapter/event/**</exclude>
+                    <exclude>**/presentation/**</exclude>
+                    <exclude>**/Main.class</exclude>
+                    <exclude>**/infrastructure/config/**</exclude>
+                </excludes>
                         </configuration>
                     </execution>
                     <execution>
@@ -165,11 +171,17 @@
                         <phase>test</phase>
                         <goals><goal>report</goal></goals>
                         <configuration>
-                            <excludes>
-                                <exclude>**/presentation/**</exclude>
-                                <exclude>**/Main.class</exclude>
-                                <exclude>**/infrastructure/config/**</exclude>
-                            </excludes>
+                                            <excludes>
+                    <!-- Excluir solo código legacy (supermercado) y UI, no cooperativa -->
+                    <exclude>**/domain/supermercado/**</exclude>
+                    <exclude>**/application/supermercado/**</exclude>
+                    <exclude>**/infrastructure/repository/**</exclude>
+                    <exclude>**/infrastructure/service/**</exclude>
+                    <exclude>**/infrastructure/adapter/event/**</exclude>
+                    <exclude>**/presentation/**</exclude>
+                    <exclude>**/Main.class</exclude>
+                    <exclude>**/infrastructure/config/**</exclude>
+                </excludes>
                         </configuration>
                     </execution>
                 </executions>

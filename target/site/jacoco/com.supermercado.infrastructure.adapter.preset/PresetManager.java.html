@@ -6,19 +6,19 @@ import java.util.Properties;
 <span class="nc" id="L6">public class PresetManager {</span>
 
     public static void guardar(File archivo, Properties props) throws IOException {
-<span class="nc" id="L9">        File dir = archivo.getParentFile();</span>
-<span class="nc bnc" id="L10" title="All 4 branches missed.">        if (dir != null &amp;&amp; !dir.exists()) dir.mkdirs();</span>
-<span class="nc" id="L11">        try (OutputStream os = new FileOutputStream(archivo)) {</span>
-<span class="nc" id="L12">            props.store(os, &quot;SimCristoRey - Preset de configuracion&quot;);</span>
+<span class="fc" id="L9">        File dir = archivo.getParentFile();</span>
+<span class="pc bpc" id="L10" title="1 of 4 branches missed.">        if (dir != null &amp;&amp; !dir.exists()) dir.mkdirs();</span>
+<span class="fc" id="L11">        try (OutputStream os = new FileOutputStream(archivo)) {</span>
+<span class="fc" id="L12">            props.store(os, &quot;SimCristoRey - Preset de configuracion&quot;);</span>
         }
-<span class="nc" id="L14">    }</span>
+<span class="fc" id="L14">    }</span>
 
     public static Properties cargar(File archivo) throws IOException {
-<span class="nc" id="L17">        Properties props = new Properties();</span>
-<span class="nc" id="L18">        try (InputStream is = new FileInputStream(archivo)) {</span>
-<span class="nc" id="L19">            props.load(is);</span>
+<span class="fc" id="L17">        Properties props = new Properties();</span>
+<span class="fc" id="L18">        try (InputStream is = new FileInputStream(archivo)) {</span>
+<span class="fc" id="L19">            props.load(is);</span>
         }
-<span class="nc" id="L21">        return props;</span>
+<span class="fc" id="L21">        return props;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -18,88 +18,88 @@ import java.util.List;
  * Ambos scores se normalizan sobre promedios globales para
  * que la comparacion sea justa entre tipos distintos de caja.
  */
-<span class="fc" id="L21">public class EstadisticasService {</span>
+<span class="nc" id="L21">public class EstadisticasService {</span>
 
     public EstadisticasDTO calcularEstadisticas(List&lt;Caja&gt; cajas) {
-<span class="pc bpc" id="L24" title="1 of 4 branches missed.">        if (cajas == null || cajas.isEmpty()) {</span>
-<span class="fc" id="L25">            return new EstadisticasDTO();</span>
+<span class="nc bnc" id="L24" title="All 4 branches missed.">        if (cajas == null || cajas.isEmpty()) {</span>
+<span class="nc" id="L25">            return new EstadisticasDTO();</span>
         }
 
         // --- Pasada 1: totales globales ---
-<span class="fc" id="L29">        int totalAtendidos       = 0;</span>
-<span class="fc" id="L30">        int totalArticulos       = 0;</span>
-<span class="fc" id="L31">        int totalMinutosAtencion = 0;</span>
-<span class="fc" id="L32">        int totalEnCola          = 0;</span>
+<span class="nc" id="L29">        int totalAtendidos       = 0;</span>
+<span class="nc" id="L30">        int totalArticulos       = 0;</span>
+<span class="nc" id="L31">        int totalMinutosAtencion = 0;</span>
+<span class="nc" id="L32">        int totalEnCola          = 0;</span>
 
-<span class="fc bfc" id="L34" title="All 2 branches covered.">        for (Caja caja : cajas) {</span>
-<span class="fc" id="L35">            totalAtendidos += caja.getTotalAtendidos();</span>
-<span class="fc" id="L36">            totalEnCola    += caja.getClientesEnCola();</span>
-<span class="fc bfc" id="L37" title="All 2 branches covered.">            for (Cliente c : caja.getClientesAtendidos()) {</span>
-<span class="fc" id="L38">                totalArticulos       += c.getCantidadArticulos();</span>
-<span class="fc" id="L39">                totalMinutosAtencion += c.getTiempoAtencionReal();</span>
-<span class="fc" id="L40">            }</span>
-<span class="fc" id="L41">        }</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">        for (Caja caja : cajas) {</span>
+<span class="nc" id="L35">            totalAtendidos += caja.getTotalAtendidos();</span>
+<span class="nc" id="L36">            totalEnCola    += caja.getClientesEnCola();</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">            for (Cliente c : caja.getClientesAtendidos()) {</span>
+<span class="nc" id="L38">                totalArticulos       += c.getCantidadArticulos();</span>
+<span class="nc" id="L39">                totalMinutosAtencion += c.getTiempoAtencionReal();</span>
+<span class="nc" id="L40">            }</span>
+<span class="nc" id="L41">        }</span>
 
         // IPM de referencia global (articulos/minuto promedio de toda la simulacion)
-<span class="fc bfc" id="L44" title="All 2 branches covered.">        double ipmGlobal = (totalMinutosAtencion &gt; 0)</span>
-<span class="fc" id="L45">            ? (double) totalArticulos / totalMinutosAtencion : 1.0;</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        double ipmGlobal = (totalMinutosAtencion &gt; 0)</span>
+<span class="nc" id="L45">            ? (double) totalArticulos / totalMinutosAtencion : 1.0;</span>
 
         // --- Pasada 2: score IPM por caja ---
-<span class="fc" id="L48">        String cajeroEstrella = &quot;-&quot;;</span>
-<span class="fc" id="L49">        double mejorScore     = -1.0;</span>
+<span class="nc" id="L48">        String cajeroEstrella = &quot;-&quot;;</span>
+<span class="nc" id="L49">        double mejorScore     = -1.0;</span>
 
-<span class="fc bfc" id="L51" title="All 2 branches covered.">        for (Caja caja : cajas) {</span>
-<span class="fc" id="L52">            int atendidos = caja.getTotalAtendidos();</span>
-<span class="fc bfc" id="L53" title="All 2 branches covered.">            if (atendidos == 0) continue;</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        for (Caja caja : cajas) {</span>
+<span class="nc" id="L52">            int atendidos = caja.getTotalAtendidos();</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">            if (atendidos == 0) continue;</span>
 
             // Articulos y minutos de esta caja especifica
-<span class="fc" id="L56">            int artsCaja    = 0;</span>
-<span class="fc" id="L57">            int minutosCaja = 0;</span>
-<span class="fc bfc" id="L58" title="All 2 branches covered.">            for (Cliente c : caja.getClientesAtendidos()) {</span>
-<span class="fc" id="L59">                artsCaja    += c.getCantidadArticulos();</span>
-<span class="fc" id="L60">                minutosCaja += c.getTiempoAtencionReal();</span>
-<span class="fc" id="L61">            }</span>
+<span class="nc" id="L56">            int artsCaja    = 0;</span>
+<span class="nc" id="L57">            int minutosCaja = 0;</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">            for (Cliente c : caja.getClientesAtendidos()) {</span>
+<span class="nc" id="L59">                artsCaja    += c.getCantidadArticulos();</span>
+<span class="nc" id="L60">                minutosCaja += c.getTiempoAtencionReal();</span>
+<span class="nc" id="L61">            }</span>
 
             // IPM de esta caja
-<span class="pc bpc" id="L64" title="1 of 2 branches missed.">            double ipm = (minutosCaja &gt; 0)</span>
-<span class="pc" id="L65">                ? (double) artsCaja / minutosCaja : 0.0;</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">            double ipm = (minutosCaja &gt; 0)</span>
+<span class="nc" id="L65">                ? (double) artsCaja / minutosCaja : 0.0;</span>
 
             // IPM normalizado: cuanto mejor que el promedio global
-<span class="pc bpc" id="L68" title="1 of 2 branches missed.">            double ipmNorm = (ipmGlobal &gt; 0) ? ipm / ipmGlobal : 0.0;</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">            double ipmNorm = (ipmGlobal &gt; 0) ? ipm / ipmGlobal : 0.0;</span>
 
             // Ratio de clientes: que parte del total atendio esta caja
-<span class="pc bpc" id="L71" title="1 of 2 branches missed.">            double ratioClientes = (totalAtendidos &gt; 0)</span>
-<span class="pc" id="L72">                ? (double) atendidos / totalAtendidos : 0.0;</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">            double ratioClientes = (totalAtendidos &gt; 0)</span>
+<span class="nc" id="L72">                ? (double) atendidos / totalAtendidos : 0.0;</span>
 
             double score;
-<span class="fc bfc" id="L75" title="All 2 branches covered.">            if (caja.esRapida()) {</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">            if (caja.esRapida()) {</span>
                 // Caja rapida: prioriza clientes atendidos (velocidad de turno)
-<span class="fc" id="L77">                score = ratioClientes * 0.65 + ipmNorm * 0.35;</span>
+<span class="nc" id="L77">                score = ratioClientes * 0.65 + ipmNorm * 0.35;</span>
             } else {
                 // Caja normal: prioriza articulos por minuto (escaneo)
-<span class="fc" id="L80">                score = ipmNorm * 0.70 + ratioClientes * 0.30;</span>
+<span class="nc" id="L80">                score = ipmNorm * 0.70 + ratioClientes * 0.30;</span>
             }
 
-<span class="fc bfc" id="L83" title="All 2 branches covered.">            if (score &gt; mejorScore) {</span>
-<span class="fc" id="L84">                mejorScore     = score;</span>
-<span class="fc" id="L85">                cajeroEstrella = caja.getId();</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">            if (score &gt; mejorScore) {</span>
+<span class="nc" id="L84">                mejorScore     = score;</span>
+<span class="nc" id="L85">                cajeroEstrella = caja.getId();</span>
             }
-<span class="fc" id="L87">        }</span>
+<span class="nc" id="L87">        }</span>
 
-<span class="fc bfc" id="L89" title="All 2 branches covered.">        double tiempoPromedio    = (totalAtendidos &gt; 0)</span>
-<span class="fc" id="L90">            ? (double) totalMinutosAtencion / totalAtendidos : 0.0;</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">        double articulosPromedio = (totalAtendidos &gt; 0)</span>
-<span class="fc" id="L92">            ? (double) totalArticulos / totalAtendidos : 0.0;</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        double tiempoPromedio    = (totalAtendidos &gt; 0)</span>
+<span class="nc" id="L90">            ? (double) totalMinutosAtencion / totalAtendidos : 0.0;</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        double articulosPromedio = (totalAtendidos &gt; 0)</span>
+<span class="nc" id="L92">            ? (double) totalArticulos / totalAtendidos : 0.0;</span>
 
-<span class="fc" id="L94">        return new EstadisticasDTO.Builder()</span>
-<span class="fc" id="L95">                .totalClientesAtendidos(totalAtendidos)</span>
-<span class="fc" id="L96">                .totalArticulosVendidos(totalArticulos)</span>
-<span class="fc" id="L97">                .totalMinutosAtencion(totalMinutosAtencion)</span>
-<span class="fc" id="L98">                .clientesEnCola(totalEnCola)</span>
-<span class="fc" id="L99">                .cajeroEstrella(cajeroEstrella)</span>
-<span class="fc" id="L100">                .tiempoPromedioAtencion(tiempoPromedio)</span>
-<span class="fc" id="L101">                .articulosPromedio(articulosPromedio)</span>
-<span class="fc" id="L102">                .build();</span>
+<span class="nc" id="L94">        return new EstadisticasDTO.Builder()</span>
+<span class="nc" id="L95">                .totalClientesAtendidos(totalAtendidos)</span>
+<span class="nc" id="L96">                .totalArticulosVendidos(totalArticulos)</span>
+<span class="nc" id="L97">                .totalMinutosAtencion(totalMinutosAtencion)</span>
+<span class="nc" id="L98">                .clientesEnCola(totalEnCola)</span>
+<span class="nc" id="L99">                .cajeroEstrella(cajeroEstrella)</span>
+<span class="nc" id="L100">                .tiempoPromedioAtencion(tiempoPromedio)</span>
+<span class="nc" id="L101">                .articulosPromedio(articulosPromedio)</span>
+<span class="nc" id="L102">                .build();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

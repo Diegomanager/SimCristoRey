@@ -102,14 +102,14 @@ import java.util.*;
 <span class="fc" id="L102">            int colInicio = indiceColumna(header, &quot;hora_inicio_atencion&quot;);</span>
 <span class="fc" id="L103">            int colFin = indiceColumna(header, &quot;hora_fin_atencion&quot;);</span>
 <span class="fc" id="L104">            int colFecha = indiceColumna(header, &quot;fecha_creacion&quot;);</span>
-<span class="pc bpc" id="L105" title="1 of 2 branches missed.">            colFechaExiste = colFecha &gt;= 0;</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">            colFechaExiste = colFecha &gt;= 0;</span>
 
-<span class="pc bpc" id="L107" title="4 of 8 branches missed.">            if (colId &lt; 0 || colPref &lt; 0 || colInicio &lt; 0 || colFin &lt; 0) {</span>
-<span class="nc" id="L108">                throw new IOException(&quot;Faltan columnas obligatorias: id_tipo_servicio, &quot;</span>
+<span class="pc bpc" id="L107" title="3 of 8 branches missed.">            if (colId &lt; 0 || colPref &lt; 0 || colInicio &lt; 0 || colFin &lt; 0) {</span>
+<span class="fc" id="L108">                throw new IOException(&quot;Faltan columnas obligatorias: id_tipo_servicio, &quot;</span>
                         + &quot;es_preferencial, hora_inicio_atencion, hora_fin_atencion.&quot;);
             }
-<span class="pc bpc" id="L111" title="1 of 2 branches missed.">            if (!colFechaExiste) {</span>
-<span class="nc" id="L112">                System.out.println(&quot;&gt;&gt;&gt; [Importar] AVISO: no se encontro 'fecha_creacion'. &quot;</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">            if (!colFechaExiste) {</span>
+<span class="fc" id="L112">                System.out.println(&quot;&gt;&gt;&gt; [Importar] AVISO: no se encontro 'fecha_creacion'. &quot;</span>
                         + &quot;Sin fechas no hay replay posible, solo calibracion de servicios/probabilidades.&quot;);
             }
 
@@ -122,14 +122,14 @@ import java.util.*;
 <span class="fc" id="L122">                    LocalTime inicio = leerHora(fila.getCell(colInicio));</span>
 <span class="fc" id="L123">                    LocalTime fin = leerHora(fila.getCell(colFin));</span>
 
-<span class="pc bpc" id="L125" title="4 of 8 branches missed.">                    if (idTipo == null || esPref == null || inicio == null || fin == null) {</span>
-<span class="nc" id="L126">                        filasIgnoradas++;</span>
-<span class="nc" id="L127">                        continue;</span>
+<span class="pc bpc" id="L125" title="3 of 8 branches missed.">                    if (idTipo == null || esPref == null || inicio == null || fin == null) {</span>
+<span class="fc" id="L126">                        filasIgnoradas++;</span>
+<span class="fc" id="L127">                        continue;</span>
                     }
 
 <span class="fc" id="L130">                    long minutos = Duration.between(inicio, fin).toMinutes();</span>
 <span class="pc bpc" id="L131" title="1 of 2 branches missed.">                    if (minutos &lt; 0) minutos += 24 * 60;</span>
-<span class="pc bpc" id="L132" title="1 of 2 branches missed.">                    if (minutos &lt;= 0) minutos = 1;</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">                    if (minutos &lt;= 0) minutos = 1;</span>
 
 <span class="pc bpc" id="L134" title="1 of 2 branches missed.">                    String clave = idTipo + &quot;-&quot; + (esPref != 0 ? &quot;1&quot; : &quot;0&quot;);</span>
 <span class="fc" id="L135">                    String codigo = MAPA_CODIGOS.get(clave);</span>
@@ -141,7 +141,7 @@ import java.util.*;
 <span class="fc" id="L141">                    duracionesPorCodigo.computeIfAbsent(codigo, k -&gt; new ArrayList&lt;&gt;()).add((int) minutos);</span>
 <span class="fc" id="L142">                    totalFichas++;</span>
 
-<span class="pc bpc" id="L144" title="1 of 2 branches missed.">                    if (colFechaExiste) {</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">                    if (colFechaExiste) {</span>
 <span class="fc" id="L145">                        LocalDateTime instante = leerFechaHora(fila.getCell(colFecha));</span>
 <span class="pc bpc" id="L146" title="1 of 2 branches missed.">                        if (instante != null) {</span>
 <span class="fc" id="L147">                            instantesPorDia.computeIfAbsent(instante.toLocalDate(), k -&gt; new ArrayList&lt;&gt;())</span>
@@ -195,7 +195,7 @@ import java.util.*;
 <span class="fc" id="L195">        int maxSociosDia = 0;</span>
 <span class="fc" id="L196">        double intervaloPromedio = 0;</span>
 
-<span class="pc bpc" id="L198" title="2 of 4 branches missed.">        if (colFechaExiste &amp;&amp; !instantesPorDia.isEmpty()) {</span>
+<span class="pc bpc" id="L198" title="1 of 4 branches missed.">        if (colFechaExiste &amp;&amp; !instantesPorDia.isEmpty()) {</span>
 <span class="fc" id="L199">            List&lt;Long&gt; diffsMinutos = new ArrayList&lt;&gt;();</span>
 <span class="fc bfc" id="L200" title="All 2 branches covered.">            for (Map.Entry&lt;LocalDate, List&lt;LocalDateTime&gt;&gt; e : instantesPorDia.entrySet()) {</span>
 <span class="fc" id="L201">                LocalDate dia = e.getKey();</span>
@@ -232,20 +232,20 @@ import java.util.*;
 <span class="fc" id="L232">            System.out.println(&quot;    &quot; + entry.getKey() + &quot;: &quot; + entry.getValue());</span>
 <span class="fc" id="L233">        }</span>
 
-<span class="pc bpc" id="L235" title="1 of 2 branches missed.">        return new CalibracionMensual(servicios, probabilidades, totalFichas, filasIgnoradas,</span>
+<span class="fc bfc" id="L235" title="All 2 branches covered.">        return new CalibracionMensual(servicios, probabilidades, totalFichas, filasIgnoradas,</span>
 <span class="pc bpc" id="L236" title="1 of 2 branches missed.">                colFechaExiste &amp;&amp; !instantesPorDia.isEmpty(),</span>
                 diasLaborables, sociosPorDia, maxSociosDia, intervaloPromedio, registros);
     }
 
     private int indiceColumna(Row header, String nombreBuscado) {
 <span class="pc bpc" id="L241" title="1 of 2 branches missed.">        if (header == null) return -1;</span>
-<span class="pc bpc" id="L242" title="1 of 2 branches missed.">        for (Cell c : header) {</span>
+<span class="fc bfc" id="L242" title="All 2 branches covered.">        for (Cell c : header) {</span>
 <span class="pc bpc" id="L243" title="1 of 2 branches missed.">            if (c.getCellType() == CellType.STRING) {</span>
 <span class="fc" id="L244">                String valor = c.getStringCellValue().trim().toLowerCase(Locale.ROOT);</span>
 <span class="fc bfc" id="L245" title="All 2 branches covered.">                if (valor.equals(nombreBuscado.toLowerCase(Locale.ROOT))) return c.getColumnIndex();</span>
             }
 <span class="fc" id="L247">        }</span>
-<span class="nc" id="L248">        return -1;</span>
+<span class="fc" id="L248">        return -1;</span>
     }
 
     private Integer leerEntero(Cell c) {
@@ -266,16 +266,16 @@ import java.util.*;
             }
 <span class="pc bpc" id="L267" title="1 of 2 branches missed.">            if (c.getCellType() == CellType.STRING) {</span>
 <span class="fc" id="L268">                String texto = c.getStringCellValue().trim();</span>
-<span class="pc bpc" id="L269" title="1 of 2 branches missed.">                for (DateTimeFormatter f : FORMATOS_HORA) {</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">                for (DateTimeFormatter f : FORMATOS_HORA) {</span>
                     try {
 <span class="fc" id="L271">                        return LocalTime.parse(texto, f);</span>
-<span class="nc" id="L272">                    } catch (Exception ignored) {</span>
+<span class="fc" id="L272">                    } catch (Exception ignored) {</span>
                     }
                 }
             }
 <span class="nc" id="L276">        } catch (Exception ignored) {</span>
-<span class="nc" id="L277">        }</span>
-<span class="nc" id="L278">        return null;</span>
+<span class="fc" id="L277">        }</span>
+<span class="fc" id="L278">        return null;</span>
     }
 
     private LocalDateTime leerFechaHora(Cell c) {

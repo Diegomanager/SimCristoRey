@@ -14,36 +14,36 @@ public class IniciarSimulacionUseCase {
 
     private final SimulacionEngine engine;
 
-<span class="fc" id="L17">    public IniciarSimulacionUseCase(SimulacionEngine engine) {</span>
-<span class="fc" id="L18">        this.engine = engine;</span>
-<span class="fc" id="L19">    }</span>
+<span class="nc" id="L17">    public IniciarSimulacionUseCase(SimulacionEngine engine) {</span>
+<span class="nc" id="L18">        this.engine = engine;</span>
+<span class="nc" id="L19">    }</span>
 
     public void ejecutar(ConfiguracionDTO config) throws InterruptedException {
-<span class="fc" id="L22">        engine.iniciar(config);</span>
-<span class="fc" id="L23">    }</span>
+<span class="nc" id="L22">        engine.iniciar(config);</span>
+<span class="nc" id="L23">    }</span>
 
     public void detener() {
-<span class="fc" id="L26">        engine.detener();</span>
-<span class="fc" id="L27">    }</span>
+<span class="nc" id="L26">        engine.detener();</span>
+<span class="nc" id="L27">    }</span>
 
     public void pausar() {
-<span class="fc" id="L30">        engine.pausar();</span>
-<span class="fc" id="L31">    }</span>
+<span class="nc" id="L30">        engine.pausar();</span>
+<span class="nc" id="L31">    }</span>
 
     public void reanudar() {
-<span class="fc" id="L34">        engine.reanudar();</span>
-<span class="fc" id="L35">    }</span>
+<span class="nc" id="L34">        engine.reanudar();</span>
+<span class="nc" id="L35">    }</span>
 
     public boolean isEjecutando() {
-<span class="fc" id="L38">        return engine.isEjecutando();</span>
+<span class="nc" id="L38">        return engine.isEjecutando();</span>
     }
 
     public boolean isPausado() {
-<span class="fc" id="L42">        return engine.isPausado();</span>
+<span class="nc" id="L42">        return engine.isPausado();</span>
     }
 
     public EstadisticasDTO obtenerEstadisticas() {
-<span class="fc" id="L46">        return engine.obtenerEstadisticas();</span>
+<span class="nc" id="L46">        return engine.obtenerEstadisticas();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

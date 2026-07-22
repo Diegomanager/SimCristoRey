@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.supermercado.infrastructure.adapter.export.HistorialImportadorAdapterExtraTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.083 s -- in com.supermercado.infrastructure.adapter.export.HistorialImportadorAdapterExtraTest

@@ -13,36 +13,36 @@ public class EstadisticasDTO {
     private final String horaSimulada;
 
     public EstadisticasDTO() {
-<span class="fc" id="L16">        this(0, 0, 0, 0, &quot;-&quot;, 0.0, 0.0, 0, &quot;08:00&quot;);</span>
-<span class="fc" id="L17">    }</span>
+<span class="nc" id="L16">        this(0, 0, 0, 0, &quot;-&quot;, 0.0, 0.0, 0, &quot;08:00&quot;);</span>
+<span class="nc" id="L17">    }</span>
 
     private EstadisticasDTO(int totalClientesAtendidos, int totalArticulosVendidos,
                            int totalMinutosAtencion, int clientesEnCola,
                            String cajeroEstrella, double tiempoPromedioAtencion,
                            double articulosPromedio, int clientesGenerados,
-<span class="fc" id="L23">                           String horaSimulada) {</span>
-<span class="fc" id="L24">        this.totalClientesAtendidos = totalClientesAtendidos;</span>
-<span class="fc" id="L25">        this.totalArticulosVendidos = totalArticulosVendidos;</span>
-<span class="fc" id="L26">        this.totalMinutosAtencion = totalMinutosAtencion;</span>
-<span class="fc" id="L27">        this.clientesEnCola = clientesEnCola;</span>
-<span class="fc bfc" id="L28" title="All 2 branches covered.">        this.cajeroEstrella = cajeroEstrella != null ? cajeroEstrella : &quot;-&quot;;</span>
-<span class="fc" id="L29">        this.tiempoPromedioAtencion = tiempoPromedioAtencion;</span>
-<span class="fc" id="L30">        this.articulosPromedio = articulosPromedio;</span>
-<span class="fc" id="L31">        this.clientesGenerados = clientesGenerados;</span>
-<span class="fc bfc" id="L32" title="All 2 branches covered.">        this.horaSimulada = horaSimulada != null ? horaSimulada : &quot;08:00&quot;;</span>
-<span class="fc" id="L33">    }</span>
+<span class="nc" id="L23">                           String horaSimulada) {</span>
+<span class="nc" id="L24">        this.totalClientesAtendidos = totalClientesAtendidos;</span>
+<span class="nc" id="L25">        this.totalArticulosVendidos = totalArticulosVendidos;</span>
+<span class="nc" id="L26">        this.totalMinutosAtencion = totalMinutosAtencion;</span>
+<span class="nc" id="L27">        this.clientesEnCola = clientesEnCola;</span>
+<span class="nc bnc" id="L28" title="All 2 branches missed.">        this.cajeroEstrella = cajeroEstrella != null ? cajeroEstrella : &quot;-&quot;;</span>
+<span class="nc" id="L29">        this.tiempoPromedioAtencion = tiempoPromedioAtencion;</span>
+<span class="nc" id="L30">        this.articulosPromedio = articulosPromedio;</span>
+<span class="nc" id="L31">        this.clientesGenerados = clientesGenerados;</span>
+<span class="nc bnc" id="L32" title="All 2 branches missed.">        this.horaSimulada = horaSimulada != null ? horaSimulada : &quot;08:00&quot;;</span>
+<span class="nc" id="L33">    }</span>
 
-<span class="fc" id="L35">    public int getTotalClientesAtendidos() { return totalClientesAtendidos; }</span>
-<span class="fc" id="L36">    public int getTotalArticulosVendidos() { return totalArticulosVendidos; }</span>
-<span class="fc" id="L37">    public int getTotalMinutosAtencion() { return totalMinutosAtencion; }</span>
-<span class="fc" id="L38">    public int getClientesEnCola() { return clientesEnCola; }</span>
-<span class="fc" id="L39">    public String getCajeroEstrella() { return cajeroEstrella; }</span>
-<span class="fc" id="L40">    public double getTiempoPromedioAtencion() { return tiempoPromedioAtencion; }</span>
-<span class="fc" id="L41">    public double getArticulosPromedio() { return articulosPromedio; }</span>
-<span class="fc" id="L42">    public int getClientesGenerados() { return clientesGenerados; }</span>
-<span class="fc" id="L43">    public String getHoraSimulada() { return horaSimulada; }</span>
+<span class="nc" id="L35">    public int getTotalClientesAtendidos() { return totalClientesAtendidos; }</span>
+<span class="nc" id="L36">    public int getTotalArticulosVendidos() { return totalArticulosVendidos; }</span>
+<span class="nc" id="L37">    public int getTotalMinutosAtencion() { return totalMinutosAtencion; }</span>
+<span class="nc" id="L38">    public int getClientesEnCola() { return clientesEnCola; }</span>
+<span class="nc" id="L39">    public String getCajeroEstrella() { return cajeroEstrella; }</span>
+<span class="nc" id="L40">    public double getTiempoPromedioAtencion() { return tiempoPromedioAtencion; }</span>
+<span class="nc" id="L41">    public double getArticulosPromedio() { return articulosPromedio; }</span>
+<span class="nc" id="L42">    public int getClientesGenerados() { return clientesGenerados; }</span>
+<span class="nc" id="L43">    public String getHoraSimulada() { return horaSimulada; }</span>
 
-<span class="fc" id="L45">    public static class Builder {</span>
+<span class="nc" id="L45">    public static class Builder {</span>
         private int totalClientesAtendidos;
         private int totalArticulosVendidos;
         private int totalMinutosAtencion;
@@ -53,18 +53,18 @@ public class EstadisticasDTO {
         private int clientesGenerados;
         private String horaSimulada;
 
-<span class="fc" id="L56">        public Builder totalClientesAtendidos(int value) { this.totalClientesAtendidos = value; return this; }</span>
-<span class="fc" id="L57">        public Builder totalArticulosVendidos(int value) { this.totalArticulosVendidos = value; return this; }</span>
-<span class="fc" id="L58">        public Builder totalMinutosAtencion(int value) { this.totalMinutosAtencion = value; return this; }</span>
-<span class="fc" id="L59">        public Builder clientesEnCola(int value) { this.clientesEnCola = value; return this; }</span>
-<span class="fc" id="L60">        public Builder cajeroEstrella(String value) { this.cajeroEstrella = value; return this; }</span>
-<span class="fc" id="L61">        public Builder tiempoPromedioAtencion(double value) { this.tiempoPromedioAtencion = value; return this; }</span>
-<span class="fc" id="L62">        public Builder articulosPromedio(double value) { this.articulosPromedio = value; return this; }</span>
-<span class="fc" id="L63">        public Builder clientesGenerados(int value) { this.clientesGenerados = value; return this; }</span>
-<span class="fc" id="L64">        public Builder horaSimulada(String value) { this.horaSimulada = value; return this; }</span>
+<span class="nc" id="L56">        public Builder totalClientesAtendidos(int value) { this.totalClientesAtendidos = value; return this; }</span>
+<span class="nc" id="L57">        public Builder totalArticulosVendidos(int value) { this.totalArticulosVendidos = value; return this; }</span>
+<span class="nc" id="L58">        public Builder totalMinutosAtencion(int value) { this.totalMinutosAtencion = value; return this; }</span>
+<span class="nc" id="L59">        public Builder clientesEnCola(int value) { this.clientesEnCola = value; return this; }</span>
+<span class="nc" id="L60">        public Builder cajeroEstrella(String value) { this.cajeroEstrella = value; return this; }</span>
+<span class="nc" id="L61">        public Builder tiempoPromedioAtencion(double value) { this.tiempoPromedioAtencion = value; return this; }</span>
+<span class="nc" id="L62">        public Builder articulosPromedio(double value) { this.articulosPromedio = value; return this; }</span>
+<span class="nc" id="L63">        public Builder clientesGenerados(int value) { this.clientesGenerados = value; return this; }</span>
+<span class="nc" id="L64">        public Builder horaSimulada(String value) { this.horaSimulada = value; return this; }</span>
 
         public EstadisticasDTO build() {
-<span class="fc" id="L67">            return new EstadisticasDTO(totalClientesAtendidos, totalArticulosVendidos,</span>
+<span class="nc" id="L67">            return new EstadisticasDTO(totalClientesAtendidos, totalArticulosVendidos,</span>
                                       totalMinutosAtencion, clientesEnCola,
                                       cajeroEstrella, tiempoPromedioAtencion,
                                       articulosPromedio, clientesGenerados,

@@ -11,17 +11,17 @@ public class DiagnosticoDTO {
     
     public DiagnosticoDTO(List&lt;DiagnosticoItem&gt; items, long criticos, 
                           long alertas, long atencion) {
-<span class="fc" id="L14">        this(items, criticos, alertas, atencion, null);</span>
-<span class="fc" id="L15">    }</span>
+<span class="nc" id="L14">        this(items, criticos, alertas, atencion, null);</span>
+<span class="nc" id="L15">    }</span>
     
     public DiagnosticoDTO(List&lt;DiagnosticoItem&gt; items, long criticos, 
-<span class="fc" id="L18">                          long alertas, long atencion, String resumenEjecutivo) {</span>
-<span class="fc" id="L19">        this.items = items;</span>
-<span class="fc" id="L20">        this.criticos = criticos;</span>
-<span class="fc" id="L21">        this.alertas = alertas;</span>
-<span class="fc" id="L22">        this.atencion = atencion;</span>
-<span class="fc" id="L23">        this.resumenEjecutivo = resumenEjecutivo;</span>
-<span class="fc" id="L24">    }</span>
+<span class="nc" id="L18">                          long alertas, long atencion, String resumenEjecutivo) {</span>
+<span class="nc" id="L19">        this.items = items;</span>
+<span class="nc" id="L20">        this.criticos = criticos;</span>
+<span class="nc" id="L21">        this.alertas = alertas;</span>
+<span class="nc" id="L22">        this.atencion = atencion;</span>
+<span class="nc" id="L23">        this.resumenEjecutivo = resumenEjecutivo;</span>
+<span class="nc" id="L24">    }</span>
     
     public static class DiagnosticoItem {
         private final String cajaId;
@@ -34,40 +34,40 @@ public class DiagnosticoDTO {
         
         public DiagnosticoItem(String cajaId, String nivel, String icono,
                                String mensaje, String sugerencia,
-<span class="fc" id="L37">                               int colaActual, int colaMaxima) {</span>
-<span class="fc" id="L38">            this.cajaId = cajaId;</span>
-<span class="fc" id="L39">            this.nivel = nivel;</span>
-<span class="fc" id="L40">            this.icono = icono;</span>
-<span class="fc" id="L41">            this.mensaje = mensaje;</span>
-<span class="fc" id="L42">            this.sugerencia = sugerencia;</span>
-<span class="fc" id="L43">            this.colaActual = colaActual;</span>
-<span class="fc" id="L44">            this.colaMaxima = colaMaxima;</span>
-<span class="fc" id="L45">        }</span>
+<span class="nc" id="L37">                               int colaActual, int colaMaxima) {</span>
+<span class="nc" id="L38">            this.cajaId = cajaId;</span>
+<span class="nc" id="L39">            this.nivel = nivel;</span>
+<span class="nc" id="L40">            this.icono = icono;</span>
+<span class="nc" id="L41">            this.mensaje = mensaje;</span>
+<span class="nc" id="L42">            this.sugerencia = sugerencia;</span>
+<span class="nc" id="L43">            this.colaActual = colaActual;</span>
+<span class="nc" id="L44">            this.colaMaxima = colaMaxima;</span>
+<span class="nc" id="L45">        }</span>
         
-<span class="fc" id="L47">        public String getCajaId() { return cajaId; }</span>
-<span class="fc" id="L48">        public String getNivel() { return nivel; }</span>
-<span class="fc" id="L49">        public String getIcono() { return icono; }</span>
-<span class="fc" id="L50">        public String getMensaje() { return mensaje; }</span>
-<span class="fc" id="L51">        public String getSugerencia() { return sugerencia; }</span>
-<span class="fc" id="L52">        public int getColaActual() { return colaActual; }</span>
-<span class="fc" id="L53">        public int getColaMaxima() { return colaMaxima; }</span>
+<span class="nc" id="L47">        public String getCajaId() { return cajaId; }</span>
+<span class="nc" id="L48">        public String getNivel() { return nivel; }</span>
+<span class="nc" id="L49">        public String getIcono() { return icono; }</span>
+<span class="nc" id="L50">        public String getMensaje() { return mensaje; }</span>
+<span class="nc" id="L51">        public String getSugerencia() { return sugerencia; }</span>
+<span class="nc" id="L52">        public int getColaActual() { return colaActual; }</span>
+<span class="nc" id="L53">        public int getColaMaxima() { return colaMaxima; }</span>
     }
     
-<span class="fc" id="L56">    public List&lt;DiagnosticoItem&gt; getItems() { return items; }</span>
-<span class="fc" id="L57">    public long getCriticos() { return criticos; }</span>
-<span class="fc" id="L58">    public long getAlertas() { return alertas; }</span>
-<span class="fc" id="L59">    public long getAtencion() { return atencion; }</span>
-<span class="fc" id="L60">    public String getResumenEjecutivo() { return resumenEjecutivo; }</span>
+<span class="nc" id="L56">    public List&lt;DiagnosticoItem&gt; getItems() { return items; }</span>
+<span class="nc" id="L57">    public long getCriticos() { return criticos; }</span>
+<span class="nc" id="L58">    public long getAlertas() { return alertas; }</span>
+<span class="nc" id="L59">    public long getAtencion() { return atencion; }</span>
+<span class="nc" id="L60">    public String getResumenEjecutivo() { return resumenEjecutivo; }</span>
     
     public boolean tieneProblemas() {
-<span class="fc bfc" id="L63" title="All 4 branches covered.">        return criticos &gt; 0 || alertas &gt; 0;</span>
+<span class="nc bnc" id="L63" title="All 4 branches missed.">        return criticos &gt; 0 || alertas &gt; 0;</span>
     }
     
     public String getEstadoGeneral() {
-<span class="fc bfc" id="L67" title="All 2 branches covered.">        if (criticos &gt; 0) return &quot;CRITICO&quot;;</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">        if (alertas &gt; 0) return &quot;ALERTA&quot;;</span>
-<span class="fc bfc" id="L69" title="All 2 branches covered.">        if (atencion &gt; 0) return &quot;ATENCION&quot;;</span>
-<span class="fc" id="L70">        return &quot;NORMAL&quot;;</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">        if (criticos &gt; 0) return &quot;CRITICO&quot;;</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        if (alertas &gt; 0) return &quot;ALERTA&quot;;</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (atencion &gt; 0) return &quot;ATENCION&quot;;</span>
+<span class="nc" id="L70">        return &quot;NORMAL&quot;;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

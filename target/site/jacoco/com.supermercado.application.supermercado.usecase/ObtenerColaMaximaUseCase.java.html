@@ -4,20 +4,20 @@ import com.supermercado.domain.supermercado.model.Caja;
 
 import java.util.List;
 
-<span class="fc" id="L7">public class ObtenerColaMaximaUseCase {</span>
+<span class="nc" id="L7">public class ObtenerColaMaximaUseCase {</span>
     
     public int ejecutar(List&lt;Caja&gt; cajas) {
-<span class="fc bfc" id="L10" title="All 4 branches covered.">        if (cajas == null || cajas.isEmpty()) {</span>
-<span class="fc" id="L11">            return 0;</span>
+<span class="nc bnc" id="L10" title="All 4 branches missed.">        if (cajas == null || cajas.isEmpty()) {</span>
+<span class="nc" id="L11">            return 0;</span>
         }
-<span class="fc" id="L13">        int max = 0;</span>
-<span class="fc bfc" id="L14" title="All 2 branches covered.">        for (Caja caja : cajas) {</span>
-<span class="fc" id="L15">            int cola = caja.getColaMaxima();</span>
-<span class="fc bfc" id="L16" title="All 2 branches covered.">            if (cola &gt; max) {</span>
-<span class="fc" id="L17">                max = cola;</span>
+<span class="nc" id="L13">        int max = 0;</span>
+<span class="nc bnc" id="L14" title="All 2 branches missed.">        for (Caja caja : cajas) {</span>
+<span class="nc" id="L15">            int cola = caja.getColaMaxima();</span>
+<span class="nc bnc" id="L16" title="All 2 branches missed.">            if (cola &gt; max) {</span>
+<span class="nc" id="L17">                max = cola;</span>
             }
-<span class="fc" id="L19">        }</span>
-<span class="fc" id="L20">        return max;</span>
+<span class="nc" id="L19">        }</span>
+<span class="nc" id="L20">        return max;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

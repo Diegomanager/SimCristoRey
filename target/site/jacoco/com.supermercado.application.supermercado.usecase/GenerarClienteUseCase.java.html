@@ -21,10 +21,10 @@ public class GenerarClienteUseCase {
     private final AtomicInteger contador;
     private final Random        random;
 
-<span class="fc" id="L24">    public GenerarClienteUseCase() {</span>
-<span class="fc" id="L25">        this.contador = new AtomicInteger(0);</span>
-<span class="fc" id="L26">        this.random   = new Random();</span>
-<span class="fc" id="L27">    }</span>
+<span class="nc" id="L24">    public GenerarClienteUseCase() {</span>
+<span class="nc" id="L25">        this.contador = new AtomicInteger(0);</span>
+<span class="nc" id="L26">        this.random   = new Random();</span>
+<span class="nc" id="L27">    }</span>
 
     /**
      * Genera un nuevo cliente con articulos en el rango [minArticulos, maxArticulos].
@@ -35,9 +35,9 @@ public class GenerarClienteUseCase {
      * @throws IllegalArgumentException si el rango es invalido
      */
     public Cliente ejecutar(int minArticulos, int maxArticulos) {
-<span class="fc" id="L38">        validarRango(minArticulos, maxArticulos);</span>
-<span class="fc" id="L39">        int articulos = minArticulos + random.nextInt(maxArticulos - minArticulos + 1);</span>
-<span class="fc" id="L40">        return new Cliente(contador.incrementAndGet(), articulos);</span>
+<span class="nc" id="L38">        validarRango(minArticulos, maxArticulos);</span>
+<span class="nc" id="L39">        int articulos = minArticulos + random.nextInt(maxArticulos - minArticulos + 1);</span>
+<span class="nc" id="L40">        return new Cliente(contador.incrementAndGet(), articulos);</span>
     }
 
     /**
@@ -56,14 +56,14 @@ public class GenerarClienteUseCase {
     }
 
     private void validarRango(int min, int max) {
-<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (min &lt; 0) {</span>
-<span class="fc" id="L60">            throw new IllegalArgumentException(</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">        if (min &lt; 0) {</span>
+<span class="nc" id="L60">            throw new IllegalArgumentException(</span>
                 &quot;El minimo de articulos no puede ser negativo: &quot; + min);
         }
-<span class="fc bfc" id="L63" title="All 2 branches covered.">        if (max &lt; min) {</span>
-<span class="fc" id="L64">            throw new IllegalArgumentException(</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        if (max &lt; min) {</span>
+<span class="nc" id="L64">            throw new IllegalArgumentException(</span>
                 &quot;El maximo (&quot; + max + &quot;) no puede ser menor que el minimo (&quot; + min + &quot;)&quot;);
         }
-<span class="fc" id="L67">    }</span>
+<span class="nc" id="L67">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

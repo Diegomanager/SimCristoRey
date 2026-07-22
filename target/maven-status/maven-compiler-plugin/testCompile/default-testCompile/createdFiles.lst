@@ -8,9 +8,11 @@ com\supermercado\domain\cooperativa\service\EstadisticasFaseTest.class
 com\supermercado\regression\SimulacionRegressionTest.class
 com\supermercado\application\supermercado\usecase\PausarSimulacionUseCaseTest.class
 com\supermercado\application\supermercado\usecase\AsignarClienteUseCaseTest.class
+com\supermercado\domain\cooperativa\service\EstadisticasFinancierasServiceTest.class
 com\supermercado\application\supermercado\usecase\ConfigurarSimulacionUseCaseTest.class
 com\supermercado\domain\supermercado\service\TeoriaColasServiceTest.class
 com\supermercado\domain\supermercado\model\EstadoCajaTest.class
+com\supermercado\application\cooperativa\usecase\CalibrarConfiguracionUseCaseTest.class
 com\supermercado\application\supermercado\usecase\ObtenerEstadisticasUseCaseTest.class
 com\supermercado\application\supermercado\usecase\TeoriaColasUseCaseTest.class
 com\supermercado\application\supermercado\dto\ConfiguracionDTOTest.class
@@ -20,10 +22,12 @@ com\supermercado\application\supermercado\usecase\GenerarClienteUseCaseTest.clas
 com\supermercado\domain\cooperativa\service\SimuladorMensualServiceTest.class
 com\supermercado\application\supermercado\dto\DiagnosticoDTOTest.class
 com\supermercado\application\supermercado\usecase\ExportarReporteUseCaseTest.class
+com\supermercado\domain\cooperativa\service\SimuladorCooperativaServiceTest.class
 com\supermercado\application\supermercado\usecase\DiagnosticarConfiguracionUseCaseTest.class
 com\supermercado\application\supermercado\usecase\SimulacionConEscalaUseCaseTest.class
 com\supermercado\application\supermercado\usecase\IniciarSimulacionUseCaseTest.class
 com\supermercado\domain\supermercado\service\SimuladorServiceTest.class
+com\supermercado\infrastructure\adapter\preset\PresetManagerTest.class
 com\supermercado\domain\supermercado\model\ClienteTest.class
 com\supermercado\application\supermercado\usecase\ConfigurarSimulacionUseCaseTest$2.class
 com\supermercado\application\supermercado\usecase\DetenerSimulacionUseCaseTest.class
@@ -31,6 +35,7 @@ com\supermercado\application\supermercado\usecase\RecomendarMejoraUseCaseTest.cl
 com\supermercado\infrastructure\adapter\export\HistorialImportadorAdapterTest.class
 com\supermercado\application\cooperativa\dto\CalibracionMensualTest.class
 com\supermercado\application\supermercado\usecase\ObtenerColaMaximaUseCaseTest.class
+com\supermercado\infrastructure\adapter\export\HistorialImportadorAdapterExtraTest.class
 com\supermercado\application\supermercado\usecase\OptimizarCajasUseCaseTest.class
 com\supermercado\application\supermercado\usecase\ReiniciarSimulacionUseCaseTest.class
 com\supermercado\infrastructure\repository\ConfiguracionRepositorioTest$1.class

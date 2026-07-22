@@ -9,21 +9,21 @@ public class ExportarReporteUseCase {
     private final ILogService logService;
     private final IReporteExportador exportador;
     
-<span class="fc" id="L12">    public ExportarReporteUseCase(ILogService logService, IReporteExportador exportador) {</span>
-<span class="fc" id="L13">        this.logService = logService;</span>
-<span class="fc" id="L14">        this.exportador = exportador;</span>
-<span class="fc" id="L15">    }</span>
+<span class="nc" id="L12">    public ExportarReporteUseCase(ILogService logService, IReporteExportador exportador) {</span>
+<span class="nc" id="L13">        this.logService = logService;</span>
+<span class="nc" id="L14">        this.exportador = exportador;</span>
+<span class="nc" id="L15">    }</span>
     
     public void ejecutar(EstadisticasDTO estadisticas, String rutaArchivo) {
-<span class="fc bfc" id="L18" title="All 2 branches covered.">        if (estadisticas == null) {</span>
-<span class="fc" id="L19">            throw new IllegalArgumentException(&quot;Las estad?sticas no pueden ser nulas&quot;);</span>
+<span class="nc bnc" id="L18" title="All 2 branches missed.">        if (estadisticas == null) {</span>
+<span class="nc" id="L19">            throw new IllegalArgumentException(&quot;Las estad?sticas no pueden ser nulas&quot;);</span>
         }
-<span class="pc bpc" id="L21" title="1 of 4 branches missed.">        if (rutaArchivo == null || rutaArchivo.isBlank()) {</span>
-<span class="fc" id="L22">            throw new IllegalArgumentException(&quot;La ruta del archivo no puede estar vac?a&quot;);</span>
+<span class="nc bnc" id="L21" title="All 4 branches missed.">        if (rutaArchivo == null || rutaArchivo.isBlank()) {</span>
+<span class="nc" id="L22">            throw new IllegalArgumentException(&quot;La ruta del archivo no puede estar vac?a&quot;);</span>
         }
         
-<span class="fc" id="L25">        exportador.exportar(estadisticas, rutaArchivo);</span>
-<span class="fc" id="L26">        logService.info(&quot;Reporte exportado correctamente&quot;);</span>
-<span class="fc" id="L27">    }</span>
+<span class="nc" id="L25">        exportador.exportar(estadisticas, rutaArchivo);</span>
+<span class="nc" id="L26">        logService.info(&quot;Reporte exportado correctamente&quot;);</span>
+<span class="nc" id="L27">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

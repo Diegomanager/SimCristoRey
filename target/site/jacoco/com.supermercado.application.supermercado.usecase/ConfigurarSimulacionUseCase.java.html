@@ -9,35 +9,35 @@ public class ConfigurarSimulacionUseCase {
     private final ILogService logService;
     private final IConfiguracionRepositorio repositorio;
     
-<span class="fc" id="L12">    public ConfigurarSimulacionUseCase(ILogService logService, IConfiguracionRepositorio repositorio) {</span>
-<span class="fc" id="L13">        this.logService = logService;</span>
-<span class="fc" id="L14">        this.repositorio = repositorio;</span>
-<span class="fc" id="L15">    }</span>
+<span class="nc" id="L12">    public ConfigurarSimulacionUseCase(ILogService logService, IConfiguracionRepositorio repositorio) {</span>
+<span class="nc" id="L13">        this.logService = logService;</span>
+<span class="nc" id="L14">        this.repositorio = repositorio;</span>
+<span class="nc" id="L15">    }</span>
     
     public void ejecutar(ConfiguracionDTO config) {
-<span class="fc bfc" id="L18" title="All 2 branches covered.">        if (config == null) {</span>
-<span class="fc" id="L19">            throw new IllegalArgumentException(&quot;La configuraci?n no puede ser nula&quot;);</span>
+<span class="nc bnc" id="L18" title="All 2 branches missed.">        if (config == null) {</span>
+<span class="nc" id="L19">            throw new IllegalArgumentException(&quot;La configuraci?n no puede ser nula&quot;);</span>
         }
         
-<span class="fc" id="L22">        validarConfiguracion(config);</span>
-<span class="fc" id="L23">        repositorio.guardar(config);</span>
-<span class="fc" id="L24">        logService.info(&quot;Configuraci?n guardada exitosamente&quot;);</span>
-<span class="fc" id="L25">    }</span>
+<span class="nc" id="L22">        validarConfiguracion(config);</span>
+<span class="nc" id="L23">        repositorio.guardar(config);</span>
+<span class="nc" id="L24">        logService.info(&quot;Configuraci?n guardada exitosamente&quot;);</span>
+<span class="nc" id="L25">    }</span>
     
     private void validarConfiguracion(ConfiguracionDTO config) {
-<span class="fc bfc" id="L28" title="All 2 branches covered.">        if (config.getNumCajasNormales() &lt; 1) {</span>
-<span class="fc" id="L29">            throw new IllegalArgumentException(&quot;Debe haber al menos 1 caja normal&quot;);</span>
+<span class="nc bnc" id="L28" title="All 2 branches missed.">        if (config.getNumCajasNormales() &lt; 1) {</span>
+<span class="nc" id="L29">            throw new IllegalArgumentException(&quot;Debe haber al menos 1 caja normal&quot;);</span>
         }
-<span class="fc bfc" id="L31" title="All 2 branches covered.">        if (config.getTiempoCajaNormalMin() &gt; config.getTiempoCajaNormalMax()) {</span>
-<span class="fc" id="L32">            throw new IllegalArgumentException(&quot;El tiempo m?nimo no puede ser mayor al m?ximo&quot;);</span>
+<span class="nc bnc" id="L31" title="All 2 branches missed.">        if (config.getTiempoCajaNormalMin() &gt; config.getTiempoCajaNormalMax()) {</span>
+<span class="nc" id="L32">            throw new IllegalArgumentException(&quot;El tiempo m?nimo no puede ser mayor al m?ximo&quot;);</span>
         }
-<span class="pc bpc" id="L34" title="1 of 2 branches missed.">        if (config.getTiempoCajaRapidaMin() &gt; config.getTiempoCajaRapidaMax()) {</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">        if (config.getTiempoCajaRapidaMin() &gt; config.getTiempoCajaRapidaMax()) {</span>
 <span class="nc" id="L35">            throw new IllegalArgumentException(&quot;El tiempo m?nimo r?pido no puede ser mayor al m?ximo r?pido&quot;);</span>
         }
-<span class="fc bfc" id="L37" title="All 2 branches covered.">        if (config.getArticulosClienteMin() &gt; config.getArticulosClienteMax()) {</span>
-<span class="fc" id="L38">            throw new IllegalArgumentException(&quot;El m?nimo de art?culos no puede ser mayor al m?ximo&quot;);</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        if (config.getArticulosClienteMin() &gt; config.getArticulosClienteMax()) {</span>
+<span class="nc" id="L38">            throw new IllegalArgumentException(&quot;El m?nimo de art?culos no puede ser mayor al m?ximo&quot;);</span>
         }
-<span class="fc" id="L40">        logService.debug(&quot;Configuraci?n validada correctamente&quot;);</span>
-<span class="fc" id="L41">    }</span>
+<span class="nc" id="L40">        logService.debug(&quot;Configuraci?n validada correctamente&quot;);</span>
+<span class="nc" id="L41">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

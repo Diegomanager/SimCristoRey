@@ -12,7 +12,7 @@ public class JornadaLaboral {
 <span class="pc" id="L12">    private List&lt;BloqueHorario&gt; bloques   = new ArrayList&lt;&gt;();</span>
 <span class="pc" id="L13">    private LocalDate           fechaReal = null;</span>
 
-<span class="nc" id="L15">    public JornadaLaboral() {}</span>
+<span class="fc" id="L15">    public JornadaLaboral() {}</span>
 
 <span class="fc" id="L17">    public JornadaLaboral(int dia, boolean laborable) {</span>
 <span class="fc" id="L18">        this.dia = dia;</span>
@@ -58,11 +58,11 @@ public class JornadaLaboral {
 <span class="fc" id="L58">    }</span>
 
     public int getTotalMinutosLaborables() {
-<span class="nc" id="L61">        return bloques.stream().mapToInt(BloqueHorario::getDuracion).sum();</span>
+<span class="fc" id="L61">        return bloques.stream().mapToInt(BloqueHorario::getDuracion).sum();</span>
     }
 
     public int getMinutoInicio() {
-<span class="nc bnc" id="L65" title="All 2 branches missed.">        return bloques.isEmpty() ? 510 : bloques.get(0).getInicio();</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">        return bloques.isEmpty() ? 510 : bloques.get(0).getInicio();</span>
     }
 
     public int getMinutoFin() {
@@ -79,14 +79,14 @@ public class JornadaLaboral {
 <span class="nc" id="L79">        return &quot;Día &quot; + dia;</span>
     }
 
-<span class="nc" id="L82">    public int getDia() { return dia; }</span>
-<span class="nc" id="L83">    public void setDia(int d) { this.dia = d; }</span>
-<span class="nc" id="L84">    public boolean isLaborable() { return laborable; }</span>
-<span class="nc" id="L85">    public void setLaborable(boolean v) { this.laborable = v; }</span>
-<span class="nc" id="L86">    public List&lt;BloqueHorario&gt; getBloques() { return bloques; }</span>
+<span class="fc" id="L82">    public int getDia() { return dia; }</span>
+<span class="fc" id="L83">    public void setDia(int d) { this.dia = d; }</span>
+<span class="fc" id="L84">    public boolean isLaborable() { return laborable; }</span>
+<span class="fc" id="L85">    public void setLaborable(boolean v) { this.laborable = v; }</span>
+<span class="fc" id="L86">    public List&lt;BloqueHorario&gt; getBloques() { return bloques; }</span>
 <span class="nc" id="L87">    public void setBloques(List&lt;BloqueHorario&gt; b) { this.bloques = b; }</span>
 <span class="nc" id="L88">    public LocalDate getFechaReal() { return fechaReal; }</span>
-<span class="nc" id="L89">    public void setFechaReal(LocalDate f) { this.fechaReal = f; }</span>
+<span class="fc" id="L89">    public void setFechaReal(LocalDate f) { this.fechaReal = f; }</span>
 
     @Override
     public String toString() {

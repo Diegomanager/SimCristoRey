@@ -2,13 +2,13 @@
 
 import com.supermercado.domain.supermercado.model.Cliente;
 
-<span class="fc" id="L5">public class CalcularTiempoEsperaUseCase {</span>
+<span class="nc" id="L5">public class CalcularTiempoEsperaUseCase {</span>
     
     public long ejecutar(Cliente cliente) {
-<span class="fc bfc" id="L8" title="All 2 branches covered.">        if (cliente == null) {</span>
-<span class="fc" id="L9">            throw new IllegalArgumentException(&quot;El cliente no puede ser nulo&quot;);</span>
+<span class="nc bnc" id="L8" title="All 2 branches missed.">        if (cliente == null) {</span>
+<span class="nc" id="L9">            throw new IllegalArgumentException(&quot;El cliente no puede ser nulo&quot;);</span>
         }
-<span class="fc" id="L11">        return cliente.calcularTiempoEspera();</span>
+<span class="nc" id="L11">        return cliente.calcularTiempoEspera();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

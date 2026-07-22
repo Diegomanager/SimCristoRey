@@ -15,7 +15,7 @@ public class BloqueHorario {
 <span class="fc" id="L15">        this.fin    = fin;</span>
 <span class="fc" id="L16">    }</span>
 
-<span class="nc" id="L18">    public int getDuracion() { return fin - inicio; }</span>
+<span class="fc" id="L18">    public int getDuracion() { return fin - inicio; }</span>
 
     public boolean estaActivo(int minutosDesdeMedanoche) {
 <span class="nc bnc" id="L21" title="All 4 branches missed.">        return minutosDesdeMedanoche &gt;= inicio &amp;&amp; minutosDesdeMedanoche &lt; fin;</span>
@@ -30,9 +30,9 @@ public class BloqueHorario {
 <span class="nc" id="L30">        return toHHMM(inicio) + &quot;–&quot; + toHHMM(fin) + &quot; (&quot; + getDuracion() + &quot; min)&quot;;</span>
     }
 
-<span class="nc" id="L33">    public int getInicio() { return inicio; }</span>
+<span class="fc" id="L33">    public int getInicio() { return inicio; }</span>
 <span class="nc" id="L34">    public void setInicio(int v){ this.inicio = v; }</span>
-<span class="nc" id="L35">    public int getFin()    { return fin; }</span>
+<span class="fc" id="L35">    public int getFin()    { return fin; }</span>
 <span class="nc" id="L36">    public void setFin(int v)  { this.fin = v; }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

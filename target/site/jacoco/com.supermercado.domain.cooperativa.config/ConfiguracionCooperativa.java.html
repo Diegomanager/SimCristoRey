@@ -8,44 +8,44 @@ import java.util.*;
 
 public class ConfiguracionCooperativa {
     private static final String ARCHIVO = &quot;simcristorey.properties&quot;;
-<span class="nc" id="L11">    private final Properties props = new Properties();</span>
+<span class="fc" id="L11">    private final Properties props = new Properties();</span>
 
-<span class="nc" id="L13">    private double horasJornadaDia  = 8.0;</span>
-<span class="nc" id="L14">    private int    diasASimular     = 1;</span>
-<span class="nc" id="L15">    private long   msPorMinuto      = 62L;</span>
-<span class="nc" id="L16">    private int    maxSociosDia     = 200;</span>
-<span class="nc" id="L17">    private double intervaloMinutos = 1.0;</span>
+<span class="fc" id="L13">    private double horasJornadaDia  = 8.0;</span>
+<span class="fc" id="L14">    private int    diasASimular     = 1;</span>
+<span class="fc" id="L15">    private long   msPorMinuto      = 62L;</span>
+<span class="fc" id="L16">    private int    maxSociosDia     = 200;</span>
+<span class="fc" id="L17">    private double intervaloMinutos = 1.0;</span>
 
-<span class="nc" id="L19">    private int     horaInicio      = 510;</span>
-<span class="nc" id="L20">    private int     horaFin         = 990;</span>
-<span class="nc" id="L21">    private boolean jornadaPartida  = true;</span>
-<span class="nc" id="L22">    private int     horaAlmuerzoFin = 720;</span>
-<span class="nc" id="L23">    private int     horaReanudacion = 870;</span>
+<span class="fc" id="L19">    private int     horaInicio      = 510;</span>
+<span class="fc" id="L20">    private int     horaFin         = 990;</span>
+<span class="fc" id="L21">    private boolean jornadaPartida  = true;</span>
+<span class="fc" id="L22">    private int     horaAlmuerzoFin = 720;</span>
+<span class="fc" id="L23">    private int     horaReanudacion = 870;</span>
 
-<span class="nc" id="L25">    private int cajasGenerales  = 7;</span>
-<span class="nc" id="L26">    private int cajasPlataforma = 2;</span>
-<span class="nc" id="L27">    private int cajasMM         = 1;</span>
+<span class="fc" id="L25">    private int cajasGenerales  = 7;</span>
+<span class="fc" id="L26">    private int cajasPlataforma = 2;</span>
+<span class="fc" id="L27">    private int cajasMM         = 1;</span>
 
-<span class="nc" id="L29">    private Map&lt;String, Double&gt; probPorCodigo = new LinkedHashMap&lt;&gt;();</span>
-<span class="nc" id="L30">    private Map&lt;LocalDate, Boolean&gt; diasLaborables = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc" id="L29">    private Map&lt;String, Double&gt; probPorCodigo = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc" id="L30">    private Map&lt;LocalDate, Boolean&gt; diasLaborables = new LinkedHashMap&lt;&gt;();</span>
 
-<span class="nc" id="L32">    public ConfiguracionCooperativa() {</span>
-<span class="nc" id="L33">        inicializarProbabilidadesPorDefecto();</span>
-<span class="nc" id="L34">        cargar();</span>
-<span class="nc" id="L35">    }</span>
+<span class="fc" id="L32">    public ConfiguracionCooperativa() {</span>
+<span class="fc" id="L33">        inicializarProbabilidadesPorDefecto();</span>
+<span class="fc" id="L34">        cargar();</span>
+<span class="fc" id="L35">    }</span>
 
     private void inicializarProbabilidadesPorDefecto() {
-<span class="nc" id="L38">        probPorCodigo.put(&quot;C&quot;,  0.20);</span>
-<span class="nc" id="L39">        probPorCodigo.put(&quot;A&quot;,  0.08);</span>
-<span class="nc" id="L40">        probPorCodigo.put(&quot;S&quot;,  0.25);</span>
-<span class="nc" id="L41">        probPorCodigo.put(&quot;F&quot;,  0.05);</span>
-<span class="nc" id="L42">        probPorCodigo.put(&quot;P&quot;,  0.10);</span>
-<span class="nc" id="L43">        probPorCodigo.put(&quot;R&quot;,  0.15);</span>
-<span class="nc" id="L44">        probPorCodigo.put(&quot;PC&quot;, 0.04);</span>
-<span class="nc" id="L45">        probPorCodigo.put(&quot;PS&quot;, 0.05);</span>
-<span class="nc" id="L46">        probPorCodigo.put(&quot;PA&quot;, 0.04);</span>
-<span class="nc" id="L47">        probPorCodigo.put(&quot;PP&quot;, 0.04);</span>
-<span class="nc" id="L48">    }</span>
+<span class="fc" id="L38">        probPorCodigo.put(&quot;C&quot;,  0.20);</span>
+<span class="fc" id="L39">        probPorCodigo.put(&quot;A&quot;,  0.08);</span>
+<span class="fc" id="L40">        probPorCodigo.put(&quot;S&quot;,  0.25);</span>
+<span class="fc" id="L41">        probPorCodigo.put(&quot;F&quot;,  0.05);</span>
+<span class="fc" id="L42">        probPorCodigo.put(&quot;P&quot;,  0.10);</span>
+<span class="fc" id="L43">        probPorCodigo.put(&quot;R&quot;,  0.15);</span>
+<span class="fc" id="L44">        probPorCodigo.put(&quot;PC&quot;, 0.04);</span>
+<span class="fc" id="L45">        probPorCodigo.put(&quot;PS&quot;, 0.05);</span>
+<span class="fc" id="L46">        probPorCodigo.put(&quot;PA&quot;, 0.04);</span>
+<span class="fc" id="L47">        probPorCodigo.put(&quot;PP&quot;, 0.04);</span>
+<span class="fc" id="L48">    }</span>
 
 <span class="nc" id="L50">    public double getProbCodigo(String codigo) { return probPorCodigo.getOrDefault(codigo, 0.0); }</span>
     public void setProbCodigo(String codigo, double prob) {
@@ -54,7 +54,7 @@ public class ConfiguracionCooperativa {
 <span class="nc" id="L54">    }</span>
 <span class="nc" id="L55">    public void eliminarProbCodigo(String codigo) { probPorCodigo.remove(codigo); }</span>
 <span class="nc" id="L56">    public void agregarCodigoNuevo(String codigo) { probPorCodigo.putIfAbsent(codigo, 0.01); }</span>
-<span class="nc" id="L57">    public Map&lt;String, Double&gt; getProbPorCodigo() { return Collections.unmodifiableMap(probPorCodigo); }</span>
+<span class="fc" id="L57">    public Map&lt;String, Double&gt; getProbPorCodigo() { return Collections.unmodifiableMap(probPorCodigo); }</span>
 
     public void normalizarProbabilidades() {
 <span class="nc" id="L60">        double suma = probPorCodigo.values().stream().mapToDouble(Double::doubleValue).sum();</span>
@@ -66,33 +66,33 @@ public class ConfiguracionCooperativa {
 <span class="nc" id="L66">    public int getDuracionTotalMinutos(){ return getDuracionDiaMinutos() * Math.max(1, diasASimular); }</span>
 
     public void cargar() {
-<span class="nc" id="L69">        try (InputStream in = new FileInputStream(ARCHIVO)) {</span>
-<span class="nc" id="L70">            props.load(in);</span>
-<span class="nc" id="L71">            horasJornadaDia  = pd(&quot;horas.jornada.dia&quot;,  8.0);</span>
-<span class="nc" id="L72">            diasASimular     = pi(&quot;dias.simular&quot;,        1);</span>
-<span class="nc" id="L73">            msPorMinuto      = pl(&quot;escala.ms&quot;,           62L);</span>
-<span class="nc" id="L74">            maxSociosDia     = pi(&quot;max.socios.dia&quot;,      200);</span>
-<span class="nc" id="L75">            intervaloMinutos = pd(&quot;intervalo.minutos&quot;,   1.0);</span>
-<span class="nc" id="L76">            horaInicio       = pi(&quot;hora.inicio&quot;,         510);</span>
-<span class="nc" id="L77">            horaFin          = pi(&quot;hora.fin&quot;,            990);</span>
-<span class="nc" id="L78">            jornadaPartida   = pb(&quot;jornada.partida&quot;,     true);</span>
-<span class="nc" id="L79">            horaAlmuerzoFin  = pi(&quot;hora.almuerzo.fin&quot;,   720);</span>
-<span class="nc" id="L80">            horaReanudacion  = pi(&quot;hora.reanudacion&quot;,    870);</span>
-<span class="nc" id="L81">            cajasGenerales   = pi(&quot;cajas.generales&quot;,     7);</span>
-<span class="nc" id="L82">            cajasPlataforma  = pi(&quot;cajas.plataforma&quot;,    2);</span>
-<span class="nc" id="L83">            cajasMM          = pi(&quot;cajas.mm&quot;,            1);</span>
-<span class="nc" id="L84">            diasLaborables   = deserializarDias(props.getProperty(&quot;dias.laborables&quot;, &quot;&quot;));</span>
-<span class="nc" id="L85">            String codigosStr = props.getProperty(&quot;prob.codigos&quot;, &quot;&quot;);</span>
-<span class="nc bnc" id="L86" title="All 2 branches missed.">            if (!codigosStr.isBlank()) {</span>
-<span class="nc" id="L87">                Map&lt;String, Double&gt; cargado = new LinkedHashMap&lt;&gt;();</span>
-<span class="nc bnc" id="L88" title="All 2 branches missed.">                for (String par : codigosStr.split(&quot;,&quot;)) {</span>
-<span class="nc" id="L89">                    String[] kv = par.trim().split(&quot;=&quot;);</span>
-<span class="nc bnc" id="L90" title="All 2 branches missed.">                    if (kv.length == 2) try { cargado.put(kv[0].trim(), Double.parseDouble(kv[1].trim())); } catch(Exception ignored){}</span>
+<span class="fc" id="L69">        try (InputStream in = new FileInputStream(ARCHIVO)) {</span>
+<span class="fc" id="L70">            props.load(in);</span>
+<span class="fc" id="L71">            horasJornadaDia  = pd(&quot;horas.jornada.dia&quot;,  8.0);</span>
+<span class="fc" id="L72">            diasASimular     = pi(&quot;dias.simular&quot;,        1);</span>
+<span class="fc" id="L73">            msPorMinuto      = pl(&quot;escala.ms&quot;,           62L);</span>
+<span class="fc" id="L74">            maxSociosDia     = pi(&quot;max.socios.dia&quot;,      200);</span>
+<span class="fc" id="L75">            intervaloMinutos = pd(&quot;intervalo.minutos&quot;,   1.0);</span>
+<span class="fc" id="L76">            horaInicio       = pi(&quot;hora.inicio&quot;,         510);</span>
+<span class="fc" id="L77">            horaFin          = pi(&quot;hora.fin&quot;,            990);</span>
+<span class="fc" id="L78">            jornadaPartida   = pb(&quot;jornada.partida&quot;,     true);</span>
+<span class="fc" id="L79">            horaAlmuerzoFin  = pi(&quot;hora.almuerzo.fin&quot;,   720);</span>
+<span class="fc" id="L80">            horaReanudacion  = pi(&quot;hora.reanudacion&quot;,    870);</span>
+<span class="fc" id="L81">            cajasGenerales   = pi(&quot;cajas.generales&quot;,     7);</span>
+<span class="fc" id="L82">            cajasPlataforma  = pi(&quot;cajas.plataforma&quot;,    2);</span>
+<span class="fc" id="L83">            cajasMM          = pi(&quot;cajas.mm&quot;,            1);</span>
+<span class="fc" id="L84">            diasLaborables   = deserializarDias(props.getProperty(&quot;dias.laborables&quot;, &quot;&quot;));</span>
+<span class="fc" id="L85">            String codigosStr = props.getProperty(&quot;prob.codigos&quot;, &quot;&quot;);</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">            if (!codigosStr.isBlank()) {</span>
+<span class="fc" id="L87">                Map&lt;String, Double&gt; cargado = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">                for (String par : codigosStr.split(&quot;,&quot;)) {</span>
+<span class="fc" id="L89">                    String[] kv = par.trim().split(&quot;=&quot;);</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">                    if (kv.length == 2) try { cargado.put(kv[0].trim(), Double.parseDouble(kv[1].trim())); } catch(Exception ignored){}</span>
                 }
-<span class="nc bnc" id="L92" title="All 2 branches missed.">                if (!cargado.isEmpty()) probPorCodigo = cargado;</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">                if (!cargado.isEmpty()) probPorCodigo = cargado;</span>
             }
-<span class="nc" id="L94">        } catch (IOException e) { guardar(); }</span>
-<span class="nc" id="L95">    }</span>
+<span class="pc" id="L94">        } catch (IOException e) { guardar(); }</span>
+<span class="fc" id="L95">    }</span>
 
     public void guardar() {
 <span class="nc" id="L98">        set(&quot;horas.jornada.dia&quot;,  horasJornadaDia);</span>
@@ -152,30 +152,30 @@ public class ConfiguracionCooperativa {
     }
 
     private Map&lt;LocalDate, Boolean&gt; deserializarDias(String s) {
-<span class="nc" id="L155">        Map&lt;LocalDate, Boolean&gt; m = new LinkedHashMap&lt;&gt;();</span>
-<span class="nc bnc" id="L156" title="All 4 branches missed.">        if (s==null||s.isBlank()) return m;</span>
-<span class="nc bnc" id="L157" title="All 2 branches missed.">        for (String par : s.split(&quot;,&quot;)) {</span>
-<span class="nc" id="L158">            String[] kv=par.trim().split(&quot;=&quot;);</span>
-<span class="nc bnc" id="L159" title="All 2 branches missed.">            if(kv.length==2) try{m.put(LocalDate.parse(kv[0].trim()),Boolean.parseBoolean(kv[1].trim()));}catch(Exception ignored){}</span>
+<span class="fc" id="L155">        Map&lt;LocalDate, Boolean&gt; m = new LinkedHashMap&lt;&gt;();</span>
+<span class="pc bpc" id="L156" title="2 of 4 branches missed.">        if (s==null||s.isBlank()) return m;</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        for (String par : s.split(&quot;,&quot;)) {</span>
+<span class="fc" id="L158">            String[] kv=par.trim().split(&quot;=&quot;);</span>
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">            if(kv.length==2) try{m.put(LocalDate.parse(kv[0].trim()),Boolean.parseBoolean(kv[1].trim()));}catch(Exception ignored){}</span>
         }
-<span class="nc" id="L161">        return m;</span>
+<span class="fc" id="L161">        return m;</span>
     }
 
 <span class="nc" id="L164">    private void set(String k,Object v){props.setProperty(k,String.valueOf(v));}</span>
-<span class="nc" id="L165">    private int     pi(String k,int d)    {try{return Integer.parseInt(props.getProperty(k,String.valueOf(d)));}catch(Exception e){return d;}}</span>
-<span class="nc" id="L166">    private long    pl(String k,long d)   {try{return Long.parseLong(props.getProperty(k,String.valueOf(d)));}catch(Exception e){return d;}}</span>
-<span class="nc" id="L167">    private double  pd(String k,double d) {try{return Double.parseDouble(props.getProperty(k,String.valueOf(d)));}catch(Exception e){return d;}}</span>
-<span class="nc" id="L168">    private boolean pb(String k,boolean d){try{return Boolean.parseBoolean(props.getProperty(k,String.valueOf(d)));}catch(Exception e){return d;}}</span>
+<span class="pc" id="L165">    private int     pi(String k,int d)    {try{return Integer.parseInt(props.getProperty(k,String.valueOf(d)));}catch(Exception e){return d;}}</span>
+<span class="pc" id="L166">    private long    pl(String k,long d)   {try{return Long.parseLong(props.getProperty(k,String.valueOf(d)));}catch(Exception e){return d;}}</span>
+<span class="pc" id="L167">    private double  pd(String k,double d) {try{return Double.parseDouble(props.getProperty(k,String.valueOf(d)));}catch(Exception e){return d;}}</span>
+<span class="pc" id="L168">    private boolean pb(String k,boolean d){try{return Boolean.parseBoolean(props.getProperty(k,String.valueOf(d)));}catch(Exception e){return d;}}</span>
 
 <span class="nc" id="L170">    public double  getHorasJornadaDia()           { return horasJornadaDia; }</span>
 <span class="nc" id="L171">    public void    setHorasJornadaDia(double v)   { horasJornadaDia = v; }</span>
 <span class="nc" id="L172">    public int     getDiasASimular()              { return diasASimular; }</span>
 <span class="nc" id="L173">    public void    setDiasASimular(int v)         { diasASimular = Math.max(1, Math.min(31, v)); }</span>
-<span class="nc" id="L174">    public long    getMsPorMinuto()               { return msPorMinuto; }</span>
+<span class="fc" id="L174">    public long    getMsPorMinuto()               { return msPorMinuto; }</span>
 <span class="nc" id="L175">    public void    setMsPorMinuto(long v)         { msPorMinuto = v; }</span>
-<span class="nc" id="L176">    public int     getMaxSociosDia()              { return maxSociosDia; }</span>
+<span class="fc" id="L176">    public int     getMaxSociosDia()              { return maxSociosDia; }</span>
 <span class="nc" id="L177">    public void    setMaxSociosDia(int v)         { maxSociosDia = v; }</span>
-<span class="nc" id="L178">    public double  getIntervaloMinutos()          { return intervaloMinutos; }</span>
+<span class="fc" id="L178">    public double  getIntervaloMinutos()          { return intervaloMinutos; }</span>
 <span class="nc" id="L179">    public void    setIntervaloMinutos(double v)  { intervaloMinutos = v; }</span>
 <span class="nc" id="L180">    public int     getHoraInicio()                { return horaInicio; }</span>
 <span class="nc" id="L181">    public void    setHoraInicio(int v)           { horaInicio = v; }</span>

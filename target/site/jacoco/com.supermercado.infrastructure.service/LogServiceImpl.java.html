@@ -12,45 +12,45 @@ import org.slf4j.LoggerFactory;
  * @author Bazoalto Andia Carlos Diego
  * @version 1.0
  */
-<span class="fc" id="L15">public class LogServiceImpl implements ILogService {</span>
+<span class="nc" id="L15">public class LogServiceImpl implements ILogService {</span>
 
-<span class="fc" id="L17">    private static final Logger logger = LoggerFactory.getLogger(LogServiceImpl.class);</span>
+<span class="nc" id="L17">    private static final Logger logger = LoggerFactory.getLogger(LogServiceImpl.class);</span>
 
     @Override
     public void info(String mensaje) {
-<span class="fc bfc" id="L21" title="All 2 branches covered.">        if (mensaje != null) {</span>
-<span class="fc" id="L22">            logger.info(mensaje);</span>
+<span class="nc bnc" id="L21" title="All 2 branches missed.">        if (mensaje != null) {</span>
+<span class="nc" id="L22">            logger.info(mensaje);</span>
         }
-<span class="fc" id="L24">    }</span>
+<span class="nc" id="L24">    }</span>
 
     @Override
     public void debug(String mensaje) {
-<span class="pc bpc" id="L28" title="1 of 2 branches missed.">        if (mensaje != null) {</span>
-<span class="fc" id="L29">            logger.debug(mensaje);</span>
+<span class="nc bnc" id="L28" title="All 2 branches missed.">        if (mensaje != null) {</span>
+<span class="nc" id="L29">            logger.debug(mensaje);</span>
         }
-<span class="fc" id="L31">    }</span>
+<span class="nc" id="L31">    }</span>
 
     @Override
     public void warn(String mensaje) {
-<span class="pc bpc" id="L35" title="1 of 2 branches missed.">        if (mensaje != null) {</span>
-<span class="fc" id="L36">            logger.warn(mensaje);</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">        if (mensaje != null) {</span>
+<span class="nc" id="L36">            logger.warn(mensaje);</span>
         }
-<span class="fc" id="L38">    }</span>
+<span class="nc" id="L38">    }</span>
 
     @Override
     public void error(String mensaje) {
-<span class="pc bpc" id="L42" title="1 of 2 branches missed.">        if (mensaje != null) {</span>
-<span class="fc" id="L43">            logger.error(mensaje);</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">        if (mensaje != null) {</span>
+<span class="nc" id="L43">            logger.error(mensaje);</span>
         }
-<span class="fc" id="L45">    }</span>
+<span class="nc" id="L45">    }</span>
 
     @Override
     public void error(String mensaje, Throwable throwable) {
-<span class="pc bpc" id="L49" title="1 of 2 branches missed.">        if (mensaje != null) {</span>
-<span class="fc" id="L50">            logger.error(mensaje, throwable);</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        if (mensaje != null) {</span>
+<span class="nc" id="L50">            logger.error(mensaje, throwable);</span>
 <span class="nc bnc" id="L51" title="All 2 branches missed.">        } else if (throwable != null) {</span>
 <span class="nc" id="L52">            logger.error(&quot;Error sin mensaje&quot;, throwable);</span>
         }
-<span class="fc" id="L54">    }</span>
+<span class="nc" id="L54">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

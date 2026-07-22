@@ -6,12 +6,14 @@ C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\domai
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\application\supermercado\usecase\ConfigurarSimulacionUseCaseTest.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\infrastructure\service\LogServiceImplTest.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\application\supermercado\dto\EstadisticasDTOTest.java
+C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\domain\cooperativa\service\SimuladorCooperativaServiceTest.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\application\supermercado\usecase\CompararConfiguracionesUseCaseTest.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\application\supermercado\usecase\OptimizarCajasUseCaseTest.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\domain\supermercado\service\DiagnosticoServiceTest.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\domain\supermercado\service\TeoriaColasServiceTest.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\regression\SimulacionRegressionTest.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\application\supermercado\usecase\IniciarSimulacionUseCaseTest.java
+C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\infrastructure\adapter\preset\PresetManagerTest.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\application\supermercado\usecase\DiagnosticarConfiguracionUseCaseTest.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\application\supermercado\usecase\TeoriaColasUseCaseTest.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\infrastructure\adapter\export\HistorialImportadorAdapterTest.java
@@ -21,7 +23,9 @@ C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\domai
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\domain\cooperativa\service\EstadisticasFaseTest.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\application\supermercado\usecase\PausarSimulacionUseCaseTest.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\domain\supermercado\model\EstadoCajaTest.java
+C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\application\cooperativa\usecase\CalibrarConfiguracionUseCaseTest.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\application\supermercado\usecase\DetenerSimulacionUseCaseTest.java
+C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\infrastructure\adapter\export\HistorialImportadorAdapterExtraTest.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\application\supermercado\usecase\ObtenerEstadisticasUseCaseTest.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\domain\supermercado\model\ClienteTest.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\domain\cooperativa\service\SimuladorMensualServiceTest.java
@@ -32,6 +36,7 @@ C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\domai
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\application\supermercado\usecase\ReanudarSimulacionUseCaseTest.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\application\supermercado\usecase\ExportarReporteUseCaseTest.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\application\supermercado\usecase\RecomendarMejoraUseCaseTest.java
+C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\domain\cooperativa\service\EstadisticasFinancierasServiceTest.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\application\supermercado\usecase\AsignarClienteUseCaseTest.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\application\supermercado\usecase\CalcularTiempoEsperaUseCaseTest.java
 C:\Users\ASUS\Documents\DClass\SimCristoRey\src\test\java\com\supermercado\application\supermercado\usecase\SimulacionConEscalaUseCaseTest.java

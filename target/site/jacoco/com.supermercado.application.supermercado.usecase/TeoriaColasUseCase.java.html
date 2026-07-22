@@ -8,30 +8,30 @@ public class TeoriaColasUseCase {
     
     private final TeoriaColasService teoriaColasService;
     
-<span class="fc" id="L11">    public TeoriaColasUseCase() {</span>
-<span class="fc" id="L12">        this.teoriaColasService = new TeoriaColasService();</span>
-<span class="fc" id="L13">    }</span>
+<span class="nc" id="L11">    public TeoriaColasUseCase() {</span>
+<span class="nc" id="L12">        this.teoriaColasService = new TeoriaColasService();</span>
+<span class="nc" id="L13">    }</span>
     
     public String ejecutar(Configuracion configuracion) {
-<span class="fc" id="L16">        double lambda = configuracion.getClientesPorHora();</span>
-<span class="fc" id="L17">        double mu = 60.0 / configuracion.getTiempoAtencionPromedio();</span>
-<span class="fc" id="L18">        int c = configuracion.getNumCajasNormales() + configuracion.getNumCajasRapidas();</span>
+<span class="nc" id="L16">        double lambda = configuracion.getClientesPorHora();</span>
+<span class="nc" id="L17">        double mu = 60.0 / configuracion.getTiempoAtencionPromedio();</span>
+<span class="nc" id="L18">        int c = configuracion.getNumCajasNormales() + configuracion.getNumCajasRapidas();</span>
         
-<span class="fc" id="L20">        TeoriaColasService.MetricasColas metricas = </span>
-<span class="fc" id="L21">            teoriaColasService.calcularMetricas(lambda, mu, c);</span>
+<span class="nc" id="L20">        TeoriaColasService.MetricasColas metricas = </span>
+<span class="nc" id="L21">            teoriaColasService.calcularMetricas(lambda, mu, c);</span>
         
-<span class="fc" id="L23">        return metricas.toString();</span>
+<span class="nc" id="L23">        return metricas.toString();</span>
     }
     
     public Recomendacion obtenerRecomendacion(Configuracion configuracion) {
-<span class="fc" id="L27">        double lambda = configuracion.getClientesPorHora();</span>
-<span class="fc" id="L28">        double mu = 60.0 / configuracion.getTiempoAtencionPromedio();</span>
-<span class="fc" id="L29">        int c = configuracion.getNumCajasNormales() + configuracion.getNumCajasRapidas();</span>
+<span class="nc" id="L27">        double lambda = configuracion.getClientesPorHora();</span>
+<span class="nc" id="L28">        double mu = 60.0 / configuracion.getTiempoAtencionPromedio();</span>
+<span class="nc" id="L29">        int c = configuracion.getNumCajasNormales() + configuracion.getNumCajasRapidas();</span>
         
-<span class="fc" id="L31">        TeoriaColasService.MetricasColas metricas = </span>
-<span class="fc" id="L32">            teoriaColasService.calcularMetricas(lambda, mu, c);</span>
+<span class="nc" id="L31">        TeoriaColasService.MetricasColas metricas = </span>
+<span class="nc" id="L32">            teoriaColasService.calcularMetricas(lambda, mu, c);</span>
         
-<span class="fc" id="L34">        return teoriaColasService.generarRecomendacionTeoriaColas(metricas);</span>
+<span class="nc" id="L34">        return teoriaColasService.generarRecomendacionTeoriaColas(metricas);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -3,78 +3,95 @@ package com.supermercado.domain.cooperativa.service;
 import com.supermercado.application.cooperativa.dto.CalibracionMensual;
 import com.supermercado.application.cooperativa.dto.RegistroAtencion;
 import com.supermercado.domain.cooperativa.config.ConfiguracionCooperativa;
+import com.supermercado.domain.cooperativa.event.TipoEvento;
 import com.supermercado.domain.cooperativa.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 class SimuladorMensualServiceTest {
 
-    @Mock
     private SimuladorCooperativaService motor;
-    @Mock
-    private ConfiguracionCooperativa config;
-
     private SimuladorMensualService service;
     private List<JornadaLaboral> jornadas;
-    private CalibracionMensual calibracion;
+    private List<Caja> cajas;
+    private ConfiguracionCooperativa config;
 
     @BeforeEach
     void setUp() {
-        service = new SimuladorMensualService(motor);
-        
-        // Crear jornada plantilla
-        jornadas = new ArrayList<>();
+        motor = new SimuladorCooperativaService();
+        cajas = new ArrayList<>();
+        cajas.add(new Caja("G-01", new TipoCaja("GENERAL", "General", "GENERAL")));
+
+        config = new ConfiguracionCooperativa();
+
         JornadaLaboral plantilla = new JornadaLaboral(1, true);
-        plantilla.agregarBloque(new BloqueHorario(510, 990));
+        plantilla.agregarBloque(new BloqueHorario(510, 513)); // jornada de 3 min: test rapido
+        jornadas = new ArrayList<>();
         jornadas.add(plantilla);
-        
-        // Crear calibracion con 2 dias
+
+        // maxSociosDia bajo + 1ms/minuto: cualquier corrida real termina en milisegundos
+        motor.configurar(1L, 3, 1.0, new ArrayList<>(), cajas, null, config);
+        service = new SimuladorMensualService(motor);
+        service.configurar(config, jornadas, cajas, new ArrayList<>(), new ConfiguracionMultiServicio());
+        service.setPreguntarRezagadosHabilitado(false); // que no espere confirmacion, drene directo
+    }
+
+    private CalibracionMensual calibracionDeUnDia() {
         List<RegistroAtencion> registros = new ArrayList<>();
-        registros.add(new RegistroAtencion(LocalDate.of(2026, 2, 1), LocalTime.of(8, 30), 5, "C", false, 100.0));
-        registros.add(new RegistroAtencion(LocalDate.of(2026, 2, 2), LocalTime.of(9, 0), 3, "S", true, 200.0));
-        
-        List<LocalDate> dias = List.of(LocalDate.of(2026, 2, 1), LocalDate.of(2026, 2, 2));
-        Map<LocalDate, Integer> sociosPorDia = new HashMap<>();
-        sociosPorDia.put(LocalDate.of(2026, 2, 1), 1);
-        sociosPorDia.put(LocalDate.of(2026, 2, 2), 1);
-        
-        calibracion = new CalibracionMensual(
-            new ArrayList<>(), new HashMap<>(), 2, 0, true,
-            dias, sociosPorDia, 1, 1.0, registros
-        );
+        registros.add(new RegistroAtencion(LocalDate.of(2026, 3, 2), LocalTime.of(8, 31), 2, "C", false, 100.0));
+        List<LocalDate> dias = List.of(LocalDate.of(2026, 3, 2));
+        Map<LocalDate, Integer> sociosPorDia = Map.of(LocalDate.of(2026, 3, 2), 1);
+        return new CalibracionMensual(new ArrayList<>(), new HashMap<>(), 1, 0, true,
+                dias, sociosPorDia, 1, 1.0, registros);
     }
 
     @Test
-    void testReplayMode_IniciaConDiasDelHistorial() {
-        service.setCalibracion(calibracion);
-        service.configurar(config, jornadas, new ArrayList<>(), new ArrayList<>(), null);
-        
-        // No podemos probar el hilo facilmente, pero verificamos que el estado inicial es correcto
-        assertNotNull(service);
-        // En una prueba real, necesitariamos mockear el motor y verificar que se llama a ejecutarDiaConSocios
-        // con los dias correctos.
-    }
-
-    @Test
-    void testIsModoReplayActivo_ConCalibracion() {
-        service.setCalibracion(calibracion);
-        assertTrue(service.isModoReplayActivo());
-    }
-
-    @Test
-    void testIsModoReplayActivo_SinCalibracion() {
+    void manual_sinCalibracion_terminaYQuedaSinModoReplay() throws InterruptedException {
         service.setCalibracion(null);
+
+        CountDownLatch latch = new CountDownLatch(1);
+        service.addListener(ev -> {
+            if (ev.getTipo() == TipoEvento.SIMULACION_MENSUAL_FINALIZADA) latch.countDown();
+        });
+
+        service.iniciar();
+        boolean termino = latch.await(20, TimeUnit.SECONDS);
+        assertTrue(termino, "La simulacion manual deberia terminar");
         assertFalse(service.isModoReplayActivo());
+        assertEquals(1, service.getResumenes().size());
+        assertNull(service.getResumenes().get(0).getFecha(), "En modo manual la fecha debe quedar null");
+    }
+
+    @Test
+    void replay_conUnDia_generaResumenConFechaReal() throws InterruptedException {
+        service.setCalibracion(calibracionDeUnDia());
+
+        CountDownLatch latch = new CountDownLatch(1);
+        service.addListener(ev -> {
+            if (ev.getTipo() == TipoEvento.SIMULACION_MENSUAL_FINALIZADA) latch.countDown();
+        });
+
+        service.iniciar();
+        boolean termino = latch.await(20, TimeUnit.SECONDS);
+        assertTrue(termino, "El replay deberia terminar");
+
+        assertTrue(service.isModoReplayActivo());
+        assertEquals(1, service.getTotalDiasReplay());
+        assertEquals(1, service.getResumenes().size());
+        assertEquals(LocalDate.of(2026, 3, 2), service.getResumenes().get(0).getFecha());
+        assertEquals(1, service.getResumenes().get(0).getGenerados());
+    }
+
+    @Test
+    void detener_antesDeIniciar_noLanzaExcepcion() {
+        assertDoesNotThrow(() -> service.detener());
     }
 }

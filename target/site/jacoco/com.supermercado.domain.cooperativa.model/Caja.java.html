@@ -20,33 +20,33 @@ public class Caja {
 <span class="fc" id="L20">    public Caja(String id, TipoCaja tipo) { this.id = id; this.tipo = tipo; }</span>
 
     public void asignarSocio(Socio s, long tiempoActual) {
-<span class="nc" id="L23">        this.socioActual = s; this.estado = EstadoCaja.OCUPADA;</span>
-<span class="nc" id="L24">        this.tiempoInicioAtencion = tiempoActual;</span>
-<span class="nc" id="L25">    }</span>
+<span class="fc" id="L23">        this.socioActual = s; this.estado = EstadoCaja.OCUPADA;</span>
+<span class="fc" id="L24">        this.tiempoInicioAtencion = tiempoActual;</span>
+<span class="fc" id="L25">    }</span>
     public void finalizarAtencion(long tiempoActual) {
-<span class="nc bnc" id="L27" title="All 2 branches missed.">        if (socioActual != null) {</span>
-<span class="nc" id="L28">            long dur = Math.max(0, tiempoActual - tiempoInicioAtencion);</span>
-<span class="nc" id="L29">            tiempoTotalOcupado += dur;</span>
-<span class="nc" id="L30">            montoTotalAtendido += socioActual.getMonto();</span>
-<span class="nc" id="L31">            totalAtendidos++;</span>
-<span class="nc bnc" id="L32" title="All 2 branches missed.">            for (ServicioFinanciero s : socioActual.getTodosLosServicios()) {</span>
+<span class="pc bpc" id="L27" title="1 of 2 branches missed.">        if (socioActual != null) {</span>
+<span class="fc" id="L28">            long dur = Math.max(0, tiempoActual - tiempoInicioAtencion);</span>
+<span class="fc" id="L29">            tiempoTotalOcupado += dur;</span>
+<span class="fc" id="L30">            montoTotalAtendido += socioActual.getMonto();</span>
+<span class="fc" id="L31">            totalAtendidos++;</span>
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">            for (ServicioFinanciero s : socioActual.getTodosLosServicios()) {</span>
 <span class="nc bnc" id="L33" title="All 2 branches missed.">                if (s == null) continue;</span>
 <span class="nc" id="L34">                tiempoPorServicio.merge(s.getNombre(), dur, Long::sum);</span>
 <span class="nc" id="L35">                atendidosPorServicio.merge(s.getNombre(), 1, Integer::sum);</span>
 <span class="nc" id="L36">            }</span>
         }
-<span class="nc" id="L38">        socioActual = null; estado = EstadoCaja.LIBRE;</span>
-<span class="nc" id="L39">    }</span>
+<span class="fc" id="L38">        socioActual = null; estado = EstadoCaja.LIBRE;</span>
+<span class="fc" id="L39">    }</span>
 <span class="nc bnc" id="L40" title="All 4 branches missed.">    public void pausar()    { if (estado == EstadoCaja.OCUPADA || estado == EstadoCaja.LIBRE) estado = EstadoCaja.PAUSADA; }</span>
 <span class="nc bnc" id="L41" title="All 2 branches missed.">    public void reanudar()  { if (estado == EstadoCaja.PAUSADA) estado = EstadoCaja.LIBRE; }</span>
 <span class="nc" id="L42">    public void desactivar(){ activa = false; estado = EstadoCaja.DESACTIVADA; }</span>
 <span class="nc" id="L43">    public void activar()   { activa = true;  estado = EstadoCaja.LIBRE; }</span>
     public void reiniciar() {
-<span class="nc" id="L45">        socioActual = null; estado = EstadoCaja.LIBRE;</span>
-<span class="nc" id="L46">        totalAtendidos = 0; montoTotalAtendido = 0.0;</span>
-<span class="nc" id="L47">        tiempoTotalOcupado = 0L; tiempoInicioAtencion = 0L;</span>
-<span class="nc" id="L48">        tiempoPorServicio.clear(); atendidosPorServicio.clear();</span>
-<span class="nc" id="L49">    }</span>
+<span class="fc" id="L45">        socioActual = null; estado = EstadoCaja.LIBRE;</span>
+<span class="fc" id="L46">        totalAtendidos = 0; montoTotalAtendido = 0.0;</span>
+<span class="fc" id="L47">        tiempoTotalOcupado = 0L; tiempoInicioAtencion = 0L;</span>
+<span class="fc" id="L48">        tiempoPorServicio.clear(); atendidosPorServicio.clear();</span>
+<span class="fc" id="L49">    }</span>
     public long getMinutosEnAtencionActual(long tiempoActual) {
 <span class="nc bnc" id="L51" title="All 4 branches missed.">        if (estado != EstadoCaja.OCUPADA || socioActual == null) return 0;</span>
 <span class="nc" id="L52">        return Math.max(0, tiempoActual - tiempoInicioAtencion);</span>
@@ -63,12 +63,12 @@ public class Caja {
     // Getters
 <span class="fc" id="L64">    public String     getId() { return id; }</span>
 <span class="nc" id="L65">    public void       setId(String id) { this.id = id; }</span>
-<span class="nc" id="L66">    public TipoCaja   getTipo() { return tipo; }</span>
+<span class="fc" id="L66">    public TipoCaja   getTipo() { return tipo; }</span>
 <span class="nc" id="L67">    public void       setTipo(TipoCaja t) { this.tipo = t; }</span>
-<span class="nc" id="L68">    public EstadoCaja getEstado() { return estado; }</span>
+<span class="fc" id="L68">    public EstadoCaja getEstado() { return estado; }</span>
 <span class="nc" id="L69">    public void       setEstado(EstadoCaja e) { this.estado = e; }</span>
-<span class="nc" id="L70">    public Socio      getSocioActual() { return socioActual; }</span>
-<span class="nc" id="L71">    public boolean    isActiva() { return activa; }</span>
+<span class="fc" id="L70">    public Socio      getSocioActual() { return socioActual; }</span>
+<span class="fc" id="L71">    public boolean    isActiva() { return activa; }</span>
 <span class="nc" id="L72">    public void       setActiva(boolean v) { this.activa = v; }</span>
 <span class="nc" id="L73">    public int        getTotalAtendidos() { return totalAtendidos; }</span>
 <span class="nc" id="L74">    public double     getMontoTotalAtendido() { return montoTotalAtendido; }</span>

@@ -1,0 +1,60 @@
+name: CI - SimCristoRey
+
+on:
+  push:
+    branches: [ "main", "master", "feature/**" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+
+      # Las pruebas de integracion UI (AssertJ-Swing) abren ventanas Swing
+      # reales -- en un runner sin escritorio (como este) necesitan un
+      # display virtual X11. Xvfb simula una pantalla en memoria.
+      - name: Instalar Xvfb (display virtual para las pruebas de UI Swing)
+        run: sudo apt-get update && sudo apt-get install -y xvfb
+
+      - name: Compilar y correr todas las pruebas (unitarias + integracion UI)
+        run: xvfb-run --auto-servernum mvn clean test
+
+      - name: Generar reporte de cobertura (JaCoCo)
+        run: mvn jacoco:report
+
+      - name: Publicar resultados de pruebas
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultados-pruebas
+          path: target/surefire-reports/
+
+      - name: Publicar reporte de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-cobertura-jacoco
+          path: target/site/jacoco/
+
+      - name: Empaquetar la aplicacion (jar + dependencias)
+        run: mvn clean package -DskipTests
+
+      - name: Publicar el jar y las dependencias
+        uses: actions/upload-artifact@v4
+        with:
+          name: simcristorey-build
+          path: |
+            target/bottleneck-buster-1.0.0.jar
+            target/lib/

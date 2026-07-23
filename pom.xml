@@ -75,51 +75,15 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- SELENIUM (con exclusiones) -->
+        <!-- ====== INTEGRACION UI (Swing) - reemplaza a Selenium ====== -->
+        <!-- Selenium/webdrivermanager removidos: controlan navegadores web,
+             SimCristoRey es una app Swing de escritorio, no hay compatibilidad
+             posible. AssertJ-Swing es la herramienta correcta para esto. -->
         <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-java</artifactId>
-            <version>4.15.0</version>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-swing-junit</artifactId>
+            <version>3.17.1</version>
             <scope>test</scope>
-            <exclusions>
-                <exclusion><groupId>org.apache.commons</groupId><artifactId>commons-compress</artifactId></exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-api</artifactId>
-            <version>4.15.0</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion><groupId>org.apache.commons</groupId><artifactId>commons-compress</artifactId></exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-chrome-driver</artifactId>
-            <version>4.15.0</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion><groupId>org.apache.commons</groupId><artifactId>commons-compress</artifactId></exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-remote-driver</artifactId>
-            <version>4.15.0</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion><groupId>org.apache.commons</groupId><artifactId>commons-compress</artifactId></exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>io.github.bonigarcia</groupId>
-            <artifactId>webdrivermanager</artifactId>
-            <version>5.6.2</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion><groupId>org.apache.commons</groupId><artifactId>commons-compress</artifactId></exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 
@@ -153,17 +117,16 @@
                         <id>prepare-agent</id>
                         <goals><goal>prepare-agent</goal></goals>
                         <configuration>
-                                            <excludes>
-                    <!-- Excluir solo código legacy (supermercado) y UI, no cooperativa -->
-                    <exclude>**/domain/supermercado/**</exclude>
-                    <exclude>**/application/supermercado/**</exclude>
-                    <exclude>**/infrastructure/repository/**</exclude>
-                    <exclude>**/infrastructure/service/**</exclude>
-                    <exclude>**/infrastructure/adapter/event/**</exclude>
-                    <exclude>**/presentation/**</exclude>
-                    <exclude>**/Main.class</exclude>
-                    <exclude>**/infrastructure/config/**</exclude>
-                </excludes>
+                            <excludes>
+                                <exclude>**/domain/supermercado/**</exclude>
+                                <exclude>**/application/supermercado/**</exclude>
+                                <exclude>**/infrastructure/repository/**</exclude>
+                                <exclude>**/infrastructure/service/**</exclude>
+                                <exclude>**/infrastructure/adapter/event/**</exclude>
+                                <exclude>**/presentation/**</exclude>
+                                <exclude>**/Main.class</exclude>
+                                <exclude>**/infrastructure/config/**</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                     <execution>
@@ -171,25 +134,21 @@
                         <phase>test</phase>
                         <goals><goal>report</goal></goals>
                         <configuration>
-                                            <excludes>
-                    <!-- Excluir solo código legacy (supermercado) y UI, no cooperativa -->
-                    <exclude>**/domain/supermercado/**</exclude>
-                    <exclude>**/application/supermercado/**</exclude>
-                    <exclude>**/infrastructure/repository/**</exclude>
-                    <exclude>**/infrastructure/service/**</exclude>
-                    <exclude>**/infrastructure/adapter/event/**</exclude>
-                    <exclude>**/presentation/**</exclude>
-                    <exclude>**/Main.class</exclude>
-                    <exclude>**/infrastructure/config/**</exclude>
-                </excludes>
+                            <excludes>
+                                <exclude>**/domain/supermercado/**</exclude>
+                                <exclude>**/application/supermercado/**</exclude>
+                                <exclude>**/infrastructure/repository/**</exclude>
+                                <exclude>**/infrastructure/service/**</exclude>
+                                <exclude>**/infrastructure/adapter/event/**</exclude>
+                                <exclude>**/presentation/**</exclude>
+                                <exclude>**/Main.class</exclude>
+                                <exclude>**/infrastructure/config/**</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
 
-            <!-- REGLA FIJA: SOLO este plugin para dependencias. NUNCA shade
-                 ni assembly (jar-with-dependencies) en este proyecto. Copia
-                 cada .jar INTACTO a target/lib, sin fusionar nada. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -208,8 +167,6 @@
                 </executions>
             </plugin>
 
-            <!-- FIX: Class-Path automatico en el manifest -> "java -jar" solo
-                 (sin -cp manual) encuentra las dependencias en target/lib/. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
